@@ -93,8 +93,9 @@ D2 = k.fp("LED_SMD", "LED_0603_1608Metric", "D2", "LED green", -19.6, 16.6, 180,
 # input polyfuse (bottom, next to the power connector)
 f1i, f1o = two("F1", "Fuse", "Fuse_1812_4532Metric", "PTC 1812 Ihold>=2.6A 16V+", -16.2, 33.5, 90, True, (-16.2, 25),
                "12V_IN", "12V", "")
-for i, (x, y) in enumerate([(21.5, 20.0), (21.5, 37.0), (-27.8, 21.0), (-27.8, 37.0)]):
-    k.fp("MountingHole", "MountingHole_3.2mm_M3", f"H{i+1}", "M3", x, y, bom=False)
+# holder screws: M3 slots elongated along the drive insertion axis (Y), +-1.5 mm travel
+for i, (x, y) in enumerate([(21.5, 20.0), (21.5, 35.8), (-27.8, 21.0), (-27.8, 35.8)]):
+    k.fp("u3adapter", "MountingSlot_M3_3.2x6.2", f"H{i+1}", "M3 slot", x, y, bom=False)
 
 # ------------------------------------------------------------------ outline + rule areas
 k.outline([(-31.5, 0), (25, 0), (25, 40), (14, 40), (14, EF), (-8, EF), (-8, 40), (-31.5, 40)])
@@ -299,7 +300,7 @@ k.zone("GND", "L3", BOARD, clearance=0.25)
 k.text("U.3 CAGE", 19.5, 28.0, P.F_SilkS, 1.0)
 k.text("rev A", 19.5, 30.0, P.F_SilkS, 1.0)
 k.text("12V IN", -27.5, 29.0, P.F_SilkS, 1.0)
-k.text("J2 OCuLink", 19.5, 33.0, P.B_SilkS, 1.0, mirror=True)
+k.text("J2 OCuLink", 19.0, 28.0, P.B_SilkS, 1.0, mirror=True)
 
 for ref, f in k.fps.items():
     for g in list(f.GraphicalItems()):          # library silk crowds 0.5 mm pitch fields; JLC places by CPL
