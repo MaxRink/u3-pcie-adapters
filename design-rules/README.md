@@ -1,4 +1,4 @@
-# PCIe 4.0 + JLCPCB / PCBWay design rules (Rev D, 2026-11-09)
+# PCIe 4.0 + JLCPCB / PCBWay design rules (Rev E, 2026-11-09)
 
 Shared rule set for every board in the U.3 adapter project:
 
@@ -49,10 +49,10 @@ The 6L-3313 layer layout is L1 / 3313 0.0994 / L2 / core 0.55 / L3 / 2116 0.1088
 
 | Net class | Width | Gap | Notes |
 |---|---|---|---|
-| PCIe_85 (85 Ω diff) | **0.157 mm (6.19 mil)** | **0.152 mm (6 mil)** | Alternative 0.143 / 0.127 mm. Field solver gives ~89 Ω for both, within JLC ±10%. |
-| REFCLK_100 (100 Ω diff) | **0.128 mm (5.03 mil)** | **0.254 mm (10 mil)** | 100 Ω matches CEM/HCSL. 85 Ω is also acceptable if the clock buffer has 85 Ω internal terminations. |
+| PCIe_85 (85 Ω diff) | **0.157 mm (6.19 mil)** | **0.152 mm (6 mil)** | JLC's calculator value, which is what the fab tunes to under impedance control. Our 2D solver (si/) gives 89–91 Ω for this geometry; the difference is the soldermask and etch model. Keep JLC's numbers, because the fab adjusts the width to hit 85 Ω on its coupon. PCBWay also tunes width to its own model, so give them the target impedance, not just the width. |
+| REFCLK_100 (100 Ω diff) | **0.128 mm (5.03 mil)** | **0.254 mm (10 mil)** | JLC calculator; our solver gives ~107 Ω, still within the HCSL tolerance. 100 Ω matches CEM/HCSL. 85 Ω is also acceptable if the clock buffer has 85 Ω internal terminations. |
 | 50 Ω single-ended | 0.151 mm | – | for reference only |
-| Neck-down inside `NECKDOWN_*` areas | ≥ 0.09 mm | ≥ 0.09 mm | keep each neck-down ≤ 2.5 mm long |
+| Neck-down inside `NECKDOWN_*` areas | ≥ 0.10 mm | ≥ 0.10 mm (Rev E: PCBWay minimum) | keep each neck-down ≤ 2.5 mm long |
 
 Order with **Impedance control = Yes** and the stackup set explicitly. JLC tolerance is ±10%. The PCIe CEM limit for 16 GT/s is 85 Ω ±15%, so JLC's tolerance fits inside it.
 
@@ -60,31 +60,31 @@ Order with **Impedance control = Yes** and the stackup set explicitly. JLC toler
 
 | Item | Rule | JLC limit | PCBWay limit |
 |---|---|---|---|
-| Track / space | ≥ 0.10 / 0.10 mm (0.09 only inside NECKDOWN) | 0.09 / 0.09 | 0.10 / 0.10 |
+| Track / space | ≥ 0.10 / 0.10 mm everywhere | 0.09 / 0.09 | 0.10 / 0.10 |
 | PCIe signal via | 0.25 drill / 0.55 pad (Rev D; rule allows 0.25–0.30 / 0.55–0.60) | 0.15/0.25 abs, 0.20 recommended on impedance boards | 0.15 min drill, 0.15 annular |
 | Generic via | ≥ 0.20 drill, ≥ 0.15 annular (0.2/0.5) | ok | ok (0.15 annular) |
 | PTH annular | ≥ 0.15 mm | 0.15 abs / 0.20 rec | 0.15 |
-| Hole to hole | ≥ 0.25 mm | 0.20 | – |
-| Copper to hole | ≥ 0.20 mm | via–track 0.20, PTH–track 0.28 rec | – |
+| Hole to hole | vias ≥ 0.25 mm; PTH pad holes ≥ 0.45 mm (Rev E) | via 0.20, PTH pad 0.45 | – |
+| Copper to hole | vias and NPTH ≥ 0.20 mm; PTH pads ≥ 0.30 mm (Rev E) | via–track 0.20, PTH–track 0.28 (0.35 rec), inner PTH 0.30, NPTH 0.20 | – |
 | Copper to edge | ≥ 0.30 mm (0 inside FINGERS) | 0.20 | 0.20 |
 | Soldermask web | ≥ 0.10 mm, expansion 0 (JLC LDI is 1:1) | 0.10 green | – |
 | Silk | ≥ 1.0 mm text height, ≥ 0.15 mm line | 1.0 / 0.15 | – |
 
 ## 5. PCIe 4.0 electrical rules
 
-**Loss budget at 8 GHz (Nyquist of 16 GT/s).** The total channel budget is 28 dB. CEM 4.0 splits it as root package 5.0, system board 13.5, CEM connector 1.5 and add-in card 8.0 dB (source: Astera Labs' summary of the CEM table). Our passive hardware plus the drive's own internal routing must fit inside the **8.0 dB AIC allocation**. Assuming ~2 dB for the PM1735's connector-to-controller routing, our part gets **≤ 6.0 dB**. JLC FR4 (NP-155F, Df ≈ 0.02) costs about 1.0–1.1 dB/in for these microstrips.
+**Loss budget at 8 GHz (Nyquist of 16 GT/s), Rev E (conservative).** The total channel budget is 28 dB bump to bump. CEM 4.0 splits it as root package 5.0, system board 13.5, CEM connector 1.5 and add-in card 8.0 dB (Astera Labs' summary of the CEM table). There is no separate endpoint-package line, so the 8.0 dB AIC figure must **include the endpoint package**. Our passive hardware sits in front of the drive, and the drive's package plus internal routing must also fit in that 8.0 dB. PM1735 internals are unpublished, so we assume ~4 dB for them. That leaves **≤ 4.0 dB for our hardware**. Rev D said 6 dB, which assumed the package was excluded. FR4 loss is budgeted at **1.25 dB/in (0.05 dB/mm)** at 8 GHz, the middle of 1.1–1.4 dB/in for NP-155F (Df ≈ 0.02) with standard copper roughness.
 
 | Topology | Allocation | Rule |
 |---|---|---|
-| Direct-attach (x16/x8 card with onboard U.3) | fingers + breakout 0.3, traces ≤ 3 in ≈ 3.2, 2 vias 0.2, U.3 receptacle ≤ 1.0 → **≈ 4.7 dB**, 1.3 dB margin | **Target ≤ 76 mm (3 in) finger to U.3 pin, hard max 101.6 mm (4 in)**, which is in the DRU |
-| Cabled (x16 card → OCuLink → device board → U.3) | host-card traces ≤ 1 in (1.05), 2 mated OCuLink connectors (~1.0), cable ≤ 1.5 dB, device board ≤ 1 in (1.05), U.3 receptacle 1.0, vias 0.3 → **≈ 5.9 dB** | **the budget applies per link, not per board: host-card + device-board PCIe copper ≤ 50 mm combined (≤ 30 mm on either board), cable IL ≤ 1.5 dB at 8 GHz. Any lane whose combined copper is over 50 mm must cut its cable allowance by 0.05 dB per extra mm (≈ 0.25 m of 30 AWG twinax; check the cable datasheet)**. A 0.5 m cable puts the link ~1 dB over budget. It will probably still train, thanks to host margin and equalization, but it is not compliant. |
+| Direct-attach (x16/x8 card with onboard U.3) | fingers + breakout 0.3, 2 vias 0.2, U.3 receptacle 1.0 = 1.5 → **copper ≤ 2.5 dB ≈ 50 mm** | **Hard max 50 mm finger edge to U.3 pin, per lane (DRU length cap 50.8 mm).** Lanes that cannot meet this, e.g. a stacked deck with an extra connector, need a retimer for compliance. |
+| Cabled, passive (x16 card → OCuLink → device board → U.3) | 2 mated OCuLink 1.0, U.3 1.0, vias 0.3 = 2.3 → only **1.7 dB for both boards' copper plus the cable** (e.g. 20 mm copper total plus ~15 cm cable) | **Not practical as a compliant design: a retimer is required** (§9). A passive link will very likely still train at Gen4, but cannot be claimed compliant. |
 
 To gain margin, have PCBWay build the cabled boards in mid-loss laminate (e.g. IT-170GRA or FR408HR, ~0.5 dB/in). That roughly doubles the allowed trace length.
 
 **Impedance and routing**
 
 - PCIe data routes only on L1/L6 (DRU enforces this). Each net gets at most 2 vias, one L1↔L6 transition (DRU enforces this). An L1↔L6 through via has no stub, so **no backdrill is needed**. JLC does offer backdrill: 4–32 layers, ≥ 0.8 mm thick, back-drill +0.2 mm, ≥ 0.15 mm dielectric left. We don't need it.
-- Every signal via gets a GND via within 0.5 mm (2 per pair, symmetric) to carry the return path from L2 to L5. Plane antipad is Ø 0.95 mm on all layers (DRU: 0.20 zone clearance around the 0.55 pad, plus 0.325 hole clearance). A shared oval antipad per pair is fine. Via-pair pitch is 0.8–1.0 mm.
+- Every signal via gets a GND return via with **centre-to-centre distance ≤ 1.0 mm** (edge-to-edge ≥ 0.25 mm for drilling), 2 per pair, placed symmetrically, to carry the return from L2 to L5. Plane antipad is Ø 0.95 mm on all layers (DRU: 0.20 zone clearance around the 0.55 pad, plus 0.325 hole clearance). A shared oval antipad per pair is fine. Via-pair pitch is 0.8–1.0 mm.
 - Pair-to-pair and pair-to-other-net spacing is ≥ 0.40 mm (≈ 4h, in the DRU). TX and RX groups should sit ≥ 0.6 mm apart or have a GND pour with stitching between them. Keep PCIe ≥ 1 mm from the board edge, except at fingers and connectors.
 - Never cross a plane split, antipad field or slot. Keep the reference plane ≥ 3w beyond each trace edge.
 - Uncoupled length is ≤ 2.5 mm (DRU), for pin escapes only.
@@ -164,3 +164,31 @@ Sources:
 - PCIe CEM 4.0 loss split, https://www.asteralabs.com/resources/blog/pci-express-5-0-architecture-channel-insertion-loss-budget/
 
 To check against the PCI-SIG documents themselves: the CEM bevel angle and finger plating thickness, and the exact AIC budget reference points. This rule set treats the 8.0 dB AIC figure as finger to device pins, excluding the package.
+
+## 9. Cabled path: when is a retimer required? (Rev E, 2026-11-09)
+
+Under the conservative budget in §5 (≤ 4.0 dB for our hardware), the cabled topology's fixed parts already use 2.3 dB: two mated OCuLink connectors, the U.3 receptacle and vias. That leaves 1.7 dB for both boards' copper plus the cable, which is less than any useful cage cable.
+
+Cable loss figures are typical twinax values, not measured on a specific cable. Consumer OCuLink cables are often 32–34 AWG.
+
+| Cable | ~IL at 8 GHz | Passive link total (incl. 40 mm copper, 2.0 dB) | vs 4.0 dB |
+|---|---|---|---|
+| 0.25 m, 30 AWG | ~1.1 dB | 5.4 dB | −1.4 |
+| 0.5 m, 30 AWG | ~2.3 dB | 6.6 dB | −2.6 |
+| 0.5 m, 34 AWG | ~3.8 dB | 8.1 dB | −4.1 |
+
+**Conclusion: for a fully compliant cabled design, a retimer is mandatory at any realistic cable length.** Put it on the x16 host card next to the fingers.
+
+- A retimer is the only spec-defined fix. It splits the link into two channels, and each gets its own full 28 dB budget. The drive-side segment then has ~17 dB for traces, cable and connectors (28 dB minus ~3 dB retimer package minus ~8 dB drive), which allows 1 m+ cables.
+- Redrivers are not defined by the PCIe spec, so a redriver design cannot be claimed compliant even when it works.
+- Candidate: TI DS160PT801 (Gen4 x8, two per x16; LCSC availability not checked). It needs its own REFCLK, SMBus/EEPROM config, 0.9/1.8 V rails and BGA fan-out (the part's layout guide decides whether 6 layers are enough).
+- Without a retimer, a 0.25–0.5 m passive link will very likely still train at Gen4. Host boards rarely use their full 13.5 dB, and Gen4 receivers (CTLE + DFE) have margin. It is a working build, not a compliant one.
+- Direct-attach cards need no retimer when every lane is ≤ 50 mm (§5).
+
+**How far "full validation" can go**
+
+1. Budget analysis (this doc), with the conservative interpretation of the CEM AIC allocation.
+2. Channel simulation with S-parameter models: Amphenol OCuLink and U.3 receptacle models (usually on request), the cable model, and our traces extracted from the stackup. Run them through a PCIe Gen4 statistical eye tool (PCI-SIG Seasim, which needs membership, or open-source PyBERT).
+3. Post-build: **PCIe 4.0 Lane Margining at the Receiver** (mandatory on Gen4 ports) gives real per-lane eye margin. Combine it with `LnkSta 16GT/s x4` and zero AER errors under `fio`.
+4. The formal PCI-SIG compliance test (CBB/CLB fixtures and a scope) is lab-only.
+5. Not settled: the PCIe SFF-8639 Module spec's own host-side allocation at the drive connector. If it grants the host more than the CEM AIC split implies, §5 can be relaxed. It needs the PCI-SIG document.
