@@ -156,7 +156,7 @@ class Kit:
 
     def via(self, net, x, y, d=None, drill=None):
         """Rev D (dual-fab JLC+PCBWay): annular >= 0.15 mm.  HS vias 0.25/0.55, generic 0.2/0.5."""
-        hs = net.startswith(("PET", "PER", "REFCLK")) and "PERST" not in net
+        hs = bool(re.search(r"PE[TR]\d|REFCLK", net))
         d = d or (0.55 if hs else 0.5); drill = drill or (0.25 if hs else 0.2)
         v = P.PCB_VIA(self.b)
         v.SetPosition(self.V(x, y)); v.SetDrill(MM(drill)); v.SetWidth(MM(d))
@@ -166,7 +166,7 @@ class Kit:
         self.vias_by_net.setdefault(net, []).append((x, y))
         return v
 
-    def pair(self, layer, center, starts, ends, w=PCIE_W, g=PCIE_G, tune=None):
+    def pair(self, layer, center, starts, ends, w=PCIE_W, g=PCIE_G, tune=None, dry=False):
         """Route a coupled pair.
         center: centerline polyline (coupled part).
         starts/ends: two entries each, (net or None, [points from the terminal toward the coupled part]).
@@ -190,7 +190,8 @@ class Kit:
             for (si, fracs, h, L) in (tune or {}).get(net, []):
                 line = bump(line, si, fracs, sg * h, L)
             full = list(sp) + line + list(reversed(ep))
-            self.track(net, layer, full, w)
+            if not dry:
+                self.track(net, layer, full, w)
             out[net] = (full, sn, en)
         return out
 
@@ -234,8 +235,35 @@ class Kit:
         z.SetDoNotAllowPads(False); z.SetDoNotAllowFootprints(False)
         self.b.Add(z)
 
-    def outline(self, poly, layer=P.Edge_Cuts, w=0.1):
-        for a, c in zip(poly, poly[1:] + poly[:1]):
+    def keepout(self, name, poly, layers, pour=True, tracks=False, vias=False):
+        """Keepout rule area on the given layers (default: no copper pour = plane void)."""
+        z = P.ZONE(self.b)
+        ls = P.LSET()
+        for L in layers:
+            ls.AddLayer(LAYER[L])
+        z.SetLayerSet(ls)
+        o = z.Outline(); o.NewOutline()
+        for x, y in poly:
+            o.Append(MM(x + self.O[0]), MM(y + self.O[1]))
+        z.SetIsRuleArea(True); z.SetZoneName(name)
+        z.SetDoNotAllowCopperPour(pour); z.SetDoNotAllowVias(vias); z.SetDoNotAllowTracks(tracks)
+        z.SetDoNotAllowPads(False); z.SetDoNotAllowFootprints(False)
+        self.b.Add(z)
+
+    def void_under(self, ref, layer, margin=0.15):
+        """Plane void (keepout) under the pads of a footprint on the given layer."""
+        for p in self.fps[ref].Pads():
+            bb = p.GetBoundingBox()
+            x0, y0 = P.ToMM(bb.GetX()) - self.O[0] - margin, P.ToMM(bb.GetY()) - self.O[1] - margin
+            x1, y1 = x0 + P.ToMM(bb.GetWidth()) + 2 * margin, y0 + P.ToMM(bb.GetHeight()) + 2 * margin
+            self.keepout(f"VOID_{ref}_{p.GetNumber()}", [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], [layer])
+
+    def arc_pts(self, c, r, a0, a1, n=8):
+        return [(c[0] + r * math.cos(math.radians(a0 + (a1 - a0) * i / n)),
+                 c[1] + r * math.sin(math.radians(a0 + (a1 - a0) * i / n))) for i in range(n + 1)]
+
+    def outline(self, poly, layer=P.Edge_Cuts, w=0.1, closed=True):
+        for a, c in zip(poly, poly[1:] + (poly[:1] if closed else [])):
             s = P.PCB_SHAPE(self.b); s.SetShape(P.SHAPE_T_SEGMENT)
             s.SetStart(self.V(*a)); s.SetEnd(self.V(*c)); s.SetLayer(layer); s.SetWidth(MM(w))
             self.b.Add(s)
