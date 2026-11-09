@@ -164,3 +164,31 @@ Sources:
 - PCIe CEM 4.0 loss split, https://www.asteralabs.com/resources/blog/pci-express-5-0-architecture-channel-insertion-loss-budget/
 
 To check against the PCI-SIG documents themselves: the CEM bevel angle and finger plating thickness, and the exact AIC budget reference points. This rule set treats the 8.0 dB AIC figure as finger to device pins, excluding the package.
+
+## 9. Cabled path: when is a retimer required? (added 2026-11-09)
+
+Budget for our hardware at 8 GHz: **6.0 dB**. That is the CEM AIC allocation of 8.0 dB minus ~2 dB inside the drive. Fixed parts of the cabled link: host-card copper ≤ 25 mm (1.05), device-board copper ≤ 25 mm (1.05), 2 mated OCuLink connectors (~1.0), U.3 receptacle (1.0), vias (0.3). That totals **4.4 dB, leaving ≤ 1.6 dB for the cable.**
+
+Cable loss figures below are typical twinax values, not measured on a specific cable. Consumer OCuLink cables are often 32–34 AWG.
+
+| Cable | ~IL at 8 GHz | Link total | vs 6.0 dB | Spec status |
+|---|---|---|---|---|
+| 0.25 m, 30 AWG | ~1.1 dB | 5.5 dB | +0.5 margin | compliant, passive OK |
+| 0.35 m, 30 AWG | ~1.6 dB | 6.0 dB | 0 | at the limit |
+| 0.5 m, 30 AWG | ~2.3 dB | 6.7 dB | −0.7 | **not compliant** |
+| 0.5 m, 34 AWG | ~3.8 dB | 8.2 dB | −2.2 | **not compliant** |
+| 1.0 m, 30 AWG | ~4.5 dB | 8.9 dB | −2.9 | **not compliant** |
+
+Rules:
+
+- **A retimer is mandatory for spec compliance when the cable needs more than ~0.35 m of 30 AWG, or any length of thinner cable without a datasheet IL figure.** A retimer is the only spec-defined fix: it splits the link into two channels, and each gets its own full 28 dB budget. Redrivers are not defined by the PCIe spec, so a redriver design cannot be claimed compliant even when it works.
+- In practice, Gen4 receivers (CTLE + DFE) usually train over 0.5 m passive links because host boards rarely use their full 13.5 dB. Expect it to work, but it is not compliant.
+- Direct-attach cards (x16/x8 with onboard U.3) need no retimer: ≈ 4.7 dB with traces ≤ 76 mm.
+- Retimer option if needed: a Gen4 retimer on the x16 host card next to the fingers (e.g. TI DS160PT801, x8, two per x16; LCSC availability not yet checked). It needs its own REFCLK, SMBus/EEPROM config, a 0.9V/1.8V supply, and BGA fan-out. 6 layers is likely enough, but that needs checking against the part's layout guide.
+
+**How far "full validation" can go**
+
+1. Budget analysis (this doc): done, with spec allocations and JLC stackup data.
+2. Channel simulation needs S-parameter models: the Amphenol OCuLink and U.3 receptacle models (usually on request), the cable model, and our board traces extracted from the stackup. Run them through a PCIe Gen4 statistical eye tool (PCI-SIG Seasim, which needs membership, or open-source PyBERT). That is the closest pre-build check to a real compliance test.
+3. Post-build: **PCIe 4.0 Lane Margining at the Receiver** is mandatory on Gen4 ports. Measuring eye margin per lane through the host's margining interface gives real margin numbers, not just "it links". Combine that with `LnkSta 16GT/s x4` and zero AER errors under `fio`.
+4. The formal PCI-SIG compliance test (CBB/CLB fixtures and a scope) is lab-only, so it is out of reach for this project.
