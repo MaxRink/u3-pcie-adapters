@@ -19,3 +19,5 @@ The main research write-up is a living Claude Doc:
   the stock adapters).
 
 Design rules and SI numbers: see [`../design-rules/README.md`](../design-rules/README.md).
+
+Community input from GitHub and forums (cables, power, sidebands, host quirks): [`community-input.md`](community-input.md).
