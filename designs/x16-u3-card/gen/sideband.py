@@ -122,8 +122,34 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
     return dict(parts=parts, um=um, ue=ue, ug=ug, jh=jh, dl=dl, bulk=bulk)
 
 
+FANOUTS = ((), ("U6", "U5"), ("U12", "U13", "E14", "E15", "U6", "U5"))
+
+
 def route_block(k, R, d, info, JP, yvm, yvt):
-    """Wire the block with the maze router (after the trunks SMCLK/SMDAT/3V3_AUX/PCIE_RST_N exist)."""
+    """Wire the block with the maze router (after the trunks SMCLK/SMDAT/3V3_AUX/PCIE_RST_N exist).  Tries a few
+    fan-out strategies; a failed attempt is ripped up (its tracks and vias removed, router state restored)."""
+    best = None
+    for fan in FANOUTS:
+        before = {t.m_Uuid.AsString() for t in k.b.GetTracks()}
+        conn = {n_: list(v) for n_, v in R.conn.items()}
+        fails = _route_block_once(k, R, d, info, JP, yvm, yvt, fan)
+        if not fails:
+            return []
+        print(f"block {d}: fan-out {fan or '-'} left {len(fails)} unrouted, ripping up")
+        new = [t for t in k.b.GetTracks() if t.m_Uuid.AsString() not in before]
+        for t in new:
+            k.b.Delete(t)
+        del new
+        R.conn = conn
+        if best is None or len(fails) < best[0]:
+            best = (len(fails), fan)
+    fails = _route_block_once(k, R, d, info, JP, yvm, yvt, best[1])
+    for e in fails:
+        print("FAIL", e)
+    return fails
+
+
+def _route_block_once(k, R, d, info, JP, yvm, yvt, fan):
     n = lambda s: f"{s}_{d}"
     um, ue, ug, dl = info["um"], info["ue"], info["ug"], info["dl"]
     pad = lambda ref, p: k.padxy(ref, p)
@@ -150,6 +176,16 @@ def route_block(k, R, d, info, JP, yvm, yvt):
     # expander pins with no local part: escape to a via before the block fills up
     tryit(R.to_via, n("DPEN"), T(ue, "5"))
     tryit(R.route, n("LOC"), T(dl, "1"), T(ue, "7"), via_cost=1.0)
+    # drive-line pull-up pads: drop a via first, so the long drive lines can still reach them once the block is full
+    esc = {n(x) for x in ("WAKE", "IFDET2", "IFDET", "PRSNT", "PWRDIS", "SMBCLK", "SMBDAT")}
+    for ref, (pa, pb), (na, nb), bot in info["parts"]:
+        for p, net in ((pa, na), (pb, nb)):
+            if net in esc:
+                tryit(R.to_via, net, ("L6" if bot else "L1", *p))
+    # optional fan-out first for IC pins that leave the block or sit mid-column (slot bus, mux SC0/SD0)
+    for f_ in fan:
+        ref, pin = (um if f_[0] == "U" else ue), f_[1:]
+        tryit(R.to_via, k.padnet(ref, pin), T(ref, pin))
     local = []
     for ref, (pa, pb), (na, nb), bot in info["parts"]:
         L = "L6" if bot else "L1"
@@ -197,10 +233,16 @@ def route_block(k, R, d, info, JP, yvm, yvt):
         xs_ = [k.padxy(r, q.GetNumber())[0] for r in (um, ue) for q in k.fps[r].Pads()]
         bb = (min(v[1], min(xs_)) - 2.0, yvm - 6.0, max(xs_) + 3.0, yvt + 1.2)
         tryit(R.to_net, net, v, bbox=bb, **L3)
-    for f, a, kw in retry:                       # second pass: wider search window, cheaper vias
-        kw = dict(kw); kw.update(maxpad=20.0, via_cost=0.5)
-        try:
-            f(*a, **kw)
-        except RuntimeError as e:
-            fails.append(str(e)); print("FAIL", e)
+    for f, a, kw in retry:                       # second / third pass: wider search window, cheaper vias
+        for grow in (0.0, 3.0):
+            kw2 = dict(kw); kw2.update(maxpad=20.0 + 2 * grow, via_cost=0.5 if not grow else 0.3)
+            if "bbox" in kw2:
+                x0, y0, x1, y1 = kw2["bbox"]
+                kw2["bbox"] = (x0 - grow, y0 - grow, x1 + grow, y1)
+            try:
+                f(*a, **kw2)
+                break
+            except RuntimeError as e:
+                if grow:
+                    fails.append(str(e))
     return fails

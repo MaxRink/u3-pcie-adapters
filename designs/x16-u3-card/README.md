@@ -10,8 +10,9 @@ with a 3D-printed cooling shroud.
 
 | Board | What it is | Status |
 | --- | --- | --- |
-| **x8 card** (`boards/x8/`) | x8 slot (x4x4 bifurcation), 2 drives standing upright on their connectors, connectors facing the motherboard, passive, 9DBL411 REFCLK buffer, no aux 12 V | routed, DRC clean (Rev E, all lanes ≤50 mm) |
-| **x16 card, passive** (`boards/x16p/`) | x16 slot (x4x4x4x4), 4 upright drives in a row on a 310 mm card; drives B–D sit 5.7 mm higher so lanes 8–15 pass under drive B | routed, DRC clean; drive A in budget, B 45–54 mm, C ~110 mm, D ~170 mm (populate as needed) |
+| **x8 card** (`boards/x8/`) | x8 slot (x4x4 bifurcation), 2 drives standing upright on their connectors, connectors facing the motherboard, passive, 9DBL411 REFCLK buffer, full sidebands, per-drive 12 V jumper, 190 mm | rev B routed, DRC clean (Rev E, all lanes ≤50 mm) |
+| **x16 card, passive, 4 drives** (`boards/x16p/`) | x16 slot (x4x4x4x4), 4 upright drives in a row on a 312 mm card; drives B–D sit 5.7 mm higher so lanes 8–15 pass under drive B | rev B routed, DRC clean; drive A in budget, B 45–54 mm, C ~110 mm, D ~170 mm (populate as needed) |
+| **x16 card, passive, 3 drives** (`boards/x16p3/`) | same card with drives A–C only, 239 mm; host bifurcation x4x4x4 or x8x4x4, lanes 12–15 unused | rev B routed, DRC clean |
 | **x16 card with retimer** | as above, with a retimer on lanes 8–15 so all 4 drives stay compliant | planned (part search) |
 | **OCuLink cage board** (`boards/cage/`) | OCuLink 4i (SFF-8611) to U.3 breakout for a drive in a printed cage; 12 V in on a PCIe 6-pin | routed, DRC clean (design-rules Rev D); rev B only if cabled drives come back |
 
@@ -46,18 +47,37 @@ Fab files: [`fab/cage/`](fab/cage/) (Gerbers, BOM, CPL for JLCPCB / PCBWay).
 CEM x8 edge (bifurcate the slot x4x4). Both U.3 receptacles sit on the bottom, mirrored, so the drives stand
 upright with their connectors facing the motherboard and lane order needs no crossings. The card is cut away
 behind the drives for airflow. A 9DBL411 buffer fans REFCLK out to both drives (33 Ω series per the datasheet).
-PWRDIS is tied low and SMBus is not wired; 12 V comes from the slot only (2 x 25 W fits slot power).
-AC caps (220 nF) sit on the drive-to-host lanes per SFF-TA-1001. Fab files: [`fab/x8/`](fab/x8/).
+AC caps (220 nF) sit on the drive-to-host lanes per SFF-TA-1001. 190 mm long. Sidebands and 12 V work as described
+under [Sidebands and power](#sidebands-and-power). Fab files: [`fab/x8/`](fab/x8/).
 
 ## x16 card (passive)
 
-Same construction as the x8, four drives in a row (A–D, 73 mm pitch, full-length 310 mm card). Drive B's
+Same construction as the x8, four drives in a row (A–D, 73 mm pitch, 312 mm = CEM full length). The 3-drive card
+(`U3_DRIVES=3 python3 gen/x16.py`) is the same design cut after drive C (239 mm). Drive B's
 lane pads sit right above fingers 8–15, and right of the fingers the card edge rises to 12.75 mm, so lanes 8–15
 run in a 0.9 mm-pitch stack under drive B and drives B–D sit 5.7 mm higher than A to make room. Lane lengths
 finger→receptacle: A 30–46 mm, B 45–54 mm, C 107–115 mm, D 164–172 mm (the DRU documents the over-budget nets).
-One 9DBL411 feeds all four REFCLKs (C/D runs are 190/250 mm). Drives A/B run from slot 12 V; C/D run from a
-separate L4 plane fed only by the PCIe 6-pin at the card end (never tied to slot 12 V, leave it off for A/B only).
-Fab files: [`fab/x16p/`](fab/x16p/).
+One 9DBL411 feeds all four REFCLKs (B/C/D runs are about 100/205/265 mm), in channels between the sideband blocks
+and the window edges. Fab files: [`fab/x16p/`](fab/x16p/), [`fab/x16p3/`](fab/x16p3/).
+
+## Sidebands and power
+
+Every drive has its own sideband block next to its receptacle (`gen/sideband.py`), all on 3.3 V aux:
+
+| Part | Address | Does |
+| --- | --- | --- |
+| TCA9543A SMBus switch | 0x70 + drive index | slot SMBus (B5/B6) to the drive's SMBus on channel 0, so drives with the same address don't collide |
+| TCA9554 IO expander | 0x20 + drive index | P0 PWRDIS (10k pull-down: drive on by default), P1 DualPortEn#, P2 reset enable (pull-up), P3 locate LED, P4 PRSNT#, P5 IfDet#, P6 IfDet2#, P7 WAKE# (inputs pulled up) |
+| 74LVC1G08 | | PERST0#/PERST1# = slot PERST# AND reset enable, so software can hold one drive in reset |
+
+HPT0 (S15) is tied to GND for U.3 x4. REFCLK1 and port B stay open (single-port x4). Slot WAKE# and CLKREQ# are not
+used; each drive's WAKE# can be read on its expander. R9 (DNP 0R) feeds 3.3 V aux from 3.3 V for slots without aux.
+SMBus, 3.3 V aux and PERST# run as trunks on L3.
+
+**12 V:** each drive has a 3-pin jumper (JP1–JP4). Shunt on pins 2–3 (default) = slot 12 V, pins 1–2 = the PCIe
+6-pin (J5). One shunt can never join the two supplies. L4 is split into a slot-12 V plane next to the fingers and an
+aux-12 V plane fed only by J5. A slot gives at most 66 W at 12 V, so with more than two 25 W drives move some jumpers
+to aux and plug in the 6-pin. Jumper shunts (2.54 mm) are not in the BOM.
 
 ## Cooling
 
@@ -73,7 +93,9 @@ All boards are generated by Python scripts on KiCad 7 `pcbnew`. To change a boar
 - `lib/`: custom footprints (Amphenol PSAS4F213002 U.3 receptacle, Amphenol G14A421211112HR OCuLink 4i) and symbols
 - `gen/pcbkit.py`: layout toolkit (pair router with skew bumps, zones, rule areas, DRC)
 - `gen/x8.py`: x8 card (2 upright drives on the bottom, REFCLK fan-out buffer, drive window for airflow)
-- `gen/x16.py`: x16 passive card (4 drives, aux 12 V for drives C/D)
+- `gen/x16.py`: x16 passive card (4 drives; `U3_DRIVES=3` for the 3-drive card)
+- `gen/sideband.py`: per-drive sideband block (SMBus switch, IO expander, PERST# gate, 12 V jumper)
+- `gen/router.py`: small grid maze router for the low-speed sideband nets
 - `gen/cage.py`: Design 3, the OCuLink 4i to U.3 cage board (status: routed, DRC clean on design-rules Rev D)
 - `gen/fab.py`: Gerbers, drill, BOM and CPL (JLCPCB/PCBWay)
 - `boards/<board>/`: generated KiCad project, DRC report, per-net lengths

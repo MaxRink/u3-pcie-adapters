@@ -276,7 +276,36 @@ class Kit:
         self.b.Add(t)
 
     # ---------------------------------------------------------------- finish
+    def prune(self):
+        """Remove router leftovers on signal nets (no zone): vias that join fewer than two layers and tracks with a
+        dangling end, repeated until nothing changes."""
+        zn = {z.GetNetname() for z in self.b.Zones()}
+        cu = [P.F_Cu, P.In1_Cu, P.In2_Cu, P.In3_Cu, P.In4_Cu, P.B_Cu]
+        removed = 0
+        while True:
+            self.b.BuildConnectivity()
+            c = self.b.GetConnectivity()
+            dead = []
+            for t in self.b.GetTracks():
+                if t.GetNetname() in zn or not t.GetNetname():
+                    continue
+                if t.GetClass() == "PCB_VIA":
+                    if sum(1 for L in cu if c.IsConnectedOnLayer(t, L)) < 2:
+                        dead.append(t)
+                elif c.TestTrackEndpointDangling(t, False):
+                    dead.append(t)
+            if not dead:
+                return removed
+            del c
+            removed += len(dead)
+            for t in dead:
+                self.b.Delete(t)
+            del dead
+
     def save(self):
+        n = self.prune()
+        if n:
+            print(f"pruned {n} dangling router vias/tracks")
         self.b.Save(self.pcb)
 
     def fill_and_check(self, extra_dru=""):

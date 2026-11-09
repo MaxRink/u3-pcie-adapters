@@ -486,8 +486,8 @@ k.track("3V3", "L1", [V33, (V33[0], -13.6), (UX + 4.0, -13.6), (UX + 4.0, -15.6)
 VSC, VSD = (xpin(5), -10.0), (xpin(6), -10.6)
 k.track("SMCLK", "L1", [(xpin(5), -5.4), VSC], 0.2); k.via("SMCLK", *VSC)
 k.track("SMDAT", "L1", [(xpin(6), -5.4), VSD], 0.2); k.via("SMDAT", *VSD)
-TR = [("SMCLK", VSC, -12.6, 93.6, YE + 0.65, 0.2, 39.4), ("SMDAT", VSD, -12.15, 94.2, YE + 1.25, 0.2, 38.6),
-      ("3V3_AUX", VAUX, -11.7, 94.8, YE + 1.85, 0.25, 37.8), ("PCIE_RST_N", VRST, -11.25, 95.4, YE + 2.45, 0.2, 37.0)]
+TR = [("SMCLK", VSC, -12.6, 93.4, YE + 0.65, 0.2, 39.4), ("SMDAT", VSD, -12.15, 94.1, YE + 1.25, 0.2, 38.6),
+      ("3V3_AUX", VAUX, -11.7, 94.8, YE + 1.85, 0.25, 37.8), ("PCIE_RST_N", VRST, -11.25, 95.5, YE + 2.45, 0.2, 37.0)]
 TRUNK = {}
 for i, (net, v0, ylow, xr_, ych, w, xtap) in enumerate(TR):
     tA = (xr_, -26.0 - 0.8 * i)                                              # drive A tap (trunk vertex)

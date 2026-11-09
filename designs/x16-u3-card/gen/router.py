@@ -103,7 +103,11 @@ class Router:
                 ax, ay, bx, by, hw = geo
                 R = (hw + ex) / g
                 A, B = T(ax, ay), T(bx, by)
-                dr.line([A, B], fill=1, width=max(1, int(math.ceil(2 * R))))
+                L_ = math.hypot(B[0] - A[0], B[1] - A[1])
+                if L_ > 1e-9:                                   # exact rectangle (PIL thins diagonal wide lines)
+                    nx, ny = -(B[1] - A[1]) / L_ * R, (B[0] - A[0]) / L_ * R
+                    dr.polygon([(A[0] + nx, A[1] + ny), (B[0] + nx, B[1] + ny), (B[0] - nx, B[1] - ny),
+                                (A[0] - nx, A[1] - ny)], fill=1)
                 for cx, cy in (A, B):
                     dr.ellipse([cx - R, cy - R, cx + R, cy + R], fill=1)
             else:
@@ -319,7 +323,7 @@ class Router:
         if goal[0] == "via":
             vx, vy = x0 + found[1] * g, y0 + found[2] * g
             self.k.via(net, vx, vy, viad, 0.2 if viad <= 0.5 else 0.3)
-        if net in self.conn:
+        if net in self.conn and goal[0] == "net":          # only a route that reached the root copper is rooted
             self.conn[net].extend(new)
             self.conn[net].append(("all" if a[0] == "all" else a[0], "circle", (a[1], a[2], 0.1)))
             if b is not None:

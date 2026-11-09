@@ -92,12 +92,12 @@
   "U1_REFCLK1_N": 1.544,
   "REFCLK_A_N": 14.667,
   "REFCLK_A_P": 14.65,
-  "REFCLK_B_N": 91.656,
-  "REFCLK_B_P": 91.469,
-  "REFCLK_C_N": 190.5,
-  "REFCLK_C_P": 190.714,
-  "REFCLK_D_N": 251.893,
-  "REFCLK_D_P": 251.834
+  "REFCLK_B_N": 101.215,
+  "REFCLK_B_P": 101.028,
+  "REFCLK_C_N": 205.652,
+  "REFCLK_C_P": 205.866,
+  "REFCLK_D_N": 264.293,
+  "REFCLK_D_P": 264.235
  },
  "lanes_finger_to_U3": {
   "PET0": {

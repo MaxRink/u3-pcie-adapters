@@ -286,6 +286,6 @@
 (rule "x16 passive: drives B-D exceed the 50.8 mm direct-attach cap by design (populate as needed)"
     (condition "A.NetClass == 'PCIe_85' && (A.NetName == '*PE?4_*' || A.NetName == '*PE?5_*' || A.NetName == '*PE?6_*' || A.NetName == '*PE?7_*' || A.NetName == '*PE?8_*' || A.NetName == '*PE?9_*' || A.NetName == '*PE?1?_*')")
     (constraint length (max 300mm)))
-(rule "x16 passive: REFCLK_C/D run 190-290 mm with three layer changes; uncoupled <= 5 mm (all at vias/pads)"
-    (condition "A.NetClass == 'REFCLK_100' && (A.NetName == 'REFCLK_C_*' || A.NetName == 'REFCLK_D_*')")
+(rule "x16 passive: REFCLK_B-D run 120-300 mm with up to 12 bends and layer changes; uncoupled <= 5 mm (bends + ends)"
+    (condition "A.NetClass == 'REFCLK_100' && (A.NetName == 'REFCLK_B_*' || A.NetName == 'REFCLK_C_*' || A.NetName == 'REFCLK_D_*')")
     (constraint diff_pair_uncoupled (max 5.0mm)))
