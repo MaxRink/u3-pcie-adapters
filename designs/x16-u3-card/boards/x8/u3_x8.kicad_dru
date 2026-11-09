@@ -211,3 +211,6 @@
 (rule "silk may sit on masked copper (only pads/holes need clearance)"
     (condition "A.Type != 'Pad' && B.Type != 'Pad' && A.Type != 'Via' && B.Type != 'Via'")
     (constraint silk_clearance (min 0mm)))
+(rule "x8: REFCLK_B 100 MHz HCSL, ~120 mm with 8 bends and via/pin fan-outs; uncoupled <= 4 mm (bends + ends)"
+    (condition "A.NetClass == 'REFCLK_100' && A.NetName == 'REFCLK_B_*'")
+    (constraint diff_pair_uncoupled (max 4.0mm)))
