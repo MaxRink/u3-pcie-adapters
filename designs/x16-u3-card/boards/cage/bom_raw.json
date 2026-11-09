@@ -1,0 +1,178 @@
+[
+ {
+  "ref": "J1",
+  "value": "PSAS4F2130021TR",
+  "fp": "u3adapter:Amphenol_PSAS4F213002_SFF-8639_U3_RA_SMD",
+  "lcsc": "C22454449",
+  "side": "top",
+  "x": 0,
+  "y": 11.75,
+  "rot": 180,
+  "dnp": false
+ },
+ {
+  "ref": "J2",
+  "value": "G14A421211112HR",
+  "fp": "u3adapter:Amphenol_G14A421211112HR_OCuLink_4i_RA_SMD",
+  "lcsc": "C5156927",
+  "side": "bottom",
+  "x": 3.0,
+  "y": 27.905,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "J3",
+  "value": "PCIe 6-pin 45558-0003",
+  "fp": "Connector_Molex:Molex_Mini-Fit_Jr_5569-06A2_2x03_P4.20mm_Horizontal",
+  "lcsc": "C7545781",
+  "side": "top",
+  "x": -12.0,
+  "y": 25.6,
+  "rot": 180,
+  "dnp": false
+ },
+ {
+  "ref": "U1",
+  "value": "AMS1117-3.3",
+  "fp": "Package_TO_SOT_SMD:SOT-223-3_TabPin2",
+  "lcsc": "C6186",
+  "side": "bottom",
+  "x": -6.0,
+  "y": 4.4,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "C4",
+  "value": "10uF 25V X5R",
+  "fp": "Capacitor_SMD:C_0805_2012Metric",
+  "lcsc": "C15850",
+  "side": "bottom",
+  "x": -0.6,
+  "y": 4.4,
+  "rot": 90,
+  "dnp": false
+ },
+ {
+  "ref": "C5",
+  "value": "10uF 25V X5R",
+  "fp": "Capacitor_SMD:C_0805_2012Metric",
+  "lcsc": "C15850",
+  "side": "bottom",
+  "x": -11.5,
+  "y": 4.4,
+  "rot": 90,
+  "dnp": false
+ },
+ {
+  "ref": "C6",
+  "value": "100nF",
+  "fp": "Capacitor_SMD:C_0402_1005Metric",
+  "lcsc": "C1525",
+  "side": "bottom",
+  "x": 7.0,
+  "y": 7.0,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "R3",
+  "value": "10k",
+  "fp": "Resistor_SMD:R_0402_1005Metric",
+  "lcsc": "C25744",
+  "side": "bottom",
+  "x": -0.635,
+  "y": 8.0,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "Q1",
+  "value": "2N7002",
+  "fp": "Package_TO_SOT_SMD:SOT-23-3",
+  "lcsc": "C8545",
+  "side": "bottom",
+  "x": 3.0,
+  "y": 4.5,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "C1",
+  "value": "22uF 25V X5R",
+  "fp": "Capacitor_SMD:C_1206_3216Metric",
+  "lcsc": "C12891",
+  "side": "bottom",
+  "x": -16.0,
+  "y": 6.6,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "C2",
+  "value": "22uF 25V X5R",
+  "fp": "Capacitor_SMD:C_1206_3216Metric",
+  "lcsc": "C12891",
+  "side": "bottom",
+  "x": -20.9,
+  "y": 6.6,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "C3",
+  "value": "100nF 16V X7R",
+  "fp": "Capacitor_SMD:C_0402_1005Metric",
+  "lcsc": "C1525",
+  "side": "bottom",
+  "x": -12.6,
+  "y": 7.6,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "R4",
+  "value": "10k",
+  "fp": "Resistor_SMD:R_0402_1005Metric",
+  "lcsc": "C25744",
+  "side": "top",
+  "x": -17.0,
+  "y": 16.6,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "R5",
+  "value": "1k",
+  "fp": "Resistor_SMD:R_0402_1005Metric",
+  "lcsc": "C11702",
+  "side": "top",
+  "x": -22.6,
+  "y": 16.6,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "D2",
+  "value": "LED green",
+  "fp": "LED_SMD:LED_0603_1608Metric",
+  "lcsc": "C72043",
+  "side": "top",
+  "x": -19.6,
+  "y": 16.6,
+  "rot": 180,
+  "dnp": false
+ },
+ {
+  "ref": "F1",
+  "value": "PTC 1812 Ihold>=2.6A 16V+",
+  "fp": "Fuse:Fuse_1812_4532Metric",
+  "lcsc": "",
+  "side": "bottom",
+  "x": -16.2,
+  "y": 33.5,
+  "rot": 90,
+  "dnp": false
+ }
+]

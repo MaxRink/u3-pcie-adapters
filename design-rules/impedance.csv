@@ -1,0 +1,9 @@
+source,stackup,layer,ref,target_ohm,type,width_mm,gap_mm,width_mil,gap_mil,own_solver_check
+JLC calculator 2026-11-09,JLC06161H-3313 / JLC04161H-3313 / JLC04081H-3313,L1 or L6 (outer),L2 or L5,85,diff,0.157,0.152,6.19,6.0,~89 ohm (2D FD solver incl. soldermask)
+JLC calculator 2026-11-09,same,outer,adjacent GND,85,diff (alt),0.143,0.127,5.63,5.0,~89 ohm
+JLC calculator 2026-11-09,same,outer,adjacent GND,100,diff,0.128,0.254,5.03,10.0,
+JLC calculator 2026-11-09,same,outer,adjacent GND,50,single,0.151,,5.94,,~51 ohm
+JLC calculator 2026-11-09,same,outer,adjacent GND,42.5,single,0.210,,8.28,,~43 ohm
+JLC calculator 2026-11-09,JLC06161H-2116 (NOT recommended),outer,L2,85,diff,0.298,0.152,11.73,6.0,
+own 2D solver,6L-3313 CEM fingers 0.70 / 0.30 gap,L1,L2 voided -> L3 GND,,diff,0.70,0.30,,,~94 ohm (39 ohm if L2 left solid)
+own 2D solver,4L-0.8 3313 M.2 fingers 0.35 / 0.15 gap,L1,L2 voided -> L3 GND,,diff,0.35,0.15,,,~105 ohm (63 ohm if L2 left solid)

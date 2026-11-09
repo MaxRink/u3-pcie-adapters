@@ -1,0 +1,19 @@
+# KiCad generated / local files
+*-backups/
+*.kicad_prl
+fp-info-cache
+*.lck
+\#auto_saved_files#
+_autosave-*
+*-bak
+*.bak
+.history/
+# Fab outputs (regenerate per release)
+
+
+# (zips are ignored outside fab/)
+*.zip
+!designs/*/fab/**/*.zip
+# Python
+__pycache__/
+*.pyc

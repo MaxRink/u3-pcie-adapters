@@ -1,0 +1,4 @@
+# KiCad 8/9 only: append to the main .kicad_dru (KiCad 7 rejects within_diff_pairs)
+(rule "PCIe85: intra-pair skew <= 0.127 mm"
+    (condition "A.NetClass == 'PCIe_85' || A.NetClass == 'REFCLK_100'")
+    (constraint skew (max 0.127mm) (within_diff_pairs)))

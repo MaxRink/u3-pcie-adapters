@@ -1,0 +1,14 @@
+stackup,use,layer,role,material,thickness_mm,Dk,notes
+JLC06161H-3313,x16 / x8 cards and OCuLink device boards (6L 1.6 mm),F.Cu (L1),PCIe + REFCLK microstrip,Cu 1 oz finished,0.035,,ref L2
+JLC06161H-3313,,dielectric,,prepreg 3313,0.0994,4.1,
+JLC06161H-3313,,In1.Cu (L2),GND solid,Cu 0.5 oz,0.0152,,void under CEM fingers only
+JLC06161H-3313,,dielectric,,core,0.55,4.6,
+JLC06161H-3313,,In2.Cu (L3),low-speed + 3V3 pours; GND pour under finger zone,Cu 0.5 oz,0.0152,,NO PCIe here
+JLC06161H-3313,,dielectric,,prepreg 2116,0.1088,4.16,
+JLC06161H-3313,,In3.Cu (L4),12V plane,Cu 0.5 oz,0.0152,,
+JLC06161H-3313,,dielectric,,core,0.55,4.6,
+JLC06161H-3313,,In4.Cu (L5),GND solid,Cu 0.5 oz,0.0152,,
+JLC06161H-3313,,dielectric,,prepreg 3313,0.0994,4.1,
+JLC06161H-3313,,B.Cu (L6),PCIe + REFCLK microstrip,Cu 1 oz finished,0.035,,ref L5
+JLC04161H-3313,simple device board (4L 1.6 mm),F.Cu / prepreg 3313 0.0994 / In1 GND / core 1.265 / In2 PWR+GND / prepreg 3313 0.0994 / B.Cu,PCIe on L1 only,,1.564 + mask,,
+JLC04081H-3313,M.2-slot board (4L 0.8 mm),F.Cu / prepreg 3313 0.0994 / In1 GND / core 0.50 / In2 GND+PWR / prepreg 3313 0.0994 / B.Cu,PCIe on L1 only,,0.799 + mask,,
