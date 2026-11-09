@@ -154,6 +154,22 @@ def gen_oculink():
     return name
 
 
+# ---------------------------------------------------------------- slotted M3 mounting hole
+def gen_slot(length=6.2):
+    """M3 NPTH slot, elongated along footprint Y (rotate so Y = drive insertion axis); 0.6 mm copper keepout."""
+    name = f"MountingSlot_M3_3.2x{length:.1f}"
+    b = header(name, f"M3 mounting slot 3.2 x {length} mm NPTH, elongated along Y for drive/holder tolerance",
+               "mounting hole slot M3", attr="exclude_from_pos_files exclude_from_bom")
+    b += text("reference", "REF**", 0, -length / 2 - 1.2, "F.SilkS", hide=True)
+    b += text("value", name, 0, length / 2 + 1.2, "F.Fab")
+    b += (f'  (pad "" np_thru_hole oval (at 0 0) (size 3.2 {length:.2f}) (drill oval 3.2 {length:.2f}) '
+          f'(layers "*.Cu" "*.Mask") (clearance 0.6) (tstamp "{u()}"))\n')
+    b += rect(-2.4, -length / 2 - 0.8, 2.4, length / 2 + 0.8, "F.CrtYd", 0.05)
+    write(name, b)
+    return name
+
+
 if __name__ == "__main__":
+    print(gen_slot())
     print(gen_u3())
     print(gen_oculink())

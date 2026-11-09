@@ -25,9 +25,10 @@ YVR = 14.95              # via row behind U.3 top pad row
 YH = 9.15                # via row under the U.3 housing (front of bottom pad row)
 
 # ------------------------------------------------------------------ nets on the U.3 receptacle
+# HPT0 (S15) tied low = SFF-TA-1001 host (single x4 on the S lanes); HPT0 open would select U.2 quad-PCIe lanes.
 def u3net(pin):
     n = U3_PINS[pin]
-    m = {"GND": "GND", "12V": "12V", "12V_PRE": "12V", "3V3_AUX": "3V3_AUX", "PERST0#": "PCIE_RST_N",
+    m = {"GND": "GND", "HPT0": "GND", "12V": "12V", "12V_PRE": "12V", "3V3_AUX": "3V3_AUX", "PERST0#": "PCIE_RST_N",
          "SMBCLK": "SMBCLK", "SMBDAT": "SMBDAT", "DUALPORTEN#": "DUALPORTEN_N", "PWRDIS": "PWRDIS",
          "ACTIVITY#": "ACT_N", "REFCLK0+": "REFCLK0_P", "REFCLK0-": "REFCLK0_N"}
     if n in m:
@@ -36,7 +37,7 @@ def u3net(pin):
     r = re.match(r"^PE([TR])([pn])([0-3])$", n)
     if r:
         return f"PE{r.group(1)}{r.group(3)}_{r.group(2).upper()}"
-    return None          # U.2-only lanes, port B, HPT, IfDet, PRSNT, 5V, WAKE, RSVD: not connected
+    return None          # U.2-only lanes, port B, HPT1, IfDet, PRSNT, 5V, WAKE, RSVD: not connected
 
 
 j1pads = {p: u3net(p) for p in U3_PINS if u3net(p)}
@@ -93,8 +94,9 @@ D2 = k.fp("LED_SMD", "LED_0603_1608Metric", "D2", "LED green", -19.6, 16.6, 180,
 # input polyfuse (bottom, next to the power connector)
 f1i, f1o = two("F1", "Fuse", "Fuse_1812_4532Metric", "PTC 1812 Ihold>=2.6A 16V+", -16.2, 33.5, 90, True, (-16.2, 25),
                "12V_IN", "12V", "")
-for i, (x, y) in enumerate([(21.5, 20.0), (21.5, 37.0), (-27.8, 21.0), (-27.8, 37.0)]):
-    k.fp("MountingHole", "MountingHole_3.2mm_M3", f"H{i+1}", "M3", x, y, bom=False)
+# holder screws: M3 slots elongated along the drive insertion axis (Y), +-1.5 mm travel
+for i, (x, y) in enumerate([(21.5, 20.0), (21.5, 35.8), (-27.8, 21.0), (-27.8, 35.8)]):
+    k.fp("u3adapter", "MountingSlot_M3_3.2x6.2", f"H{i+1}", "M3 slot", x, y, bom=False)
 
 # ------------------------------------------------------------------ outline + rule areas
 k.outline([(-31.5, 0), (25, 0), (25, 40), (14, 40), (14, EF), (-8, EF), (-8, 40), (-31.5, 40)])
@@ -107,7 +109,9 @@ TOP_ROW = [f"E{i}" for i in range(7, 17)] + [f"S{i}" for i in range(8, 29)] + [f
 for n in TOP_ROW:
     net = j1pads.get(n)
     x, y = J1p(n)
-    if net == "GND":
+    if n == "S15":                               # HPT0: no room for a via (L3 PERST/CPRSNT run here),
+        k.track("GND", "L1", [(x, y), (x, 14.9), (x + 0.8, YVR)], 0.25)   # join S16's GND via
+    elif net == "GND":
         vx = 13.6 if n == "E9" else x            # E9 pulled away from REFCLK
         k.track("GND", "L1", [(x, y), (x, 14.9), (vx, YVR)], 0.25); k.via("GND", vx, YVR)
     elif net and net.startswith("PER"):
@@ -299,7 +303,7 @@ k.zone("GND", "L3", BOARD, clearance=0.25)
 k.text("U.3 CAGE", 19.5, 28.0, P.F_SilkS, 1.0)
 k.text("rev A", 19.5, 30.0, P.F_SilkS, 1.0)
 k.text("12V IN", -27.5, 29.0, P.F_SilkS, 1.0)
-k.text("J2 OCuLink", 19.5, 33.0, P.B_SilkS, 1.0, mirror=True)
+k.text("J2 OCuLink", 19.0, 28.0, P.B_SilkS, 1.0, mirror=True)
 
 for ref, f in k.fps.items():
     for g in list(f.GraphicalItems()):          # library silk crowds 0.5 mm pitch fields; JLC places by CPL
