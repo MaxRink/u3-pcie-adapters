@@ -11,6 +11,7 @@ Samsung PM1735a drives that refuse U.2-wired hosts. KiCad projects, fabbed at JL
 | --- | --- | --- |
 | [**x16 / x8 U.3 cards**](designs/x16-u3-card/) | x8 card (2 drives), x16 card (4 drives, passive or with retimer), OCuLink cage board | cage board routed and DRC clean; cards in layout |
 | [**Minisforum MS-01 / MS-A2**](designs/minisforum-u3/) | U.3-wired x4 card for the PCIe slot, U.3-wired replacement for the M.2 adapter | waiting on measurements of the stock adapters |
+| [**4-drive U.3 backplane**](designs/u3-backplane/) | Modular backplane, 4 drives on 2x SlimSAS 8i, tiles side by side in a printed cage | planned (after the x8/x16 cards) |
 | [**Cooling shroud**](docs/thermal/) | 3D-printed high-temp shroud for the Jonsbo N5 | sized from the thermal analysis; model in progress |
 
 <table>
