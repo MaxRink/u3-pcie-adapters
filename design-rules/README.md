@@ -167,7 +167,7 @@ To check against the PCI-SIG documents themselves: the CEM bevel angle and finge
 
 ## 9. Cabled path: when is a retimer required? (added 2026-11-09)
 
-Budget for our hardware at 8 GHz: **6.0 dB**. That is the CEM AIC allocation of 8.0 dB minus ~2 dB inside the drive. Fixed parts of the cabled link: host-card copper ≤ 25 mm (1.05), device-board copper ≤ 25 mm (1.05), 2 mated OCuLink connectors (~1.0), U.3 receptacle (1.0), vias (0.3). That totals **4.4 dB, leaving ≤ 1.6 dB for the cable.**
+Budget for our hardware at 8 GHz: **6.0 dB**. That is the CEM AIC allocation of 8.0 dB minus ~2 dB inside the drive. Fixed parts of the cabled link: host-card plus device-board copper ≤ 50 mm combined per lane (2.1 dB; the per-link rule in §5 stands, e.g. 25 + 25 or 20 + 30), 2 mated OCuLink connectors (~1.0), U.3 receptacle (1.0), vias (0.3). That totals **4.4 dB, leaving ≤ 1.6 dB for the cable.**
 
 Cable loss figures below are typical twinax values, not measured on a specific cable. Consumer OCuLink cables are often 32–34 AWG.
 
