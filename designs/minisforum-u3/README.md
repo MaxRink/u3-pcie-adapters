@@ -22,7 +22,8 @@ Decision (Max, 2026-11-09): pursue both routes.
 - Rules: ../../design-rules/, template jlc04081h-3313_0.8mm (JLC04081H-3313, 0.8 mm, 4 layers).
   - PCIe runs on L1 only, with no vias; 85 ohm diff = 0.157/0.152 mm.
   - Void L2 under the fingers and keep GND on L3.
-  - No AC caps on the board: the host TX caps are on the motherboard and the drive has its own.
+  - AC caps (SFF-TA-1001 Rev 1.1 §4.5, Tables 4-10/4-11): fit 220 nF ±10% X7R 0402 (or 0201) on PER0 and PER1 (drive TX lanes 0/1, pins S5/S6 and S12/S13), with a GND void under the pads. A compliant U.3 drive has no caps on those lanes. No caps are needed on PER2/PER3 (the drive has its own 220 nF) or on PET (host TX caps are on the motherboard).
+  - Tie U.3 pin S15 (HPT0) to GND (SFF-TA-1001 §4.2, Table 4-4). If it floats, the drive uses the U.2 lane map and won't link.
   - Fingers: JLC offers ENIG only. PCBWay offers hard gold and ±0.08 mm thickness (README §7 of the rules).
 - Pin map: share it with the x16 card thread (SFF-TA-1001).
 
