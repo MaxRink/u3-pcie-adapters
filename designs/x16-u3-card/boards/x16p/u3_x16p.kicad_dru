@@ -1,0 +1,291 @@
+(version 1)
+# =====================================================================
+#  PCIe 4.0 (16 GT/s) + JLCPCB / PCBWay rule set  -  U.3 adapter project
+#  Valid for KiCad 7, 8, 9.  Rev E (dual-fab JLC + PCBWay, conservative loss budget), 2026-11-09.
+#  Later rules override earlier ones when both match (KiCad semantics),
+#  so generic fab limits come first and specific SI rules last.
+#
+#  Required net classes (defined in the template .kicad_pro):
+#    PCIe_85   all PCIe TX/RX data pairs (85 ohm diff, outer layers only)
+#    REFCLK_100  100 MHz reference clocks (100 ohm diff, outer layers only)
+#    PWR_12V, PWR_3V3  power
+#  Required rule areas (draw as Rule Area, name exactly):
+#    FINGERS    covers the gold-finger zone incl. bevel (CEM x16 / M.2 edge)
+#    NECKDOWN*  small areas inside connector pin fields where PCIe pairs
+#               may neck down (e.g. NECKDOWN_J1, NECKDOWN_J2)
+# =====================================================================
+
+# ---------- 1. Fabrication limits (JLC multilayer  AND  PCBWay standard) ----
+(rule "fab: min track width"
+    (constraint track_width (min 0.1mm)))
+(rule "fab: min copper clearance"
+    (constraint clearance (min 0.1mm)))
+(rule "fab: min drill"
+    (constraint hole_size (min 0.2mm) (max 6.3mm)))
+(rule "fab: via annular ring (0.15 = PCBWay standard; JLC allows 0.1)"
+    (condition "A.Type == 'Via'")
+    (constraint annular_width (min 0.15mm)))
+(rule "fab: PTH annular ring"
+    (condition "A.Type == 'Pad' && A.isPlated()")
+    (constraint annular_width (min 0.15mm)))
+(rule "fab: hole to hole"
+    (constraint hole_to_hole (min 0.25mm)))
+(rule "fab: copper to hole"
+    (constraint hole_clearance (min 0.2mm)))
+(rule "fab: copper to board edge"
+    (constraint edge_clearance (min 0.3mm)))
+(rule "fab: PTH pad hole to hole (JLC 0.45)"
+    (condition "A.Type == 'Pad' && A.isPlated() && B.Type == 'Pad' && B.isPlated()")
+    (constraint hole_to_hole (min 0.45mm)))
+(rule "fab: PTH pad hole to copper (JLC 0.28 outer / 0.30 inner)"
+    (condition "A.Type == 'Pad' && A.isPlated() && A.Pad_Type == 'Through-hole'")
+    (constraint hole_clearance (min 0.30mm)))
+(rule "fab: NPTH min"
+    (condition "A.Type == 'Pad' && !A.isPlated()")
+    (constraint hole_size (min 0.5mm)))
+(rule "fab: silk"
+    (layer "?.Silkscreen")
+    (constraint text_height (min 1.0mm))
+    (constraint text_thickness (min 0.15mm)))
+(rule "fab: silk to pads"
+    (constraint silk_clearance (min 0.15mm)))
+
+# ---------- 2. Gold fingers ----------------------------------------------
+# Fingers run to the bevel, so the edge clearance is relaxed only inside FINGERS.
+(rule "fingers: pads may touch bevel edge"
+    (condition "A.Type == 'Pad' && A.intersectsArea('FINGERS')")
+    (constraint edge_clearance (min 0mm)))
+# No vias and no tracks other than the finger stubs inside the finger zone.
+(rule "fingers: no vias in finger zone"
+    (condition "A.Type == 'Via' && A.intersectsArea('FINGERS')")
+    (constraint disallow via))
+
+# ---------- 3. PCIe 4.0 data pairs: 85 ohm diff ---------------------------
+# Geometry for JLC 3313 outer prepreg (0.0994 mm, Dk 4.1) on
+# JLC06161H-3313 / JLC04161H-3313 / JLC04081H-3313:  w 0.157 / gap 0.152.
+(rule "PCIe85: outer geometry"
+    (condition "A.NetClass == 'PCIe_85'")
+    (layer outer)
+    (constraint track_width (min 0.150mm) (opt 0.157mm) (max 0.165mm))
+    (constraint diff_pair_gap (min 0.145mm) (opt 0.152mm) (max 0.160mm))
+    (constraint diff_pair_uncoupled (max 2.5mm)))
+(rule "PCIe85: outer layers only"
+    (condition "A.NetClass == 'PCIe_85'")
+    (layer inner)
+    (constraint disallow track))
+(rule "PCIe85: max 2 vias per net (one L1<->L6 transition)"
+    (condition "A.NetClass == 'PCIe_85'")
+    (constraint via_count (max 2)))
+(rule "PCIe85: hard length cap 50.8 mm (2 in, conservative budget, README 5)"
+    (condition "A.NetClass == 'PCIe_85'")
+    (constraint length (max 50.8mm)))
+(rule "PCIe85: pair-to-pair and to other nets >= 0.40 mm (4h)"
+    (condition "A.NetClass == 'PCIe_85' && !A.isCoupledDiffPair()")
+    (constraint clearance (min 0.40mm)))
+(rule "PCIe85: plane antipad around HS vias (dia 0.95 with 0.55 pad)"
+    (condition "A.NetClass == 'PCIe_85' && A.Type == 'Via' && B.Type == 'Zone'")
+    (constraint clearance (min 0.20mm))
+    (constraint hole_clearance (min 0.325mm)))
+(rule "PCIe85: via size"
+    (condition "A.NetClass == 'PCIe_85' && A.Type == 'Via'")
+    (constraint hole_size (min 0.25mm) (max 0.30mm))
+    (constraint via_diameter (min 0.55mm) (max 0.60mm)))
+# Neck-down inside connector pin fields (OCuLink 0.5 mm, U.3 0.8 mm pitch, CEM fingers)
+(rule "PCIe85: neck-down inside connector fields"
+    (condition "A.NetClass == 'PCIe_85' && A.intersectsArea('NECKDOWN*')")
+    (constraint track_width (min 0.10mm) (opt 0.10mm) (max 0.165mm))
+    (constraint diff_pair_gap (min 0.10mm) (max 0.40mm))
+    (constraint clearance (min 0.10mm))
+    (constraint diff_pair_uncoupled (max 2.5mm)))
+
+# ---------- 4. 100 MHz REFCLK: 100 ohm diff ------------------------------
+(rule "REFCLK100: outer geometry"
+    (condition "A.NetClass == 'REFCLK_100'")
+    (layer outer)
+    (constraint track_width (min 0.120mm) (opt 0.128mm) (max 0.135mm))
+    (constraint diff_pair_gap (min 0.245mm) (opt 0.254mm) (max 0.265mm))
+    (constraint diff_pair_uncoupled (max 3.0mm)))
+(rule "REFCLK100: outer layers only"
+    (condition "A.NetClass == 'REFCLK_100'")
+    (layer inner)
+    (constraint disallow track))
+(rule "REFCLK100: spacing to other nets >= 0.50 mm"
+    (condition "A.NetClass == 'REFCLK_100' && !A.isCoupledDiffPair()")
+    (constraint clearance (min 0.50mm)))
+(rule "REFCLK100: neck-down inside connector fields"
+    (condition "A.NetClass == 'REFCLK_100' && A.intersectsArea('NECKDOWN*')")
+    (constraint track_width (min 0.10mm) (max 0.135mm))
+    (constraint diff_pair_gap (min 0.10mm) (max 0.40mm))
+    (constraint clearance (min 0.10mm)))
+
+# ---------- 5. Power --------------------------------------------------------
+(rule "PWR_12V: min neck width (use planes/pours for bulk current)"
+    (condition "A.NetClass == 'PWR_12V'")
+    (constraint track_width (min 0.5mm)))
+(rule "PWR_12V: clearance"
+    (condition "A.NetClass == 'PWR_12V' && B.NetClass != 'PWR_12V'")
+    (constraint clearance (min 0.2mm)))
+
+# ---------- 6. Intra-pair skew ---------------------------------------------
+# KiCad 7 has no per-pair skew option. Run gen_pair_skew_rules.py on the
+# board and paste its output below this line (one rule per pair, max 0.127 mm).
+# KiCad 8+: you may instead use the single rule in pair_skew_kicad8.kicad_dru.
+
+# --- generated by gen_pair_skew_rules.py: intra-pair skew <= 0.127 mm ---
+(rule "skew C_PER0"
+    (condition "A.NetName == 'C_PER0_P' || A.NetName == 'C_PER0_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew C_PER1"
+    (condition "A.NetName == 'C_PER1_P' || A.NetName == 'C_PER1_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew C_PER12"
+    (condition "A.NetName == 'C_PER12_P' || A.NetName == 'C_PER12_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew C_PER13"
+    (condition "A.NetName == 'C_PER13_P' || A.NetName == 'C_PER13_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew C_PER4"
+    (condition "A.NetName == 'C_PER4_P' || A.NetName == 'C_PER4_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew C_PER5"
+    (condition "A.NetName == 'C_PER5_P' || A.NetName == 'C_PER5_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew C_PER8"
+    (condition "A.NetName == 'C_PER8_P' || A.NetName == 'C_PER8_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew C_PER9"
+    (condition "A.NetName == 'C_PER9_P' || A.NetName == 'C_PER9_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER0"
+    (condition "A.NetName == 'PER0_P' || A.NetName == 'PER0_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER1"
+    (condition "A.NetName == 'PER1_P' || A.NetName == 'PER1_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER10"
+    (condition "A.NetName == 'PER10_P' || A.NetName == 'PER10_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER11"
+    (condition "A.NetName == 'PER11_P' || A.NetName == 'PER11_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER12"
+    (condition "A.NetName == 'PER12_P' || A.NetName == 'PER12_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER13"
+    (condition "A.NetName == 'PER13_P' || A.NetName == 'PER13_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER14"
+    (condition "A.NetName == 'PER14_P' || A.NetName == 'PER14_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER15"
+    (condition "A.NetName == 'PER15_P' || A.NetName == 'PER15_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER2"
+    (condition "A.NetName == 'PER2_P' || A.NetName == 'PER2_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER3"
+    (condition "A.NetName == 'PER3_P' || A.NetName == 'PER3_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER4"
+    (condition "A.NetName == 'PER4_P' || A.NetName == 'PER4_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER5"
+    (condition "A.NetName == 'PER5_P' || A.NetName == 'PER5_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER6"
+    (condition "A.NetName == 'PER6_P' || A.NetName == 'PER6_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER7"
+    (condition "A.NetName == 'PER7_P' || A.NetName == 'PER7_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER8"
+    (condition "A.NetName == 'PER8_P' || A.NetName == 'PER8_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PER9"
+    (condition "A.NetName == 'PER9_P' || A.NetName == 'PER9_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET0"
+    (condition "A.NetName == 'PET0_P' || A.NetName == 'PET0_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET1"
+    (condition "A.NetName == 'PET1_P' || A.NetName == 'PET1_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET10"
+    (condition "A.NetName == 'PET10_P' || A.NetName == 'PET10_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET11"
+    (condition "A.NetName == 'PET11_P' || A.NetName == 'PET11_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET12"
+    (condition "A.NetName == 'PET12_P' || A.NetName == 'PET12_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET13"
+    (condition "A.NetName == 'PET13_P' || A.NetName == 'PET13_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET14"
+    (condition "A.NetName == 'PET14_P' || A.NetName == 'PET14_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET15"
+    (condition "A.NetName == 'PET15_P' || A.NetName == 'PET15_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET2"
+    (condition "A.NetName == 'PET2_P' || A.NetName == 'PET2_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET3"
+    (condition "A.NetName == 'PET3_P' || A.NetName == 'PET3_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET4"
+    (condition "A.NetName == 'PET4_P' || A.NetName == 'PET4_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET5"
+    (condition "A.NetName == 'PET5_P' || A.NetName == 'PET5_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET6"
+    (condition "A.NetName == 'PET6_P' || A.NetName == 'PET6_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET7"
+    (condition "A.NetName == 'PET7_P' || A.NetName == 'PET7_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET8"
+    (condition "A.NetName == 'PET8_P' || A.NetName == 'PET8_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew PET9"
+    (condition "A.NetName == 'PET9_P' || A.NetName == 'PET9_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew REFCLK_A"
+    (condition "A.NetName == 'REFCLK_A_P' || A.NetName == 'REFCLK_A_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew REFCLK_B"
+    (condition "A.NetName == 'REFCLK_B_P' || A.NetName == 'REFCLK_B_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew REFCLK_C"
+    (condition "A.NetName == 'REFCLK_C_P' || A.NetName == 'REFCLK_C_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew REFCLK_D"
+    (condition "A.NetName == 'REFCLK_D_P' || A.NetName == 'REFCLK_D_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew REFCLK_IN"
+    (condition "A.NetName == 'REFCLK_IN_P' || A.NetName == 'REFCLK_IN_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew U1_REFCLK0"
+    (condition "A.NetName == 'U1_REFCLK0_P' || A.NetName == 'U1_REFCLK0_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew U1_REFCLK1"
+    (condition "A.NetName == 'U1_REFCLK1_P' || A.NetName == 'U1_REFCLK1_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew U1_REFCLK2"
+    (condition "A.NetName == 'U1_REFCLK2_P' || A.NetName == 'U1_REFCLK2_N'")
+    (constraint skew (max 0.127mm)))
+(rule "skew U1_REFCLK3"
+    (condition "A.NetName == 'U1_REFCLK3_P' || A.NetName == 'U1_REFCLK3_N'")
+    (constraint skew (max 0.127mm)))
+
+(rule "silk may sit on masked copper (only pads/holes need clearance)"
+    (condition "A.Type != 'Pad' && B.Type != 'Pad' && A.Type != 'Via' && B.Type != 'Via'")
+    (constraint silk_clearance (min 0mm)))
+(rule "x16 passive: drives B-D exceed the 50.8 mm direct-attach cap by design (populate as needed)"
+    (condition "A.NetClass == 'PCIe_85' && (A.NetName == '*PE?4_*' || A.NetName == '*PE?5_*' || A.NetName == '*PE?6_*' || A.NetName == '*PE?7_*' || A.NetName == '*PE?8_*' || A.NetName == '*PE?9_*' || A.NetName == '*PE?1?_*')")
+    (constraint length (max 300mm)))
+(rule "x16 passive: REFCLK_C/D run 190-290 mm with three layer changes; uncoupled <= 5 mm (all at vias/pads)"
+    (condition "A.NetClass == 'REFCLK_100' && (A.NetName == 'REFCLK_C_*' || A.NetName == 'REFCLK_D_*')")
+    (constraint diff_pair_uncoupled (max 5.0mm)))
