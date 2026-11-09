@@ -19,18 +19,23 @@ Samsung PM1735a drives that refuse U.2-wired hosts. KiCad projects, fabbed at JL
 <td><img src="docs/img/x16-u3-card/cage_iso_bottom.png" width="400"><br>Cage board, bottom (OCuLink)</td>
 </tr>
 <tr>
-<td><img src="docs/thermal/cfd_3d_n2_g5_q21.png" width="400"><br>CFD: 2 drives x 25 W in the shroud</td>
-<td><img src="docs/thermal/analytic_temp_vs_airflow.png" width="400"><br>Drive temperature vs airflow</td>
+<td><img src="docs/img/x16-u3-card/x8_drive_iso_top.png" width="400"><br>x8 card with 2 drives</td>
+<td><img src="docs/img/x16-u3-card/x16p_drive_iso_top.png" width="400"><br>x16 card with 4 drives</td>
+</tr>
+<tr>
+<td><img src="docs/thermal/cfd_3d_inline_n4_g5_q30_coarse.png" width="400"><br>CFD: 4 drives x 25 W in line, 30 CFM</td>
+<td><img src="docs/thermal/analytic_temp_vs_airflow_inline.png" width="400"><br>Hottest drive vs airflow (x8 / x16)</td>
 </tr>
 </table>
 
 ## Cooling in one paragraph
 
-Each drive can draw ~25 W. Standing upright on the card with 5 mm gaps, 2 drives need about
-25 CFM through the shroud and 4 drives about 43 CFM to stay at 70 °C with 35 °C air coming in;
-3 mm gaps cut that to 15 and 26 CFM if the fan has the pressure for it. A quiet 92 mm fan is not
-enough; a 92x38 mm server-class fan keeps the drives around 60–66 °C. Details, assumptions and
-the OpenFOAM check: [`docs/thermal/`](docs/thermal/).
+Each drive can draw ~25 W, and on the cards the drives sit in a row, so the air passes them one
+after another. With 35 °C air coming in and a 70 °C case limit, the x8 card (2 drives) needs about
+20 CFM and the x16 card (4 drives) about 30 CFM at ~150 Pa. That takes a 92x38 mm server-class
+fan: it holds 2 drives at ~66 °C and 4 drives at ~71 °C (marginal; 3 mm shroud gaps or a 20 W
+drive power state give margin). A 92x25 mm fan is not enough for either. Details, OpenFOAM
+results and the calibrated model: [`docs/thermal/`](docs/thermal/).
 
 ## Layout
 

@@ -31,234 +31,428 @@
     75.0,
     150.0
    ]
-  ]
+  ],
+  "cal": {
+   "turb": 1.0,
+   "dp": 0.57,
+   "h": {
+    "stack": [
+     0.95,
+     -0.46
+    ],
+    "inline": [
+     0.97,
+     -0.64
+    ],
+    "parallel": [
+     0.95,
+     -0.46
+    ]
+   },
+   "re_range": {
+    "stack": [
+     2414,
+     4840
+    ],
+    "inline": [
+     3099,
+     10330
+    ],
+    "parallel": [
+     2414,
+     4840
+    ]
+   }
+  }
  },
  "cases": [
   {
+   "layout": "inline",
    "drives": 2,
    "gap_mm": 3,
-   "need_cfm_70C": 15.1,
-   "need_cfm_60C": 24.3,
+   "need_cfm_70C": 11.4,
+   "need_cfm_60C": 16.4,
    "fans": [
     {
      "fan": "92x25 quiet (NF-A9 class, 2000 rpm)",
-     "cfm": 7.9,
-     "dp_Pa": 21.7,
-     "V_ms": 3.41,
-     "Re": 1203,
-     "h": 44.2,
-     "Tmax_C": 82.3,
-     "air_rise_K": 11.9
+     "cfm": 6.0,
+     "dp_Pa": 22.0,
+     "V_ms": 4.16,
+     "Re": 1469,
+     "h": 33.0,
+     "Tmax_C": 92.7,
+     "air_rise_K": 15.8
     },
     {
      "fan": "92x25 high-speed (3000 rpm class)",
-     "cfm": 11.7,
-     "dp_Pa": 43.3,
-     "V_ms": 5.06,
-     "Re": 1784,
-     "h": 48.3,
-     "Tmax_C": 76.6,
-     "air_rise_K": 8.0
+     "cfm": 9.0,
+     "dp_Pa": 44.0,
+     "V_ms": 6.33,
+     "Re": 2233,
+     "h": 33.7,
+     "Tmax_C": 87.7,
+     "air_rise_K": 10.4
     },
     {
      "fan": "92x38 server (Delta/Sunon class, ~5000 rpm)",
-     "cfm": 22.2,
-     "dp_Pa": 136.8,
-     "V_ms": 9.58,
-     "Re": 3380,
-     "h": 61.0,
-     "Tmax_C": 62.4,
-     "air_rise_K": 4.2
+     "cfm": 17.7,
+     "dp_Pa": 141.7,
+     "V_ms": 12.35,
+     "Re": 4360,
+     "h": 75.0,
+     "Tmax_C": 59.2,
+     "air_rise_K": 5.3
     }
    ]
   },
   {
+   "layout": "inline",
    "drives": 2,
    "gap_mm": 5,
-   "need_cfm_70C": 24.5,
-   "need_cfm_60C": 35.2,
+   "need_cfm_70C": 20.0,
+   "need_cfm_60C": 48.4,
    "fans": [
     {
      "fan": "92x25 quiet (NF-A9 class, 2000 rpm)",
-     "cfm": 13.6,
-     "dp_Pa": 20.5,
-     "V_ms": 3.73,
-     "Re": 2193,
-     "h": 35.9,
-     "Tmax_C": 88.4,
-     "air_rise_K": 6.9
+     "cfm": 11.0,
+     "dp_Pa": 21.2,
+     "V_ms": 4.81,
+     "Re": 2830,
+     "h": 31.6,
+     "Tmax_C": 89.4,
+     "air_rise_K": 8.6
     },
     {
      "fan": "92x25 high-speed (3000 rpm class)",
-     "cfm": 19.7,
-     "dp_Pa": 40.2,
-     "V_ms": 5.38,
-     "Re": 3163,
-     "h": 40.9,
-     "Tmax_C": 75.2,
-     "air_rise_K": 4.8
+     "cfm": 16.0,
+     "dp_Pa": 41.8,
+     "V_ms": 7.01,
+     "Re": 4122,
+     "h": 45.1,
+     "Tmax_C": 73.0,
+     "air_rise_K": 5.9
     },
     {
      "fan": "92x38 server (Delta/Sunon class, ~5000 rpm)",
-     "cfm": 34.9,
-     "dp_Pa": 117.5,
-     "V_ms": 9.55,
-     "Re": 5618,
-     "h": 65.0,
-     "Tmax_C": 60.2,
-     "air_rise_K": 2.7
-    }
-   ]
-  },
-  {
-   "drives": 2,
-   "gap_mm": 8,
-   "need_cfm_70C": 35.7,
-   "need_cfm_60C": 53.0,
-   "fans": [
-    {
-     "fan": "92x25 quiet (NF-A9 class, 2000 rpm)",
-     "cfm": 21.0,
-     "dp_Pa": 17.8,
-     "V_ms": 3.72,
-     "Re": 3498,
-     "h": 32.3,
-     "Tmax_C": 84.9,
-     "air_rise_K": 4.5
-    },
-    {
-     "fan": "92x25 high-speed (3000 rpm class)",
-     "cfm": 29.6,
-     "dp_Pa": 34.0,
-     "V_ms": 5.23,
-     "Re": 4926,
-     "h": 39.0,
-     "Tmax_C": 76.2,
+     "cfm": 29.2,
+     "dp_Pa": 127.3,
+     "V_ms": 12.82,
+     "Re": 7539,
+     "h": 52.3,
+     "Tmax_C": 66.4,
      "air_rise_K": 3.2
-    },
-    {
-     "fan": "92x38 server (Delta/Sunon class, ~5000 rpm)",
-     "cfm": 48.5,
-     "dp_Pa": 87.3,
-     "V_ms": 8.57,
-     "Re": 8064,
-     "h": 59.6,
-     "Tmax_C": 61.9,
-     "air_rise_K": 1.9
     }
    ]
   },
   {
+   "layout": "inline",
    "drives": 4,
    "gap_mm": 3,
-   "need_cfm_70C": 25.9,
-   "need_cfm_60C": 42.8,
+   "need_cfm_70C": 14.8,
+   "need_cfm_60C": 26.0,
    "fans": [
     {
      "fan": "92x25 quiet (NF-A9 class, 2000 rpm)",
-     "cfm": 13.1,
-     "dp_Pa": 20.6,
-     "V_ms": 3.3,
-     "Re": 1165,
-     "h": 44.0,
-     "Tmax_C": 82.8,
-     "air_rise_K": 14.3
+     "cfm": 4.7,
+     "dp_Pa": 22.2,
+     "V_ms": 3.29,
+     "Re": 1160,
+     "h": 32.5,
+     "Tmax_C": 116.7,
+     "air_rise_K": 40.0
     },
     {
      "fan": "92x25 high-speed (3000 rpm class)",
-     "cfm": 19.3,
-     "dp_Pa": 40.3,
-     "V_ms": 4.86,
-     "Re": 1715,
-     "h": 47.9,
-     "Tmax_C": 77.1,
-     "air_rise_K": 9.7
+     "cfm": 7.6,
+     "dp_Pa": 44.3,
+     "V_ms": 5.32,
+     "Re": 1879,
+     "h": 32.6,
+     "Tmax_C": 103.1,
+     "air_rise_K": 24.7
     },
     {
      "fan": "92x38 server (Delta/Sunon class, ~5000 rpm)",
-     "cfm": 35.0,
-     "dp_Pa": 117.4,
-     "V_ms": 8.8,
-     "Re": 3107,
-     "h": 56.9,
-     "Tmax_C": 65.5,
-     "air_rise_K": 5.4
+     "cfm": 15.7,
+     "dp_Pa": 143.4,
+     "V_ms": 10.98,
+     "Re": 3875,
+     "h": 68.5,
+     "Tmax_C": 67.6,
+     "air_rise_K": 12.0
     }
    ]
   },
   {
+   "layout": "inline",
    "drives": 4,
    "gap_mm": 5,
-   "need_cfm_70C": 42.6,
-   "need_cfm_60C": 61.3,
+   "need_cfm_70C": 30.4,
+   "need_cfm_60C": 54.7,
    "fans": [
     {
      "fan": "92x25 quiet (NF-A9 class, 2000 rpm)",
-     "cfm": 21.3,
-     "dp_Pa": 17.7,
-     "V_ms": 3.44,
-     "Re": 2024,
-     "h": 34.9,
-     "Tmax_C": 90.1,
-     "air_rise_K": 8.8
+     "cfm": 10.0,
+     "dp_Pa": 21.4,
+     "V_ms": 4.38,
+     "Re": 2574,
+     "h": 29.5,
+     "Tmax_C": 102.8,
+     "air_rise_K": 18.9
     },
     {
      "fan": "92x25 high-speed (3000 rpm class)",
-     "cfm": 30.2,
-     "dp_Pa": 33.6,
-     "V_ms": 4.88,
-     "Re": 2870,
-     "h": 39.5,
-     "Tmax_C": 78.1,
-     "air_rise_K": 6.2
+     "cfm": 14.8,
+     "dp_Pa": 42.3,
+     "V_ms": 6.5,
+     "Re": 3825,
+     "h": 40.9,
+     "Tmax_C": 83.1,
+     "air_rise_K": 12.7
     },
     {
      "fan": "92x38 server (Delta/Sunon class, ~5000 rpm)",
-     "cfm": 49.6,
-     "dp_Pa": 84.3,
-     "V_ms": 8.01,
-     "Re": 4709,
-     "h": 55.5,
-     "Tmax_C": 65.3,
-     "air_rise_K": 3.8
+     "cfm": 27.5,
+     "dp_Pa": 129.9,
+     "V_ms": 12.07,
+     "Re": 7097,
+     "h": 50.2,
+     "Tmax_C": 71.1,
+     "air_rise_K": 6.8
     }
    ]
   },
   {
-   "drives": 4,
-   "gap_mm": 8,
-   "need_cfm_70C": 61.4,
-   "need_cfm_60C": 91.2,
+   "layout": "stack",
+   "drives": 2,
+   "gap_mm": 3,
+   "need_cfm_70C": 9.5,
+   "need_cfm_60C": 21.1,
    "fans": [
     {
      "fan": "92x25 quiet (NF-A9 class, 2000 rpm)",
-     "cfm": 30.0,
-     "dp_Pa": 13.0,
-     "V_ms": 3.15,
-     "Re": 2962,
-     "h": 30.1,
-     "Tmax_C": 90.1,
-     "air_rise_K": 6.3
+     "cfm": 10.8,
+     "dp_Pa": 21.2,
+     "V_ms": 4.64,
+     "Re": 1637,
+     "h": 62.9,
+     "Tmax_C": 68.5,
+     "air_rise_K": 8.7
     },
     {
      "fan": "92x25 high-speed (3000 rpm class)",
-     "cfm": 41.3,
-     "dp_Pa": 23.7,
-     "V_ms": 4.33,
-     "Re": 4072,
-     "h": 34.5,
-     "Tmax_C": 82.5,
-     "air_rise_K": 4.6
+     "cfm": 15.8,
+     "dp_Pa": 41.9,
+     "V_ms": 6.8,
+     "Re": 2399,
+     "h": 69.8,
+     "Tmax_C": 60.4,
+     "air_rise_K": 6.0
     },
     {
      "fan": "92x38 server (Delta/Sunon class, ~5000 rpm)",
-     "cfm": 61.2,
-     "dp_Pa": 50.2,
-     "V_ms": 6.42,
-     "Re": 6039,
-     "h": 46.7,
-     "Tmax_C": 70.1,
-     "air_rise_K": 3.1
+     "cfm": 29.0,
+     "dp_Pa": 127.5,
+     "V_ms": 12.52,
+     "Re": 4418,
+     "h": 82.2,
+     "Tmax_C": 55.5,
+     "air_rise_K": 3.2
+    }
+   ]
+  },
+  {
+   "layout": "stack",
+   "drives": 2,
+   "gap_mm": 5,
+   "need_cfm_70C": 14.7,
+   "need_cfm_60C": 36.5,
+   "fans": [
+    {
+     "fan": "92x25 quiet (NF-A9 class, 2000 rpm)",
+     "cfm": 17.8,
+     "dp_Pa": 19.1,
+     "V_ms": 4.87,
+     "Re": 2867,
+     "h": 48.4,
+     "Tmax_C": 69.7,
+     "air_rise_K": 5.3
+    },
+    {
+     "fan": "92x25 high-speed (3000 rpm class)",
+     "cfm": 25.4,
+     "dp_Pa": 36.9,
+     "V_ms": 6.95,
+     "Re": 4090,
+     "h": 50.6,
+     "Tmax_C": 67.4,
+     "air_rise_K": 3.7
+    },
+    {
+     "fan": "92x38 server (Delta/Sunon class, ~5000 rpm)",
+     "cfm": 43.2,
+     "dp_Pa": 100.2,
+     "V_ms": 11.82,
+     "Re": 6953,
+     "h": 75.3,
+     "Tmax_C": 56.6,
+     "air_rise_K": 2.2
+    }
+   ]
+  },
+  {
+   "layout": "stack",
+   "drives": 2,
+   "gap_mm": 8,
+   "need_cfm_70C": 37.1,
+   "need_cfm_60C": 55.3,
+   "fans": [
+    {
+     "fan": "92x25 quiet (NF-A9 class, 2000 rpm)",
+     "cfm": 26.1,
+     "dp_Pa": 15.3,
+     "V_ms": 4.62,
+     "Re": 4346,
+     "h": 35.9,
+     "Tmax_C": 79.6,
+     "air_rise_K": 3.6
+    },
+    {
+     "fan": "92x25 high-speed (3000 rpm class)",
+     "cfm": 36.3,
+     "dp_Pa": 28.6,
+     "V_ms": 6.41,
+     "Re": 6034,
+     "h": 45.0,
+     "Tmax_C": 70.7,
+     "air_rise_K": 2.6
+    },
+    {
+     "fan": "92x38 server (Delta/Sunon class, ~5000 rpm)",
+     "cfm": 56.1,
+     "dp_Pa": 66.0,
+     "V_ms": 9.92,
+     "Re": 9337,
+     "h": 64.7,
+     "Tmax_C": 59.7,
+     "air_rise_K": 1.7
+    }
+   ]
+  },
+  {
+   "layout": "stack",
+   "drives": 4,
+   "gap_mm": 3,
+   "need_cfm_70C": 16.2,
+   "need_cfm_60C": 39.0,
+   "fans": [
+    {
+     "fan": "92x25 quiet (NF-A9 class, 2000 rpm)",
+     "cfm": 17.4,
+     "dp_Pa": 19.2,
+     "V_ms": 4.39,
+     "Re": 1549,
+     "h": 62.1,
+     "Tmax_C": 69.1,
+     "air_rise_K": 10.8
+    },
+    {
+     "fan": "92x25 high-speed (3000 rpm class)",
+     "cfm": 25.2,
+     "dp_Pa": 37.0,
+     "V_ms": 6.35,
+     "Re": 2241,
+     "h": 68.2,
+     "Tmax_C": 64.8,
+     "air_rise_K": 7.4
+    },
+    {
+     "fan": "92x38 server (Delta/Sunon class, ~5000 rpm)",
+     "cfm": 43.5,
+     "dp_Pa": 99.6,
+     "V_ms": 10.94,
+     "Re": 3863,
+     "h": 75.8,
+     "Tmax_C": 58.1,
+     "air_rise_K": 4.3
+    }
+   ]
+  },
+  {
+   "layout": "stack",
+   "drives": 4,
+   "gap_mm": 5,
+   "need_cfm_70C": 39.7,
+   "need_cfm_60C": 63.7,
+   "fans": [
+    {
+     "fan": "92x25 quiet (NF-A9 class, 2000 rpm)",
+     "cfm": 26.6,
+     "dp_Pa": 15.1,
+     "V_ms": 4.29,
+     "Re": 2521,
+     "h": 49.0,
+     "Tmax_C": 71.2,
+     "air_rise_K": 7.1
+    },
+    {
+     "fan": "92x25 high-speed (3000 rpm class)",
+     "cfm": 37.0,
+     "dp_Pa": 27.9,
+     "V_ms": 5.98,
+     "Re": 3515,
+     "h": 47.6,
+     "Tmax_C": 70.7,
+     "air_rise_K": 5.1
+    },
+    {
+     "fan": "92x38 server (Delta/Sunon class, ~5000 rpm)",
+     "cfm": 57.2,
+     "dp_Pa": 62.8,
+     "V_ms": 9.23,
+     "Re": 5428,
+     "h": 60.8,
+     "Tmax_C": 62.5,
+     "air_rise_K": 3.3
+    }
+   ]
+  },
+  {
+   "layout": "stack",
+   "drives": 4,
+   "gap_mm": 8,
+   "need_cfm_70C": 63.8,
+   "need_cfm_60C": 95.1,
+   "fans": [
+    {
+     "fan": "92x25 quiet (NF-A9 class, 2000 rpm)",
+     "cfm": 34.8,
+     "dp_Pa": 9.8,
+     "V_ms": 3.65,
+     "Re": 3434,
+     "h": 36.1,
+     "Tmax_C": 81.0,
+     "air_rise_K": 5.4
+    },
+    {
+     "fan": "92x25 high-speed (3000 rpm class)",
+     "cfm": 47.0,
+     "dp_Pa": 17.3,
+     "V_ms": 4.93,
+     "Re": 4643,
+     "h": 36.3,
+     "Tmax_C": 80.0,
+     "air_rise_K": 4.0
+    },
+    {
+     "fan": "92x38 server (Delta/Sunon class, ~5000 rpm)",
+     "cfm": 66.2,
+     "dp_Pa": 33.2,
+     "V_ms": 6.94,
+     "Re": 6532,
+     "h": 48.1,
+     "Tmax_C": 68.9,
+     "air_rise_K": 2.8
     }
    ]
   }

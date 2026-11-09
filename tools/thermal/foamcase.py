@@ -40,8 +40,23 @@ def w(case, rel, obj, body, cls="dictionary"):
     open(p, "w").write(HDR.format(cls=cls, obj=obj) + body)
 
 
-def drive_boxes(n, gap):
+PITCH_GAP = 3.15        # in-line layout: space between neighbouring drives (x8 card: 73 mm pitch)
+
+
+def drive_boxes(n, gap, layout="stack"):
+    if layout == "inline":
+        return [(UP + i * (L + PITCH_GAP), gap, 0.0, UP + i * (L + PITCH_GAP) + L, gap + TH, H) for i in range(n)]
     return [(UP, gap + i * (TH + gap), 0.0, UP + L, gap + i * (TH + gap) + TH, H) for i in range(n)]
+
+
+def x_sections(n, layout):
+    """Lengths of the x mesh sections: plenum, drives (and the gaps between them), outlet."""
+    if layout == "inline":
+        mid = []
+        for i in range(n):
+            mid += [L] + ([PITCH_GAP] if i < n - 1 else [])
+        return [UP] + mid + [DOWN]
+    return [UP, L, DOWN]
 
 
 def field(case, name, dims, internal, bcs, cls="volScalarField"):
@@ -51,17 +66,19 @@ def field(case, name, dims, internal, bcs, cls="volScalarField"):
     w(case, f"0.orig/{name}", name, body + "}\n", cls)
 
 
-def build(case, n, gap, cfm, power, laminar=False, dy=0.625, dx=1.0, dz=2.0, T_in=35.0, iters=None):
-    W = n * TH + (n + 1) * gap
-    X, Z = UP + L + DOWN, H + TOP
-    nx = [round(UP / max(1.5, dx)), round(L / dx), round(DOWN / max(2.0, dx))]
+def build(case, n, gap, cfm, power, laminar=False, dy=0.625, dx=1.0, dz=2.0, T_in=35.0, iters=None, layout="stack"):
+    W = n * TH + (n + 1) * gap if layout == "stack" else TH + 2 * gap
+    secs = x_sections(n, layout)
+    X, Z = sum(secs), H + TOP
+    nx = [max(2, round(Ls / (max(1.5, dx) if j == 0 else max(2.0, dx) if j == len(secs) - 1 else dx)))
+          for j, Ls in enumerate(secs)]
     ny = round(W / dy)
     nz = [round(H / dz), max(4, round(TOP / 0.625))]
     sx, sz = sum(nx), sum(nz)
     w(case, "system/blockMeshDict", "blockMeshDict", f"""scale 0.001;
 vertices ( (0 0 0) ({X} 0 0) ({X} {W} 0) (0 {W} 0) (0 0 {Z}) ({X} 0 {Z}) ({X} {W} {Z}) (0 {W} {Z}) );
 blocks ( hex (0 1 2 3 4 5 6 7) ({sx} {ny} {sz})
-  simpleGrading ( ( ({UP/X} {nx[0]/sx} 1) ({L/X} {nx[1]/sx} 1) ({DOWN/X} {nx[2]/sx} 1) )
+  simpleGrading ( ( {" ".join(f"({Ls/X} {k/sx} 1)" for Ls, k in zip(secs, nx))} )
                   1
                   ( ({H/Z} {nz[0]/sz} 1) ({TOP/Z} {nz[1]/sz} 1) ) ) );
 edges ();
@@ -76,7 +93,7 @@ boundary (
     boxes = "\n".join(
         f"  {{ name drives; type cellSet; action {'new' if i == 0 else 'add'}; source boxToCell; "
         f"box ({b[0]/1000} {b[1]/1000} -0.001) ({b[3]/1000} {b[4]/1000} {b[5]/1000}); }}"
-        for i, b in enumerate(drive_boxes(n, gap)))
+        for i, b in enumerate(drive_boxes(n, gap, layout)))
     w(case, "system/topoSetDict", "topoSetDict", f"""actions (
 {boxes}
   {{ name fluid; type cellSet; action new; source cellToCell; set drives; }}
@@ -162,7 +179,7 @@ relaxationFactors { fields { rho 1.0; p_rgh 0.7; } equations { U 0.3; h 0.5; "(k
 """)
     w(case, "system/decomposeParDict", "decomposeParDict", "numberOfSubdomains 4;\nmethod hierarchical;\ncoeffs { n (4 1 1); }\n")
     meta = dict(drives=n, gap_mm=gap, cfm=cfm, power_W=power, U_in=U_in, A_in=A_in, q_Wm2=q, A_wet_mm2=A_wet,
-                laminar=laminar, T_in=T_in, boxes=drive_boxes(n, gap), cells=sx * ny * sz, dims_mm=[X, W, Z],
+                laminar=laminar, T_in=T_in, boxes=drive_boxes(n, gap, layout), layout=layout, x_sections=secs, cells=sx * ny * sz, dims_mm=[X, W, Z],
                 cells_xyz=[nx, ny, nz], iters=iters or ITERS)
     json.dump(meta, open(os.path.join(case, "meta.json"), "w"), indent=1)
     return meta
@@ -195,6 +212,40 @@ def run(case, nproc=4):
                 shutil.rmtree(os.path.join(case, d))
     else:
         sh(case, "buoyantSimpleFoam", "log.solver")
+
+
+def extend(case, more=1500, every=500, nproc=4, h_relax=0.9):
+    """Continue a finished case for `more` iterations (energy converges slower than flow),
+    writing every `every` iterations so the drive temperature history can be checked."""
+    t0 = int(float(latest_time(case)))
+    cd = os.path.join(case, "system", "controlDict")
+    s = open(cd).read()
+    s = re.sub(r"endTime \d+;", f"endTime {t0 + more};", s)
+    s = re.sub(r"writeInterval \d+;", f"writeInterval {every};", s)
+    open(cd, "w").write(s)
+    fs = os.path.join(case, "system", "fvSolution")
+    txt = open(fs).read()
+    open(fs, "w").write(re.sub(r"\bh 0\.5;", f"h {h_relax};", txt))
+    sh(case, "decomposePar -force -latestTime", "log.decomposePar2")
+    sh(case, f"mpirun --allow-run-as-root --oversubscribe -np {nproc} buoyantSimpleFoam -parallel", f"log.solver.{t0}")
+    sh(case, "reconstructPar", "log.reconstructPar2")
+    for d in os.listdir(case):
+        if d.startswith("processor"):
+            shutil.rmtree(os.path.join(case, d))
+    with open(os.path.join(case, "log.solver"), "a") as fh:
+        fh.write(open(os.path.join(case, f"log.solver.{t0}")).read())
+
+
+def history(case):
+    """Area-mean drive temperature at every written time (convergence check)."""
+    meta = json.load(open(os.path.join(case, "meta.json")))
+    C, A = patch_geometry(case, "drives")
+    out = []
+    ts = sorted([d for d in os.listdir(case) if re.fullmatch(r"[\d.]+", d) and d != "0"], key=float)
+    for t in ts:
+        T = _read_patch(os.path.join(case, t, "T"), "drives") - 273.15
+        out.append((int(float(t)), round(float((T * A).sum() / A.sum()), 2)))
+    return out
 
 
 def _read_patch(path, patch):
@@ -238,9 +289,20 @@ def results(case):
     T = _read_patch(os.path.join(case, t, "T"), "drives") - 273.15
     C, A = patch_geometry(case, "drives")
     out = []
+    # Bulk air temperature rise per drive, for the isothermal-case estimate below.
+    rise = meta["power_W"] / (1.12 * AIR["cp"] * meta["cfm"] * CFM)
+    order = np.argsort([b[0] if meta.get("layout") == "inline" else 0.0 for b in meta["boxes"]], kind="stable")
+    upstream = {int(j): (k if meta.get("layout") == "inline" else 0) for k, j in enumerate(order)}
     for i, b in enumerate(meta["boxes"]):
         sel = (C[:, 1] > b[1] - 0.5) & (C[:, 1] < b[4] + 0.5) & (C[:, 0] > b[0] - 1.5) & (C[:, 0] < b[3] + 1.5)
-        out.append(dict(drive=i + 1, T_mean=float((T[sel] * A[sel]).sum() / A[sel].sum()), T_max=float(T[sel].max()), T_p95=float(np.percentile(T[sel], 95)),
+        # T_iso: temperature of an isothermal (aluminium) case shedding the same power, from the
+        # uniform-flux result: local h_k = q / (T_k - T_ref), T_iso = T_ref + P / sum(h_k A_k), i.e.
+        # the area-weighted harmonic mean of the wall excess. T_ref = inlet + bulk rise upstream.
+        T_ref = meta["T_in"] + upstream[i] * rise
+        ex = np.maximum(T[sel] - T_ref, 0.1)
+        T_iso = T_ref + A[sel].sum() / (A[sel] / ex).sum()
+        out.append(dict(drive=i + 1, T_mean=float((T[sel] * A[sel]).sum() / A[sel].sum()), T_iso=float(T_iso),
+                        T_max=float(T[sel].max()), T_p95=float(np.percentile(T[sel], 95)),
                         area_m2=float(A[sel].sum())))
     p = _read_patch(os.path.join(case, t, "p_rgh"), "inlet")
     _, Ai = patch_geometry(case, "inlet")
@@ -263,10 +325,11 @@ if __name__ == "__main__":
     ap.add_argument("--cfm", type=float, default=21.0)
     ap.add_argument("--power", type=float, default=25.0)
     ap.add_argument("--laminar", action="store_true")
+    ap.add_argument("--layout", choices=["stack", "inline"], default="stack")
     ap.add_argument("--run", action="store_true")
     ap.add_argument("--np", type=int, default=4)
     a = ap.parse_args()
-    print(build(a.case, a.drives, a.gap, a.cfm, a.power, a.laminar))
+    print(build(a.case, a.drives, a.gap, a.cfm, a.power, a.laminar, layout=a.layout))
     if a.run:
         run(a.case, a.np)
         print(json.dumps(results(a.case), indent=1))
