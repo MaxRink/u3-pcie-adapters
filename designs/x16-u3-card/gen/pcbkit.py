@@ -9,7 +9,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
 OURLIB = os.path.join(ROOT, "lib", "u3adapter.pretty")
 KILIB = "/usr/share/kicad/footprints"
-RULES = "/mnt/project-files/design-rules"
+RULES = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "design-rules"))
 TEMPLATE6 = os.path.join(RULES, "templates", "jlc06161h-3313_1.6mm", "jlc06161h-3313_1.6mm")
 
 MM = P.FromMM
