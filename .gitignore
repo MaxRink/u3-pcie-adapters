@@ -17,3 +17,6 @@ _autosave-*
 # Python
 __pycache__/
 *.pyc
+
+# render / thermal caches
+tools/render/.cache/
