@@ -40,16 +40,12 @@
   "PET7_P": 48.904,
   "PER7_N": 47.444,
   "PER7_P": 47.444,
-  "REFCLK_IN_N": 66.312,
-  "REFCLK_IN_P": 66.326,
-  "U1_REFCLK1_P": 1.544,
-  "U1_REFCLK1_N": 1.544,
-  "U1_REFCLK0_P": 1.544,
-  "U1_REFCLK0_N": 1.544,
-  "REFCLK_A_N": 12.666,
-  "REFCLK_A_P": 12.509,
-  "REFCLK_B_N": 108.518,
-  "REFCLK_B_P": 108.331
+  "REFCLK_IN_N": 53.573,
+  "REFCLK_IN_P": 53.572,
+  "REFCLK_A_N": 11.75,
+  "REFCLK_A_P": 11.81,
+  "REFCLK_B_N": 105.427,
+  "REFCLK_B_P": 105.425
  },
  "lanes_finger_to_U3": {
   "PET0": {

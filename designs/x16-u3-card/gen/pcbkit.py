@@ -303,7 +303,7 @@ class Kit:
             del dead
 
     def save(self):
-        n = self.prune()
+        n = self.prune() if os.environ.get("STAGE") != "card" else 0
         if n:
             print(f"pruned {n} dangling router vias/tracks")
         self.b.Save(self.pcb)

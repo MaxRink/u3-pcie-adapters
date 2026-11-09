@@ -1,192 +1,1112 @@
 ** Drc report for /home/user/u3-pcie-adapters/designs/x16-u3-card/boards/x8/u3_x8.kicad_pcb **
-** Created on 2026-11-09 17:58:56 **
+** Created on 2026-11-09 21:29:49 **
 
-** Found 61 DRC violations **
+** Found 264 DRC violations **
+[diff_pair_uncoupled_length_too_long]: Differential uncoupled length too long (REFCLK100: uncoupled length incl. skew bumps and via/pin fan-outs <= 8 mm (100 MHz HCSL) maximum uncoupled length 8.0000 mm; actual 14.2107 mm)
+    Rule: REFCLK100: uncoupled length incl. skew bumps and via/pin fan-outs <= 8 mm (100 MHz HCSL); Severity: error
+    @(130.1000 mm, 86.2110 mm): Track [REFCLK_IN_P] on L1_SIG_HS, length 0.3111 mm
+    @(146.5000 mm, 85.6090 mm): Track [REFCLK_IN_N] on L1_SIG_HS, length 19.0000 mm
+[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.0000 mm)
+    Rule: fab: silk to pads; Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(240.1200 mm, 67.5500 mm): Pad 1 [3V3_AUX] of C33 on L1_SIG_HS
+[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.0817 mm)
+    Rule: fab: silk to pads; Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(241.0800 mm, 67.5500 mm): Pad 2 [GND] of C33 on L1_SIG_HS
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(172.3000 mm, 78.0000 mm): PCB Text 'SLOT' on F.Silkscreen
+    @(173.7500 mm, 69.4500 mm): Line on F.Courtyard
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(180.4000 mm, 77.2000 mm): PCB Text '12V A' on F.Silkscreen
+    @(180.6500 mm, 78.1500 mm): Line on F.Courtyard
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(239.6900 mm, 67.0900 mm): Line on F.Courtyard
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(241.5100 mm, 68.0100 mm): Line on F.Courtyard
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(241.5100 mm, 67.0900 mm): Line on F.Courtyard
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(253.4000 mm, 77.2000 mm): PCB Text '12V B' on F.Silkscreen
+    @(253.6500 mm, 78.1500 mm): Line on F.Courtyard
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(245.3000 mm, 78.0000 mm): PCB Text 'SLOT' on F.Silkscreen
+    @(246.7500 mm, 69.4500 mm): Line on F.Courtyard
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(240.1000 mm, 67.3000 mm): Line on F.Fab
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(240.1000 mm, 67.8000 mm): Line on F.Fab
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(241.1000 mm, 67.8000 mm): Line on F.Fab
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(240.6000 mm, 67.5500 mm): Footprint Text 'C33' of C33
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(241.1000 mm, 67.3000 mm): Line on F.Fab
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(172.3000 mm, 78.0000 mm): PCB Text 'SLOT' on F.Silkscreen
+    @(173.6000 mm, 77.2000 mm): Track [12V] on L1_SIG_HS, length 1.1000 mm
+[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.1282 mm)
+    Rule: fab: silk to pads; Severity: warning
+    @(172.3000 mm, 78.0000 mm): PCB Text 'SLOT' on F.Silkscreen
+    @(172.5000 mm, 77.2000 mm): Via [12V] on L1_SIG_HS - L6_SIG_HS
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(172.3000 mm, 78.0000 mm): PCB Text 'SLOT' on F.Silkscreen
+    @(174.2000 mm, 76.3400 mm): Track [12V] on L1_SIG_HS, length 1.0486 mm
+[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.0873 mm)
+    Rule: fab: silk to pads; Severity: warning
+    @(172.3000 mm, 78.0000 mm): PCB Text 'SLOT' on F.Silkscreen
+    @(173.6000 mm, 77.2000 mm): Via [12V] on L1_SIG_HS - L6_SIG_HS
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(240.1000 mm, 67.6000 mm): Track [3V3_AUX] on L1_SIG_HS, length 0.8000 mm
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(240.1200 mm, 67.5500 mm): Track [3V3_AUX] on L1_SIG_HS, length 0.0539 mm
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(241.1000 mm, 67.6000 mm): Track [GND] on L1_SIG_HS, length 0.4000 mm
+[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.0000 mm)
+    Rule: fab: silk to pads; Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(241.1000 mm, 68.0000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(241.0800 mm, 67.5500 mm): Track [GND] on L1_SIG_HS, length 0.0539 mm
+[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.0000 mm)
+    Rule: fab: silk to pads; Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+    @(241.8000 mm, 68.2000 mm): Via [SC1_B] on L1_SIG_HS - L6_SIG_HS
+[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.1146 mm)
+    Rule: fab: silk to pads; Severity: warning
+    @(241.9000 mm, 68.7200 mm): Line on F.Silkscreen
+    @(242.0500 mm, 68.9500 mm): Via [3V3_AUX] on L1_SIG_HS - L6_SIG_HS
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.9000 mm, 68.7200 mm): Line on F.Silkscreen
+    @(240.5000 mm, 69.2000 mm): Track [SC1_B] on L1_SIG_HS, length 0.8485 mm
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.9000 mm, 68.7200 mm): Line on F.Silkscreen
+    @(241.4000 mm, 68.6000 mm): Track [SC1_B] on L1_SIG_HS, length 0.5657 mm
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(241.9000 mm, 68.7200 mm): Line on F.Silkscreen
+    @(241.1000 mm, 68.6000 mm): Track [SC1_B] on L1_SIG_HS, length 0.3000 mm
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(245.3000 mm, 78.0000 mm): PCB Text 'SLOT' on F.Silkscreen
+    @(246.6000 mm, 77.2000 mm): Track [12V] on L1_SIG_HS, length 1.1000 mm
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(245.3000 mm, 78.0000 mm): PCB Text 'SLOT' on F.Silkscreen
+    @(247.2000 mm, 76.3400 mm): Track [12V] on L1_SIG_HS, length 1.0486 mm
+[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.0873 mm)
+    Rule: fab: silk to pads; Severity: warning
+    @(245.3000 mm, 78.0000 mm): PCB Text 'SLOT' on F.Silkscreen
+    @(246.6000 mm, 77.2000 mm): Via [12V] on L1_SIG_HS - L6_SIG_HS
+[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.1282 mm)
+    Rule: fab: silk to pads; Severity: warning
+    @(245.3000 mm, 78.0000 mm): PCB Text 'SLOT' on F.Silkscreen
+    @(245.5000 mm, 77.2000 mm): Via [12V] on L1_SIG_HS - L6_SIG_HS
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(221.0000 mm, 67.0000 mm): PCB Text 'DRIVE B' on B.Silkscreen
+    @(223.1000 mm, 67.4500 mm): Track [RSTEN_B] on L6_SIG_HS, length 21.7000 mm
+[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.0564 mm)
+    Rule: fab: silk to pads; Severity: warning
+    @(221.0000 mm, 67.0000 mm): PCB Text 'DRIVE B' on B.Silkscreen
+    @(223.1000 mm, 67.4500 mm): Via [RSTEN_B] on L1_SIG_HS - L6_SIG_HS
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(148.0000 mm, 67.0000 mm): PCB Text 'DRIVE A' on B.Silkscreen
+    @(282.0000 mm, 66.6000 mm): Line on Edge.Cuts
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(221.0000 mm, 67.0000 mm): PCB Text 'DRIVE B' on B.Silkscreen
+    @(282.0000 mm, 66.6000 mm): Line on Edge.Cuts
+[silk_over_copper]: Silkscreen clipped by solder mask (rule fab: silk to pads clearance 0.1500 mm; actual 0.0000 mm)
+    Rule: fab: silk to pads; Severity: warning
+    @(241.4000 mm, 67.6000 mm): Reference 'RN3'
+[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
+    Rule: board setup solder mask min width; Severity: error
+    @(249.9750 mm, 75.3000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(250.5250 mm, 76.1000 mm): Pad 2 [12V_DRV_B] of C36 on L6_SIG_HS
+[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
+    Rule: board setup solder mask min width; Severity: error
+    @(176.9750 mm, 75.3000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(177.5250 mm, 76.1000 mm): Pad 2 [12V_DRV_A] of C26 on L6_SIG_HS
+[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
+    Rule: board setup solder mask min width; Severity: error
+    @(176.0750 mm, 75.3000 mm): Track [GND] on L6_SIG_HS, length 0.9000 mm
+    @(177.5250 mm, 76.1000 mm): Pad 2 [12V_DRV_A] of C26 on L6_SIG_HS
+[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
+    Rule: board setup solder mask min width; Severity: error
+    @(249.0750 mm, 75.3000 mm): Track [GND] on L6_SIG_HS, length 0.9000 mm
+    @(250.5250 mm, 76.1000 mm): Pad 2 [12V_DRV_B] of C36 on L6_SIG_HS
+[solder_mask_bridge]: Front solder mask aperture bridges items with different nets
+    Rule: board setup solder mask min width; Severity: error
+    @(160.9955 mm, 92.3640 mm): Track [PET0_P] on L1_SIG_HS, length 10.4786 mm
+    @(159.0000 mm, 90.8900 mm): Pad 2 [GND] of R5 on L1_SIG_HS
+[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
+    Rule: board setup solder mask min width; Severity: error
+    @(167.0000 mm, 76.0000 mm): NPTH pad of JA
+    @(168.1250 mm, 75.3000 mm): Pad 2 [12V_DRV_A] of C25 on L6_SIG_HS
+[solder_mask_bridge]: Rear solder mask aperture bridges items with different nets
+    Rule: board setup solder mask min width; Severity: error
+    @(240.0000 mm, 76.0000 mm): NPTH pad of JB
+    @(241.1250 mm, 75.3000 mm): Pad 2 [12V_DRV_B] of C35 on L6_SIG_HS
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(186.2125 mm, 73.2500 mm): Track [12V_DRV_A] on L1_SIG_HS, length 0.5500 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(186.2125 mm, 72.7500 mm): Track [12V_DRV_A] on L1_SIG_HS, length 0.5500 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(186.7625 mm, 73.2500 mm): Track [12V_DRV_A] on L1_SIG_HS, length 1.0625 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(186.7625 mm, 72.7500 mm): Track [12V_DRV_A] on L1_SIG_HS, length 0.5625 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(182.5875 mm, 73.2500 mm): Track [12V_SEL_A] on L1_SIG_HS, length 0.6125 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(186.2125 mm, 73.7500 mm): Track [12V_SEL_A] on L1_SIG_HS, length 0.6125 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(182.5875 mm, 72.7500 mm): Track [12V_SEL_A] on L1_SIG_HS, length 0.6125 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(182.5875 mm, 73.7500 mm): Track [12V_SEL_A] on L1_SIG_HS, length 0.6125 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2500 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(181.6100 mm, 73.7400 mm): Track [12V_SEL_A] on L1_SIG_HS, length 0.4000 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(259.2125 mm, 72.7500 mm): Track [12V_DRV_B] on L1_SIG_HS, length 0.5500 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(259.2125 mm, 73.2500 mm): Track [12V_DRV_B] on L1_SIG_HS, length 0.5500 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(259.7625 mm, 73.2500 mm): Track [12V_DRV_B] on L1_SIG_HS, length 1.0625 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(259.7625 mm, 72.7500 mm): Track [12V_DRV_B] on L1_SIG_HS, length 0.5625 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(255.5875 mm, 73.2500 mm): Track [12V_SEL_B] on L1_SIG_HS, length 0.6125 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2500 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(254.6100 mm, 73.7400 mm): Track [12V_SEL_B] on L1_SIG_HS, length 0.4000 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(255.5875 mm, 72.7500 mm): Track [12V_SEL_B] on L1_SIG_HS, length 0.6125 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(259.2125 mm, 73.7500 mm): Track [12V_SEL_B] on L1_SIG_HS, length 0.6125 mm
+[track_width]: Track width (rule PWR_12V: min neck width (use planes/pours for bulk current) min width 0.5000 mm; actual 0.2400 mm)
+    Rule: PWR_12V: min neck width (use planes/pours for bulk current); Severity: error
+    @(255.5875 mm, 73.7500 mm): Track [12V_SEL_B] on L1_SIG_HS, length 0.6125 mm
+[text_height]: Text height out of range (rule fab: silk min height 1.0000 mm; actual 0.8000 mm)
+    Rule: fab: silk; Severity: warning
+    @(172.3000 mm, 78.0000 mm): PCB Text 'SLOT' on F.Silkscreen
+[text_height]: Text height out of range (rule fab: silk min height 1.0000 mm; actual 0.8000 mm)
+    Rule: fab: silk; Severity: warning
+    @(253.4000 mm, 77.2000 mm): PCB Text '12V B' on F.Silkscreen
+[text_height]: Text height out of range (rule fab: silk min height 1.0000 mm; actual 0.8000 mm)
+    Rule: fab: silk; Severity: warning
+    @(245.6000 mm, 69.8000 mm): PCB Text 'AUX' on F.Silkscreen
+[text_height]: Text height out of range (rule fab: silk min height 1.0000 mm; actual 0.8000 mm)
+    Rule: fab: silk; Severity: warning
+    @(172.6000 mm, 69.8000 mm): PCB Text 'AUX' on F.Silkscreen
+[text_height]: Text height out of range (rule fab: silk min height 1.0000 mm; actual 0.8000 mm)
+    Rule: fab: silk; Severity: warning
+    @(180.4000 mm, 77.2000 mm): PCB Text '12V A' on F.Silkscreen
+[text_height]: Text height out of range (rule fab: silk min height 1.0000 mm; actual 0.8000 mm)
+    Rule: fab: silk; Severity: warning
+    @(245.3000 mm, 78.0000 mm): PCB Text 'SLOT' on F.Silkscreen
 [lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
     Local override; Severity: warning
-    @(256.2000 mm, 75.0500 mm): Footprint R40
+    @(113.0000 mm, 69.8000 mm): Footprint R2
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(240.4000 mm, 71.1000 mm): Footprint C34
+    @(141.9500 mm, 72.2500 mm): Footprint C22
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(187.5000 mm, 74.2500 mm): Footprint C27
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(144.0000 mm, 71.0500 mm): Footprint RN2
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(133.0000 mm, 71.9000 mm): Footprint C20
+[lib_footprint_issues]: The current configuration does not include the library 'Jumper'.
+    Local override; Severity: warning
+    @(115.8000 mm, 72.6000 mm): Footprint SJ2
+[lib_footprint_issues]: The current configuration does not include the library 'Connector_PCBEdge'.
+    Local override; Severity: warning
+    @(145.6500 mm, 96.5500 mm): Footprint J1
+[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
+    Local override; Severity: warning
+    @(210.8000 mm, 69.8500 mm): Footprint U15
+[lib_footprint_mismatch]: Footprint 'TI_RGE0024M_VQFN-24_4x4mm_P0.5mm_SplitEP' does not match copy in library 'u3adapter'.
+    Local override; Severity: warning
+    @(257.4000 mm, 74.0000 mm): Footprint U31
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(216.0000 mm, 67.4500 mm): Footprint R41
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(183.3500 mm, 77.0000 mm): Footprint R27
 [lib_footprint_issues]: The current configuration does not include the library 'MountingHole'.
     Local override; Severity: warning
     @(107.5000 mm, 5.2500 mm): Footprint H1
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(261.3000 mm, 69.6500 mm): Footprint C30
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(262.3000 mm, 73.3500 mm): Footprint RN3
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(238.0000 mm, 71.4000 mm): Footprint C33
-[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
-    Local override; Severity: warning
-    @(183.2000 mm, 71.7500 mm): Footprint U10
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(145.6000 mm, 88.0000 mm): Footprint R9
-[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
-    Local override; Severity: warning
-    @(256.2000 mm, 71.7500 mm): Footprint U13
-[lib_footprint_issues]: The current configuration does not include the library 'Connector_PinHeader_2.54mm'.
-    Local override; Severity: warning
-    @(174.0000 mm, 71.4600 mm): Footprint JP1
-[lib_footprint_issues]: The current configuration does not include the library 'Connector_PinHeader_2.54mm'.
-    Local override; Severity: warning
-    @(247.0000 mm, 71.4600 mm): Footprint JP2
 [lib_footprint_issues]: The current configuration does not include the library 'MountingHole'.
     Local override; Severity: warning
     @(107.5000 mm, 90.6500 mm): Footprint H2
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(168.4000 mm, 70.4000 mm): Footprint RN1
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(241.4000 mm, 70.4000 mm): Footprint RN3
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(112.0000 mm, 69.8000 mm): Footprint R1
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(158.0000 mm, 68.8500 mm): Footprint R24
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(165.0000 mm, 71.4000 mm): Footprint C23
+    @(206.0000 mm, 69.4000 mm): Footprint C31
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(231.0000 mm, 70.4000 mm): Footprint R43
+[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
+    Local override; Severity: warning
+    @(230.7000 mm, 75.8000 mm): Footprint D2
+[lib_footprint_issues]: The current configuration does not include the library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(117.2000 mm, 83.6000 mm): Footprint FB1
 [lib_footprint_issues]: The current configuration does not include the library 'Connector_Molex'.
     Local override; Severity: warning
     @(275.6000 mm, 75.4000 mm): Footprint J5
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(137.3400 mm, 77.4000 mm): Footprint C101
+    @(240.6000 mm, 67.5500 mm): Footprint C33
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(132.8000 mm, 67.2500 mm): Footprint R22
+[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
+    Local override; Severity: warning
+    @(163.0000 mm, 69.8500 mm): Footprint U10
+[lib_footprint_issues]: The current configuration does not include the library 'Connector_PinHeader_2.54mm'.
+    Local override; Severity: warning
+    @(177.2000 mm, 73.8000 mm): Footprint JP1
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(181.6100 mm, 74.2500 mm): Footprint R25
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(210.3400 mm, 77.4000 mm): Footprint C105
+    @(122.1500 mm, 76.0625 mm): Footprint C2
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(214.9500 mm, 72.2500 mm): Footprint C32
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(206.0000 mm, 71.9000 mm): Footprint C30
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(133.0000 mm, 69.4000 mm): Footprint C21
 [lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
     Local override; Severity: warning
     @(155.1000 mm, 75.8000 mm): Footprint R11
-[lib_footprint_issues]: The current configuration does not include the library 'Connector_PCBEdge'.
-    Local override; Severity: warning
-    @(145.6500 mm, 96.5500 mm): Footprint J1
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(122.8000 mm, 79.6250 mm): Footprint R1
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(183.2000 mm, 75.0500 mm): Footprint R20
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(122.8000 mm, 77.3250 mm): Footprint R4
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(138.3400 mm, 77.4000 mm): Footprint C102
+    @(103.0000 mm, 83.6000 mm): Footprint C6
 [lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
     Local override; Severity: warning
-    @(122.8000 mm, 76.3750 mm): Footprint R3
+    @(254.1000 mm, 75.2500 mm): Footprint R46
+[lib_footprint_issues]: The current configuration does not include the library 'Connector_PinHeader_2.54mm'.
+    Local override; Severity: warning
+    @(250.2000 mm, 73.8000 mm): Footprint JP2
+[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
+    Local override; Severity: warning
+    @(203.4000 mm, 71.4500 mm): Footprint U17
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(107.0000 mm, 85.8000 mm): Footprint R4
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(188.3000 mm, 69.6500 mm): Footprint C20
+    @(125.3375 mm, 77.7500 mm): Footprint C5
+[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
+    Local override; Severity: warning
+    @(130.4000 mm, 71.4500 mm): Footprint U13
+[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
+    Local override; Severity: warning
+    @(106.4000 mm, 78.5000 mm): Footprint U2
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(167.4000 mm, 71.1000 mm): Footprint C24
+    @(122.1500 mm, 82.9375 mm): Footprint C1
+[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
+    Local override; Severity: warning
+    @(110.2000 mm, 85.8000 mm): Footprint U3
+[lib_footprint_issues]: The current configuration does not include the library 'Jumper'.
+    Local override; Severity: warning
+    @(117.6000 mm, 72.6000 mm): Footprint SJ3
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(266.0000 mm, 80.0000 mm): Footprint C19
+    @(113.5000 mm, 85.1000 mm): Footprint C8
+[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
+    Local override; Severity: warning
+    @(236.0000 mm, 69.8500 mm): Footprint U14
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(184.2500 mm, 77.5000 mm): Footprint R28
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(137.3400 mm, 77.4000 mm): Footprint C101
+[lib_footprint_mismatch]: Footprint 'TI_RGE0024M_VQFN-24_4x4mm_P0.5mm_SplitEP' does not match copy in library 'u3adapter'.
+    Local override; Severity: warning
+    @(184.4000 mm, 74.0000 mm): Footprint U30
 [lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
     Local override; Severity: warning
     @(157.7000 mm, 75.8000 mm): Footprint D1
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(228.1000 mm, 75.8000 mm): Footprint R12
 [lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
     Local override; Severity: warning
-    @(230.7000 mm, 75.8000 mm): Footprint D2
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(189.3000 mm, 73.3500 mm): Footprint RN1
-[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
-    Local override; Severity: warning
-    @(117.9000 mm, 79.4500 mm): Footprint U1
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(122.8000 mm, 80.5750 mm): Footprint R2
+    @(158.0000 mm, 67.6000 mm): Footprint D10
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
     @(211.3400 mm, 77.4000 mm): Footprint C106
 [lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
     Local override; Severity: warning
-    @(189.0000 mm, 70.0000 mm): Footprint R21
-[lib_footprint_mismatch]: Footprint 'Amphenol_PSAS4F213002_SFF-8639_U3_RA_SMD' does not match copy in library 'u3adapter'.
+    @(108.0000 mm, 85.8000 mm): Footprint R3
+[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
     Local override; Severity: warning
-    @(221.0000 mm, 76.0000 mm): Footprint JB
-[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
-    Local override; Severity: warning
-    @(261.8000 mm, 75.0000 mm): Footprint D11
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(189.0000 mm, 71.5000 mm): Footprint R22
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(264.4000 mm, 75.0000 mm): Footprint R43
+    @(203.4000 mm, 68.2500 mm): Footprint U16
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(247.1000 mm, 67.8000 mm): Footprint C32
+    @(266.0000 mm, 80.0000 mm): Footprint C19
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(257.2500 mm, 77.5000 mm): Footprint R48
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(116.6625 mm, 78.2500 mm): Footprint C4
+[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
+    Local override; Severity: warning
+    @(137.8000 mm, 69.8500 mm): Footprint U11
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(158.0000 mm, 70.4000 mm): Footprint R23
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(112.5000 mm, 85.1000 mm): Footprint C7
+[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
+    Local override; Severity: warning
+    @(231.0000 mm, 67.6000 mm): Footprint D11
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(138.3400 mm, 77.4000 mm): Footprint C102
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(253.8000 mm, 71.2500 mm): Footprint C38
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(216.0000 mm, 68.4500 mm): Footprint R40
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(228.1000 mm, 75.8000 mm): Footprint R12
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(231.0000 mm, 68.8500 mm): Footprint R44
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(143.0000 mm, 67.4500 mm): Footprint R21
+[lib_footprint_issues]: The current configuration does not include the library 'Jumper'.
+    Local override; Severity: warning
+    @(114.0000 mm, 72.6000 mm): Footprint SJ1
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(180.8000 mm, 71.2500 mm): Footprint C28
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(159.0000 mm, 91.4000 mm): Footprint R5
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(260.5000 mm, 74.2500 mm): Footprint C37
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(116.3625 mm, 81.4500 mm): Footprint C3
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(256.3500 mm, 77.0000 mm): Footprint R47
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(205.8000 mm, 67.2500 mm): Footprint R42
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(115.0000 mm, 84.8000 mm): Footprint C9
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(181.1000 mm, 75.2500 mm): Footprint R26
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(167.6000 mm, 67.5500 mm): Footprint C23
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(210.3400 mm, 77.4000 mm): Footprint C105
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(254.6100 mm, 74.2500 mm): Footprint R45
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(113.4000 mm, 81.1000 mm): Footprint RN3
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(217.0000 mm, 71.0500 mm): Footprint RN4
+[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
+    Local override; Severity: warning
+    @(130.4000 mm, 68.2500 mm): Footprint U12
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(143.0000 mm, 68.4500 mm): Footprint R20
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(179.0000 mm, 76.1000 mm): Footprint C26
+[lib_footprint_issues]: The current configuration does not include the library 'Package_DFN_QFN'.
+    Local override; Severity: warning
+    @(121.0000 mm, 79.5000 mm): Footprint U1
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
     @(217.6200 mm, 81.4000 mm): Footprint C108
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(118.5000 mm, 83.7000 mm): Footprint C2
-[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
-    Local override; Severity: warning
-    @(247.1000 mm, 69.8000 mm): Footprint U15
+    @(247.6000 mm, 75.3000 mm): Footprint C34
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(178.2000 mm, 68.6000 mm): Footprint C21
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(262.0000 mm, 71.5000 mm): Footprint R42
-[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
-    Local override; Severity: warning
-    @(174.1000 mm, 69.8000 mm): Footprint U12
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(251.2000 mm, 68.6000 mm): Footprint C31
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(262.0000 mm, 70.0000 mm): Footprint R41
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(216.6200 mm, 81.4000 mm): Footprint C107
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(191.4000 mm, 75.0000 mm): Footprint R23
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(177.5000 mm, 73.0000 mm): Footprint RN2
+    @(252.0000 mm, 76.1000 mm): Footprint C36
 [lib_footprint_mismatch]: Footprint 'Amphenol_PSAS4F213002_SFF-8639_U3_RA_SMD' does not match copy in library 'u3adapter'.
     Local override; Severity: warning
     @(148.0000 mm, 76.0000 mm): Footprint JA
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(120.5000 mm, 76.4000 mm): Footprint C4
+    @(143.6200 mm, 82.4000 mm): Footprint C103
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(169.6000 mm, 75.3000 mm): Footprint C25
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(242.6000 mm, 75.3000 mm): Footprint C35
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(216.6200 mm, 81.4000 mm): Footprint C107
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
     @(144.6200 mm, 82.4000 mm): Footprint C104
+[lib_footprint_mismatch]: Footprint 'Amphenol_PSAS4F213002_SFF-8639_U3_RA_SMD' does not match copy in library 'u3adapter'.
+    Local override; Severity: warning
+    @(221.0000 mm, 76.0000 mm): Footprint JB
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(115.9000 mm, 83.7000 mm): Footprint C1
-[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
+    @(174.6000 mm, 75.3000 mm): Footprint C24
+[hole_near_hole]: Drilled holes too close together (rule fab: hole to hole min 0.2495 mm; actual 0.0863 mm)
+    Rule: fab: hole to hole; Severity: error
+    @(183.6250 mm, 71.2500 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(183.4000 mm, 71.5000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+[hole_near_hole]: Drilled holes too close together (rule fab: hole to hole min 0.2495 mm; actual 0.0863 mm)
+    Rule: fab: hole to hole; Severity: error
+    @(256.4000 mm, 71.5000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(256.6250 mm, 71.2500 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+[copper_edge_clearance]: Board edge clearance violation (rule fab: copper to board edge clearance 0.3000 mm; actual 0.0000 mm)
+    Rule: fab: copper to board edge; Severity: error
+    @(158.1000 mm, 92.5500 mm): Line on Edge.Cuts
+    @(158.0500 mm, 93.2000 mm): Track [3V3] on L3_LS_3V3, length 2.2627 mm
+[copper_edge_clearance]: Board edge clearance violation (rule fab: copper to board edge clearance 0.3000 mm; actual 0.0000 mm)
+    Rule: fab: copper to board edge; Severity: error
+    @(156.2000 mm, 92.5500 mm): Line on Edge.Cuts
+    @(153.6500 mm, 93.2000 mm): Track [3V3] on L3_LS_3V3, length 4.4000 mm
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(282.0000 mm, 66.6000 mm): Line on Edge.Cuts
+    @(148.0000 mm, 67.0000 mm): PCB Text 'DRIVE A' on B.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(282.0000 mm, 66.6000 mm): Line on Edge.Cuts
+    @(221.0000 mm, 67.0000 mm): PCB Text 'DRIVE B' on B.Silkscreen
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(141.9500 mm, 72.2500 mm): Footprint C22
+    @(137.8000 mm, 69.8500 mm): Footprint U11
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(187.5000 mm, 74.2500 mm): Footprint C27
+    @(184.4000 mm, 74.0000 mm): Footprint U30
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(115.8000 mm, 72.6000 mm): Footprint SJ2
+    @(117.6000 mm, 72.6000 mm): Footprint SJ3
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(115.8000 mm, 72.6000 mm): Footprint SJ2
+    @(114.0000 mm, 72.6000 mm): Footprint SJ1
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(145.6500 mm, 96.5500 mm): Footprint J1
+    @(159.0000 mm, 91.4000 mm): Footprint R5
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(210.8000 mm, 69.8500 mm): Footprint U15
+    @(214.9500 mm, 72.2500 mm): Footprint C32
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(257.4000 mm, 74.0000 mm): Footprint U31
+    @(254.1000 mm, 75.2500 mm): Footprint R46
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(257.4000 mm, 74.0000 mm): Footprint U31
+    @(253.8000 mm, 71.2500 mm): Footprint C38
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(257.4000 mm, 74.0000 mm): Footprint U31
+    @(260.5000 mm, 74.2500 mm): Footprint C37
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(257.4000 mm, 74.0000 mm): Footprint U31
+    @(256.3500 mm, 77.0000 mm): Footprint R47
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(257.4000 mm, 74.0000 mm): Footprint U31
+    @(254.6100 mm, 74.2500 mm): Footprint R45
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(183.3500 mm, 77.0000 mm): Footprint R27
+    @(184.2500 mm, 77.5000 mm): Footprint R28
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(183.3500 mm, 77.0000 mm): Footprint R27
+    @(184.4000 mm, 74.0000 mm): Footprint U30
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(117.2000 mm, 83.6000 mm): Footprint FB1
+    @(115.0000 mm, 84.8000 mm): Footprint C9
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(240.6000 mm, 67.5500 mm): Footprint C33
+    @(236.0000 mm, 69.8500 mm): Footprint U14
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(132.8000 mm, 67.2500 mm): Footprint R22
+    @(130.4000 mm, 68.2500 mm): Footprint U12
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(163.0000 mm, 69.8500 mm): Footprint U10
+    @(158.0000 mm, 67.6000 mm): Footprint D10
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(163.0000 mm, 69.8500 mm): Footprint U10
+    @(167.6000 mm, 67.5500 mm): Footprint C23
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(177.2000 mm, 73.8000 mm): Footprint JP1
+    @(180.8000 mm, 71.2500 mm): Footprint C28
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(177.2000 mm, 73.8000 mm): Footprint JP1
+    @(181.1000 mm, 75.2500 mm): Footprint R26
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(181.6100 mm, 74.2500 mm): Footprint R25
+    @(184.4000 mm, 74.0000 mm): Footprint U30
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(181.6100 mm, 74.2500 mm): Footprint R25
+    @(181.1000 mm, 75.2500 mm): Footprint R26
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(254.1000 mm, 75.2500 mm): Footprint R46
+    @(250.2000 mm, 73.8000 mm): Footprint JP2
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(254.1000 mm, 75.2500 mm): Footprint R46
+    @(254.6100 mm, 74.2500 mm): Footprint R45
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(250.2000 mm, 73.8000 mm): Footprint JP2
+    @(253.8000 mm, 71.2500 mm): Footprint C38
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(236.0000 mm, 69.8500 mm): Footprint U14
+    @(231.0000 mm, 67.6000 mm): Footprint D11
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(184.4000 mm, 74.0000 mm): Footprint U30
+    @(180.8000 mm, 71.2500 mm): Footprint C28
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(184.4000 mm, 74.0000 mm): Footprint U30
+    @(181.1000 mm, 75.2500 mm): Footprint R26
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(203.4000 mm, 68.2500 mm): Footprint U16
+    @(205.8000 mm, 67.2500 mm): Footprint R42
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(257.2500 mm, 77.5000 mm): Footprint R48
+    @(256.3500 mm, 77.0000 mm): Footprint R47
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(179.0000 mm, 76.1000 mm): Footprint C26
+    @(174.6000 mm, 75.3000 mm): Footprint C24
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(247.6000 mm, 75.3000 mm): Footprint C34
+    @(252.0000 mm, 76.1000 mm): Footprint C36
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(148.0000 mm, 76.0000 mm): Footprint JA
+    @(169.6000 mm, 75.3000 mm): Footprint C25
+[courtyards_overlap]: Courtyards overlap
+    Rule: board setup constraints courtyard; Severity: error
+    @(242.6000 mm, 75.3000 mm): Footprint C35
+    @(221.0000 mm, 76.0000 mm): Footprint JB
+[clearance]: Clearance violation (rule PCIe85: pair-to-pair and to other nets >= 0.40 mm (4h) clearance 0.4000 mm; actual 0.0000 mm)
+    Rule: PCIe85: pair-to-pair and to other nets >= 0.40 mm (4h); Severity: error
+    @(159.0000 mm, 90.8900 mm): Track [GND] on L1_SIG_HS, length 0.7500 mm
+    @(160.9955 mm, 92.3640 mm): Track [PET0_P] on L1_SIG_HS, length 10.4786 mm
+[clearance]: Clearance violation (rule PCIe85: pair-to-pair and to other nets >= 0.40 mm (4h) clearance 0.4000 mm; actual 0.0000 mm)
+    Rule: PCIe85: pair-to-pair and to other nets >= 0.40 mm (4h); Severity: error
+    @(159.0000 mm, 90.8900 mm): Track [GND] on L1_SIG_HS, length 0.7500 mm
+    @(161.3045 mm, 92.2360 mm): Track [PET0_N] on L1_SIG_HS, length 10.7346 mm
+[clearance]: Clearance violation (rule PWR_12V: clearance clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: PWR_12V: clearance; Severity: error
+    @(249.9750 mm, 75.3000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(250.5250 mm, 76.1000 mm): Pad 2 [12V_DRV_B] of C36 on L6_SIG_HS
+[clearance]: Clearance violation (rule PWR_12V: clearance clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: PWR_12V: clearance; Severity: error
+    @(176.9750 mm, 75.3000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(177.5250 mm, 76.1000 mm): Pad 2 [12V_DRV_A] of C26 on L6_SIG_HS
+[clearance]: Clearance violation (rule PWR_12V: clearance clearance 0.2000 mm; actual 0.1377 mm)
+    Rule: PWR_12V: clearance; Severity: error
+    @(256.4000 mm, 71.5000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(256.6500 mm, 72.1875 mm): Pad 23 [12V_DRV_B] of U31 on L1_SIG_HS
+[clearance]: Clearance violation (rule PWR_12V: clearance clearance 0.2000 mm; actual 0.1377 mm)
+    Rule: PWR_12V: clearance; Severity: error
+    @(256.4000 mm, 71.5000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(256.1500 mm, 72.1875 mm): Pad 24 [12V_DRV_B] of U31 on L1_SIG_HS
+[clearance]: Clearance violation (rule REFCLK100: spacing to other nets >= 0.50 mm clearance 0.5000 mm; actual 0.4395 mm)
+    Rule: REFCLK100: spacing to other nets >= 0.50 mm; Severity: error
+    @(126.5675 mm, 77.7500 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(126.5728 mm, 78.8090 mm): Track [REFCLK_A_P] on L6_SIG_HS, length 0.7071 mm
+[clearance]: Clearance violation (rule fab: min copper clearance clearance 0.1000 mm; actual 0.0500 mm)
+    Rule: fab: min copper clearance; Severity: error
+    @(159.0500 mm, 93.2500 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(158.6500 mm, 94.6000 mm): Track [CLKREQ_N] on L1_SIG_HS, length 2.6900 mm
+[clearance]: Clearance violation (rule PCIe85: pair-to-pair and to other nets >= 0.40 mm (4h) clearance 0.4000 mm; actual 0.0000 mm)
+    Rule: PCIe85: pair-to-pair and to other nets >= 0.40 mm (4h); Severity: error
+    @(159.0000 mm, 90.1400 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(160.9955 mm, 92.3640 mm): Track [PET0_P] on L1_SIG_HS, length 10.4786 mm
+[hole_clearance]: Hole clearance violation (rule fab: copper to hole clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: fab: copper to hole; Severity: error
+    @(160.9955 mm, 92.3640 mm): Track [PET0_P] on L1_SIG_HS, length 10.4786 mm
+    @(159.0000 mm, 90.1400 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+[clearance]: Clearance violation (rule PCIe85: pair-to-pair and to other nets >= 0.40 mm (4h) clearance 0.4000 mm; actual 0.0000 mm)
+    Rule: PCIe85: pair-to-pair and to other nets >= 0.40 mm (4h); Severity: error
+    @(159.0000 mm, 90.1400 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(161.3045 mm, 92.2360 mm): Track [PET0_N] on L1_SIG_HS, length 10.7346 mm
+[hole_clearance]: Hole clearance violation (rule fab: copper to hole clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: fab: copper to hole; Severity: error
+    @(161.3045 mm, 92.2360 mm): Track [PET0_N] on L1_SIG_HS, length 10.7346 mm
+    @(159.0000 mm, 90.1400 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+[clearance]: Clearance violation (rule REFCLK100: spacing to other nets >= 0.50 mm clearance 0.5000 mm; actual 0.2092 mm)
+    Rule: REFCLK100: spacing to other nets >= 0.50 mm; Severity: error
+    @(159.0000 mm, 90.1400 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(160.3410 mm, 92.2209 mm): Track [REFCLK_IN_N] on L6_SIG_HS, length 9.3506 mm
+[clearance]: Clearance violation (rule PWR_12V: clearance clearance 0.2000 mm; actual 0.1377 mm)
+    Rule: PWR_12V: clearance; Severity: error
+    @(183.4000 mm, 71.5000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(183.1500 mm, 72.1875 mm): Pad 24 [12V_DRV_A] of U30 on L1_SIG_HS
+[clearance]: Clearance violation (rule PWR_12V: clearance clearance 0.2000 mm; actual 0.1377 mm)
+    Rule: PWR_12V: clearance; Severity: error
+    @(183.4000 mm, 71.5000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(183.6500 mm, 72.1875 mm): Pad 23 [12V_DRV_A] of U30 on L1_SIG_HS
+[clearance]: Clearance violation (rule PWR_12V: clearance clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: PWR_12V: clearance; Severity: error
+    @(176.0750 mm, 75.3000 mm): Track [GND] on L6_SIG_HS, length 0.9000 mm
+    @(177.5250 mm, 76.1000 mm): Pad 2 [12V_DRV_A] of C26 on L6_SIG_HS
+[clearance]: Clearance violation (rule PWR_12V: clearance clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: PWR_12V: clearance; Severity: error
+    @(249.0750 mm, 75.3000 mm): Track [GND] on L6_SIG_HS, length 0.9000 mm
+    @(250.5250 mm, 76.1000 mm): Pad 2 [12V_DRV_B] of C36 on L6_SIG_HS
+[clearance]: Clearance violation (rule REFCLK100: neck-down inside connector fields clearance 0.1000 mm; actual 0.0000 mm)
+    Rule: REFCLK100: neck-down inside connector fields; Severity: error
+    @(124.1375 mm, 80.7500 mm): Track [3V3] on L6_SIG_HS, length 3.0000 mm
+    @(124.1375 mm, 78.8090 mm): Track [REFCLK_A_P] on L6_SIG_HS, length 0.7136 mm
+[clearance]: Clearance violation (rule REFCLK100: neck-down inside connector fields clearance 0.1000 mm; actual 0.0000 mm)
+    Rule: REFCLK100: neck-down inside connector fields; Severity: error
+    @(124.1375 mm, 80.7500 mm): Track [3V3] on L6_SIG_HS, length 3.0000 mm
+    @(123.4375 mm, 78.7500 mm): Track [REFCLK_A_P] on L6_SIG_HS, length 0.7025 mm
+[clearance]: Clearance violation (rule REFCLK100: neck-down inside connector fields clearance 0.1000 mm; actual 0.0000 mm)
+    Rule: REFCLK100: neck-down inside connector fields; Severity: error
+    @(124.1375 mm, 80.7500 mm): Track [3V3] on L6_SIG_HS, length 3.0000 mm
+    @(123.4375 mm, 79.2500 mm): Track [REFCLK_A_N] on L6_SIG_HS, length 0.7025 mm
+[clearance]: Clearance violation (rule REFCLK100: neck-down inside connector fields clearance 0.1000 mm; actual 0.0000 mm)
+    Rule: REFCLK100: neck-down inside connector fields; Severity: error
+    @(124.1375 mm, 80.7500 mm): Track [3V3] on L6_SIG_HS, length 3.0000 mm
+    @(124.1375 mm, 79.1910 mm): Track [REFCLK_A_N] on L6_SIG_HS, length 6.1124 mm
+[clearance]: Clearance violation (rule REFCLK100: spacing to other nets >= 0.50 mm clearance 0.5000 mm; actual 0.1030 mm)
+    Rule: REFCLK100: spacing to other nets >= 0.50 mm; Severity: error
+    @(147.5000 mm, 85.2000 mm): Track [REFCLK_IN_N] on L1_SIG_HS, length 0.5784 mm
+    @(153.5860 mm, 84.9545 mm): Track [PET0_P] on L1_SIG_HS, length 18.8200 mm
+[clearance]: Clearance violation (rule REFCLK100: spacing to other nets >= 0.50 mm clearance 0.5000 mm; actual 0.4120 mm)
+    Rule: REFCLK100: spacing to other nets >= 0.50 mm; Severity: error
+    @(147.5000 mm, 85.2000 mm): Track [REFCLK_IN_N] on L1_SIG_HS, length 0.5784 mm
+    @(153.7140 mm, 84.6455 mm): Track [PET0_N] on L1_SIG_HS, length 18.8200 mm
+[clearance]: Clearance violation (rule REFCLK100: spacing to other nets >= 0.50 mm clearance 0.5000 mm; actual 0.0000 mm)
+    Rule: REFCLK100: spacing to other nets >= 0.50 mm; Severity: error
+    @(147.5000 mm, 85.2000 mm): Via [REFCLK_IN_N] on L1_SIG_HS - L6_SIG_HS
+    @(153.5860 mm, 84.9545 mm): Track [PET0_P] on L1_SIG_HS, length 18.8200 mm
+[hole_clearance]: Hole clearance violation (rule fab: copper to hole clearance 0.2000 mm; actual 0.0420 mm)
+    Rule: fab: copper to hole; Severity: error
+    @(153.5860 mm, 84.9545 mm): Track [PET0_P] on L1_SIG_HS, length 18.8200 mm
+    @(147.5000 mm, 85.2000 mm): Via [REFCLK_IN_N] on L1_SIG_HS - L6_SIG_HS
+[clearance]: Clearance violation (rule REFCLK100: spacing to other nets >= 0.50 mm clearance 0.5000 mm; actual 0.2010 mm)
+    Rule: REFCLK100: spacing to other nets >= 0.50 mm; Severity: error
+    @(147.5000 mm, 85.2000 mm): Via [REFCLK_IN_N] on L1_SIG_HS - L6_SIG_HS
+    @(153.7140 mm, 84.6455 mm): Track [PET0_N] on L1_SIG_HS, length 18.8200 mm
+[clearance]: Clearance violation (rule REFCLK100: spacing to other nets >= 0.50 mm clearance 0.5000 mm; actual 0.0000 mm)
+    Rule: REFCLK100: spacing to other nets >= 0.50 mm; Severity: error
+    @(147.5000 mm, 85.2000 mm): Via [REFCLK_IN_N] on L1_SIG_HS - L6_SIG_HS
+    @(155.5860 mm, 84.9545 mm): Track [PER0_P] on L6_SIG_HS, length 17.4100 mm
+[hole_clearance]: Hole clearance violation (rule fab: copper to hole clearance 0.2000 mm; actual 0.0420 mm)
+    Rule: fab: copper to hole; Severity: error
+    @(155.5860 mm, 84.9545 mm): Track [PER0_P] on L6_SIG_HS, length 17.4100 mm
+    @(147.5000 mm, 85.2000 mm): Via [REFCLK_IN_N] on L1_SIG_HS - L6_SIG_HS
+[clearance]: Clearance violation (rule REFCLK100: spacing to other nets >= 0.50 mm clearance 0.5000 mm; actual 0.2010 mm)
+    Rule: REFCLK100: spacing to other nets >= 0.50 mm; Severity: error
+    @(147.5000 mm, 85.2000 mm): Via [REFCLK_IN_N] on L1_SIG_HS - L6_SIG_HS
+    @(155.7140 mm, 84.6455 mm): Track [PER0_N] on L6_SIG_HS, length 17.4100 mm
+[clearance]: Clearance violation (rule REFCLK100: spacing to other nets >= 0.50 mm clearance 0.5000 mm; actual 0.1030 mm)
+    Rule: REFCLK100: spacing to other nets >= 0.50 mm; Severity: error
+    @(147.9090 mm, 85.6090 mm): Track [REFCLK_IN_N] on L6_SIG_HS, length 0.5784 mm
+    @(155.5860 mm, 84.9545 mm): Track [PER0_P] on L6_SIG_HS, length 17.4100 mm
+[clearance]: Clearance violation (rule REFCLK100: spacing to other nets >= 0.50 mm clearance 0.5000 mm; actual 0.4120 mm)
+    Rule: REFCLK100: spacing to other nets >= 0.50 mm; Severity: error
+    @(147.9090 mm, 85.6090 mm): Track [REFCLK_IN_N] on L6_SIG_HS, length 0.5784 mm
+    @(155.7140 mm, 84.6455 mm): Track [PER0_N] on L6_SIG_HS, length 17.4100 mm
+[clearance]: Clearance violation (rule PCIe85: pair-to-pair and to other nets >= 0.40 mm (4h) clearance 0.4000 mm; actual 0.0000 mm)
+    Rule: PCIe85: pair-to-pair and to other nets >= 0.40 mm (4h); Severity: error
+    @(160.9955 mm, 92.3640 mm): Track [PET0_P] on L1_SIG_HS, length 10.4786 mm
+    @(159.0000 mm, 90.8900 mm): Pad 2 [GND] of R5 on L1_SIG_HS
+[clearance]: Clearance violation (rule PCIe85: pair-to-pair and to other nets >= 0.40 mm (4h) clearance 0.4000 mm; actual 0.2380 mm)
+    Rule: PCIe85: pair-to-pair and to other nets >= 0.40 mm (4h); Severity: error
+    @(161.3045 mm, 92.2360 mm): Track [PET0_N] on L1_SIG_HS, length 10.7346 mm
+    @(159.0000 mm, 90.8900 mm): Pad 2 [GND] of R5 on L1_SIG_HS
+[clearance]: Clearance violation (rule fab: min copper clearance clearance 0.1000 mm; actual 0.0000 mm)
+    Rule: fab: min copper clearance; Severity: error
+    @(220.1000 mm, 70.6500 mm): Via [3V3_AUX] on L1_SIG_HS - L6_SIG_HS
+    @(260.6000 mm, 70.7500 mm): Track [PG_B] on L6_SIG_HS, length 55.4000 mm
+[hole_clearance]: Hole clearance violation (rule fab: copper to hole clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: fab: copper to hole; Severity: error
+    @(260.6000 mm, 70.7500 mm): Track [PG_B] on L6_SIG_HS, length 55.4000 mm
+    @(220.1000 mm, 70.6500 mm): Via [3V3_AUX] on L1_SIG_HS - L6_SIG_HS
+[clearance]: Clearance violation (rule fab: min copper clearance clearance 0.1000 mm; actual 0.0000 mm)
+    Rule: fab: min copper clearance; Severity: error
+    @(147.7000 mm, 70.6500 mm): Via [3V3_AUX] on L1_SIG_HS - L6_SIG_HS
+    @(187.6000 mm, 70.7500 mm): Track [PG_A] on L6_SIG_HS, length 55.4000 mm
+[hole_clearance]: Hole clearance violation (rule fab: copper to hole clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: fab: copper to hole; Severity: error
+    @(187.6000 mm, 70.7500 mm): Track [PG_A] on L6_SIG_HS, length 55.4000 mm
+    @(147.7000 mm, 70.6500 mm): Via [3V3_AUX] on L1_SIG_HS - L6_SIG_HS
+[clearance]: Clearance violation (rule PWR_12V: clearance clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: PWR_12V: clearance; Severity: error
+    @(187.6000 mm, 70.7500 mm): Track [PG_A] on L6_SIG_HS, length 55.4000 mm
+    @(172.5000 mm, 71.0500 mm): Via [12V_AUX] on L1_SIG_HS - L6_SIG_HS
+[hole_clearance]: Hole clearance violation (rule fab: copper to hole clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: fab: copper to hole; Severity: error
+    @(187.6000 mm, 70.7500 mm): Track [PG_A] on L6_SIG_HS, length 55.4000 mm
+    @(172.5000 mm, 71.0500 mm): Via [12V_AUX] on L1_SIG_HS - L6_SIG_HS
+[clearance]: Clearance violation (rule PWR_12V: clearance clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: PWR_12V: clearance; Severity: error
+    @(187.6000 mm, 70.7500 mm): Track [PG_A] on L6_SIG_HS, length 55.4000 mm
+    @(173.6000 mm, 71.0500 mm): Via [12V_AUX] on L1_SIG_HS - L6_SIG_HS
+[hole_clearance]: Hole clearance violation (rule fab: copper to hole clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: fab: copper to hole; Severity: error
+    @(187.6000 mm, 70.7500 mm): Track [PG_A] on L6_SIG_HS, length 55.4000 mm
+    @(173.6000 mm, 71.0500 mm): Via [12V_AUX] on L1_SIG_HS - L6_SIG_HS
+[clearance]: Clearance violation (rule PWR_12V: clearance clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: PWR_12V: clearance; Severity: error
+    @(246.6000 mm, 71.0500 mm): Via [12V_AUX] on L1_SIG_HS - L6_SIG_HS
+    @(260.6000 mm, 70.7500 mm): Track [PG_B] on L6_SIG_HS, length 55.4000 mm
+[hole_clearance]: Hole clearance violation (rule fab: copper to hole clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: fab: copper to hole; Severity: error
+    @(260.6000 mm, 70.7500 mm): Track [PG_B] on L6_SIG_HS, length 55.4000 mm
+    @(246.6000 mm, 71.0500 mm): Via [12V_AUX] on L1_SIG_HS - L6_SIG_HS
+[clearance]: Clearance violation (rule PWR_12V: clearance clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: PWR_12V: clearance; Severity: error
+    @(245.5000 mm, 71.0500 mm): Via [12V_AUX] on L1_SIG_HS - L6_SIG_HS
+    @(260.6000 mm, 70.7500 mm): Track [PG_B] on L6_SIG_HS, length 55.4000 mm
+[hole_clearance]: Hole clearance violation (rule fab: copper to hole clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: fab: copper to hole; Severity: error
+    @(260.6000 mm, 70.7500 mm): Track [PG_B] on L6_SIG_HS, length 55.4000 mm
+    @(245.5000 mm, 71.0500 mm): Via [12V_AUX] on L1_SIG_HS - L6_SIG_HS
+[clearance]: Clearance violation (rule PWR_12V: clearance clearance 0.2000 mm; actual 0.1837 mm)
+    Rule: PWR_12V: clearance; Severity: error
+    @(256.1500 mm, 72.1875 mm): Pad 24 [12V_DRV_B] of U31 on L1_SIG_HS
+    @(255.2750 mm, 71.2500 mm): Pad 2 [GND] of C38 on L1_SIG_HS
+[clearance]: Clearance violation (rule PWR_12V: clearance clearance 0.2000 mm; actual 0.1837 mm)
+    Rule: PWR_12V: clearance; Severity: error
+    @(183.1500 mm, 72.1875 mm): Pad 24 [12V_DRV_A] of U30 on L1_SIG_HS
+    @(182.2750 mm, 71.2500 mm): Pad 2 [GND] of C28 on L1_SIG_HS
+[hole_clearance]: Hole clearance violation (rule fab: copper to hole clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: fab: copper to hole; Severity: error
+    @(177.5250 mm, 76.1000 mm): Pad 2 [12V_DRV_A] of C26 on L6_SIG_HS
+    @(176.9750 mm, 75.3000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+[hole_clearance]: Hole clearance violation (rule fab: copper to hole clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: fab: copper to hole; Severity: error
+    @(250.5250 mm, 76.1000 mm): Pad 2 [12V_DRV_B] of C36 on L6_SIG_HS
+    @(249.9750 mm, 75.3000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+[hole_clearance]: Hole clearance violation (rule fab: copper to hole clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: fab: copper to hole; Severity: error
+    @(167.0000 mm, 76.0000 mm): NPTH pad of JA
+    @(168.1250 mm, 75.3000 mm): Pad 2 [12V_DRV_A] of C25 on L6_SIG_HS
+[hole_clearance]: Hole clearance violation (rule fab: copper to hole clearance 0.2000 mm; actual 0.0000 mm)
+    Rule: fab: copper to hole; Severity: error
+    @(241.1250 mm, 75.3000 mm): Pad 2 [12V_DRV_B] of C35 on L6_SIG_HS
+    @(240.0000 mm, 76.0000 mm): NPTH pad of JB
+[track_dangling]: Track has unconnected end
     Local override; Severity: warning
-    @(183.2000 mm, 71.7500 mm): Footprint U11
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    @(122.7500 mm, 81.9375 mm): Track [GND] on L6_SIG_HS, length 1.2375 mm
+[track_dangling]: Track has unconnected end
     Local override; Severity: warning
-    @(143.6200 mm, 82.4000 mm): Footprint C103
-[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
+    @(122.7500 mm, 77.0625 mm): Track [GND] on L6_SIG_HS, length 1.2375 mm
+[track_dangling]: Track has unconnected end
     Local override; Severity: warning
-    @(256.2000 mm, 71.7500 mm): Footprint U14
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    @(119.2500 mm, 81.9375 mm): Track [GND] on L6_SIG_HS, length 1.2375 mm
+[via_dangling]: Via is not connected or connected on only one layer
     Local override; Severity: warning
-    @(115.9000 mm, 76.4000 mm): Footprint C3
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    @(161.3350 mm, 73.5000 mm): Via [12V_DRV_A] on L1_SIG_HS - L6_SIG_HS
+[via_dangling]: Via is not connected or connected on only one layer
     Local override; Severity: warning
-    @(250.5000 mm, 73.0000 mm): Footprint RN4
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    @(163.8750 mm, 73.5000 mm): Via [12V_DRV_A] on L1_SIG_HS - L6_SIG_HS
+[via_dangling]: Via is not connected or connected on only one layer
     Local override; Severity: warning
-    @(174.1000 mm, 67.8000 mm): Footprint C22
-[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
+    @(162.6050 mm, 73.5000 mm): Via [12V_DRV_A] on L1_SIG_HS - L6_SIG_HS
+[via_dangling]: Via is not connected or connected on only one layer
     Local override; Severity: warning
-    @(188.8000 mm, 75.0000 mm): Footprint D10
+    @(234.3350 mm, 73.5000 mm): Via [12V_DRV_B] on L1_SIG_HS - L6_SIG_HS
+[via_dangling]: Via is not connected or connected on only one layer
+    Local override; Severity: warning
+    @(235.6050 mm, 73.5000 mm): Via [12V_DRV_B] on L1_SIG_HS - L6_SIG_HS
+[via_dangling]: Via is not connected or connected on only one layer
+    Local override; Severity: warning
+    @(236.8750 mm, 73.5000 mm): Via [12V_DRV_B] on L1_SIG_HS - L6_SIG_HS
 
-** Found 0 unconnected pads **
+** Found 44 unconnected pads **
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(122.7500 mm, 77.0625 mm): Track [GND] on L6_SIG_HS, length 1.2375 mm
+    @(122.0000 mm, 78.5000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(122.7500 mm, 81.9375 mm): Track [GND] on L6_SIG_HS, length 1.2375 mm
+    @(122.0000 mm, 80.5000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(119.2500 mm, 81.9375 mm): Track [GND] on L6_SIG_HS, length 1.2375 mm
+    @(120.0000 mm, 80.5000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(254.3750 mm, 76.1000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(255.5875 mm, 74.7500 mm): Track [GND] on L1_SIG_HS, length 0.6370 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(181.3750 mm, 76.1000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
+    @(182.5875 mm, 74.7500 mm): Track [GND] on L1_SIG_HS, length 0.6370 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(129.4500 mm, 68.2500 mm): Pad 2 [GND] of U12 on L1_SIG_HS
+    @(129.4500 mm, 72.1000 mm): Track [GND] on L1_SIG_HS, length 0.7778 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(214.9500 mm, 72.7300 mm): Pad 1 [GND] of C32 on L1_SIG_HS
+    @(215.4900 mm, 68.4500 mm): Pad 1 [GND] of R40 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(141.9500 mm, 72.7300 mm): Track [GND] on L1_SIG_HS, length 0.3700 mm
+    @(142.4900 mm, 68.4500 mm): Pad 1 [GND] of R20 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(118.5625 mm, 81.2500 mm): Track [3V3] on L6_SIG_HS, length 0.7000 mm
+    @(126.8000 mm, 81.4500 mm): Track [3V3] on L3_LS_3V3, length 8.8500 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(129.4500 mm, 67.6000 mm): Pad 1 [PCIE_RST_N] of U12 on L1_SIG_HS
+    @(155.6500 mm, 96.5500 mm): Pad A11 [PCIE_RST_N] of J1 on L6_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(155.6500 mm, 96.5500 mm): Pad A11 [PCIE_RST_N] of J1 on L6_SIG_HS
+    @(202.4500 mm, 67.6000 mm): Pad 1 [PCIE_RST_N] of U16 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(112.5000 mm, 85.5800 mm): Pad 1 [3V3_AUX_SLOT] of C7 on L1_SIG_HS
+    @(118.9500 mm, 85.3000 mm): Track [3V3_AUX_SLOT] on L3_LS_3V3, length 5.9500 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(131.3500 mm, 72.1000 mm): Pad 4 [PCIE_WAKE_N] of U13 on L1_SIG_HS
+    @(155.6500 mm, 96.5500 mm): Pad B11 [PCIE_WAKE_N] of J1 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(155.6500 mm, 96.5500 mm): Pad B11 [PCIE_WAKE_N] of J1 on L1_SIG_HS
+    @(204.3500 mm, 72.1000 mm): Pad 4 [PCIE_WAKE_N] of U17 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(114.3000 mm, 81.5000 mm): Track [3V3_AUX] on L1_SIG_HS, length 0.1500 mm
+    @(114.3000 mm, 80.7000 mm): Track [3V3_AUX] on L1_SIG_HS, length 0.5500 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(204.3500 mm, 70.8000 mm): Track [3V3_AUX] on L1_SIG_HS, length 0.0500 mm
+    @(206.0000 mm, 71.4200 mm): Pad 2 [3V3_AUX] of C30 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(133.0000 mm, 68.9200 mm): Pad 2 [3V3_AUX] of C21 on L1_SIG_HS
+    @(131.3500 mm, 68.2500 mm): Track [3V3_AUX] on L1_SIG_HS, length 0.4000 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(142.5200 mm, 73.5000 mm): Via [3V3_AUX] on L1_SIG_HS - L6_SIG_HS
+    @(141.9500 mm, 71.7700 mm): Pad 2 [3V3_AUX] of C22 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(111.6000 mm, 80.8500 mm): Track [3V3_AUX] on L3_LS_3V3, length 5.5154 mm
+    @(114.3000 mm, 80.7000 mm): Track [3V3_AUX] on L1_SIG_HS, length 0.5500 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(238.8625 mm, 71.8000 mm): Pad 1 [3V3_AUX] of U14 on L1_SIG_HS
+    @(237.5500 mm, 68.9500 mm): Track [3V3_AUX] on L3_LS_3V3, length 4.2426 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(113.0000 mm, 70.3100 mm): Pad 1 [3V3_AUX] of R2 on L1_SIG_HS
+    @(115.5000 mm, 67.9500 mm): Track [3V3_AUX] on L3_LS_3V3, length 31.6000 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(143.5100 mm, 68.4500 mm): Track [PWRDIS_A] on L1_SIG_HS, length 2.4900 mm
+    @(134.9375 mm, 69.5250 mm): Pad 4 [PWRDIS_A] of U11 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(143.1000 mm, 71.4500 mm): Pad 3 [IFDET_A] of RN2 on L1_SIG_HS
+    @(140.6000 mm, 71.4500 mm): Track [IFDET_A] on L1_SIG_HS, length 0.0673 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(142.5000 mm, 74.5000 mm): Track [PRSNT_A] on L3_LS_3V3, length 1.8385 mm
+    @(143.1000 mm, 72.2500 mm): Pad 4 [PRSNT_A] of RN2 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(167.5000 mm, 70.8000 mm): Pad 3 [SMBDAT_A] of RN1 on L1_SIG_HS
+    @(165.8625 mm, 69.2000 mm): Pad 5 [SMBDAT_A] of U10 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(162.9200 mm, 77.9500 mm): Pad E24 [SMBDAT_A] of JA on L6_SIG_HS
+    @(167.5000 mm, 70.8000 mm): Pad 3 [SMBDAT_A] of RN1 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(185.6500 mm, 72.1875 mm): Pad 19 [12V_DRV_A] of U30 on L1_SIG_HS
+    @(186.2125 mm, 72.7500 mm): Track [12V_DRV_A] on L1_SIG_HS, length 0.5500 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(160.3000 mm, 76.6000 mm): Zone [12V_DRV_A] on L6_SIG_HS
+    @(160.3000 mm, 76.6000 mm): Zone [12V_DRV_A] on L6_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(160.3000 mm, 76.6000 mm): Zone [12V_DRV_A] on L6_SIG_HS
+    @(160.3000 mm, 76.6000 mm): Zone [12V_DRV_A] on L6_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(134.9375 mm, 71.4750 mm): Pad 7 [LOC_A] of U11 on L1_SIG_HS
+    @(158.7875 mm, 67.6000 mm): Pad 1 [LOC_A] of D10 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(160.1375 mm, 68.5500 mm): Pad 9 [SD1_A] of U10 on L1_SIG_HS
+    @(167.5000 mm, 70.0000 mm): Pad 2 [SD1_A] of RN1 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(160.1375 mm, 69.2000 mm): Pad 10 [SC1_A] of U10 on L1_SIG_HS
+    @(167.5000 mm, 69.2000 mm): Pad 1 [SC1_A] of RN1 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(207.9375 mm, 69.5250 mm): Pad 4 [PWRDIS_B] of U15 on L1_SIG_HS
+    @(216.5100 mm, 68.4500 mm): Track [PWRDIS_B] on L1_SIG_HS, length 0.8900 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(216.1000 mm, 71.4500 mm): Pad 3 [IFDET_B] of RN4 on L1_SIG_HS
+    @(213.6625 mm, 71.4750 mm): Pad 10 [IFDET_B] of U15 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(216.1000 mm, 72.2500 mm): Pad 4 [PRSNT_B] of RN4 on L1_SIG_HS
+    @(213.6625 mm, 72.1250 mm): Pad 9 [PRSNT_B] of U15 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(207.9375 mm, 70.1750 mm): Pad 5 [DPEN_B] of U15 on L1_SIG_HS
+    @(236.7200 mm, 77.9500 mm): Pad E25 [DPEN_B] of JB on L6_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(259.2125 mm, 72.7500 mm): Track [12V_DRV_B] on L1_SIG_HS, length 0.5500 mm
+    @(258.6500 mm, 72.1875 mm): Pad 19 [12V_DRV_B] of U31 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(233.3000 mm, 76.6000 mm): Zone [12V_DRV_B] on L6_SIG_HS
+    @(233.3000 mm, 76.6000 mm): Zone [12V_DRV_B] on L6_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(233.3000 mm, 76.6000 mm): Zone [12V_DRV_B] on L6_SIG_HS
+    @(233.3000 mm, 76.6000 mm): Zone [12V_DRV_B] on L6_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(207.9375 mm, 71.4750 mm): Pad 7 [LOC_B] of U15 on L1_SIG_HS
+    @(231.7875 mm, 67.6000 mm): Pad 1 [LOC_B] of D11 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(233.0500 mm, 68.6500 mm): Track [MUXCTL_B] on L3_LS_3V3, length 1.9799 mm
+    @(238.8625 mm, 69.8500 mm): Track [MUXCTL_B] on L1_SIG_HS, length 0.0515 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(233.1375 mm, 68.5500 mm): Pad 9 [SD1_B] of U14 on L1_SIG_HS
+    @(240.5000 mm, 70.0000 mm): Pad 2 [SD1_B] of RN3 on L1_SIG_HS
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(121.2500 mm, 81.9375 mm): Track [3V3_A] on L6_SIG_HS, length 1.0000 mm
+    @(121.2500 mm, 77.0625 mm): Track [3V3_A] on L6_SIG_HS, length 1.0000 mm
+[unconnected_items]: Missing connection between items
+    Local override; Severity: error
+    @(109.4600 mm, 86.5500 mm): Pad 4 [PR1] of U3 on L1_SIG_HS
+    @(108.0000 mm, 85.2900 mm): Track [PR1] on L1_SIG_HS, length 0.0510 mm
 
 ** Found 0 Footprint errors **
 

@@ -55,4 +55,11 @@ with open(os.path.join(out, f"{name}-BOM.csv"), "w", newline="") as fh:
 with open(os.path.join(out, f"{name}-CPL.csv"), "w", newline="") as fh:
     w = csv.writer(fh); w.writerow(["Designator", "Mid X", "Mid Y", "Layer", "Rotation"])
     w.writerows(sorted(cpl))
+# loose parts (not placed by the assembler): one 2.54 mm shunt per drive 12 V jumper, fitted on 2-3 (SLOT)
+jps = sorted(r for r in fps if r.startswith("JP") and r[2:].isdigit())
+if jps:
+    with open(os.path.join(out, f"{name}-loose-parts.csv"), "w", newline="") as fh:
+        w = csv.writer(fh); w.writerow(["Comment", "For", "LCSC Part #", "Quantity"])
+        w.writerow(["Jumper shunt 2.54 mm 1x2 (HCTL HC-JP254-1-65-CL-B-G0), fit on pins 2-3 = SLOT 12V", ",".join(jps),
+                    "C5380290", len(jps)])
 print("wrote", zpath, len(groups), "BOM lines,", len(cpl), "placements")

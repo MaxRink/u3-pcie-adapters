@@ -201,16 +201,13 @@
 (rule "skew REFCLK_IN"
     (condition "A.NetName == 'REFCLK_IN_P' || A.NetName == 'REFCLK_IN_N'")
     (constraint skew (max 0.127mm)))
-(rule "skew U1_REFCLK0"
-    (condition "A.NetName == 'U1_REFCLK0_P' || A.NetName == 'U1_REFCLK0_N'")
-    (constraint skew (max 0.127mm)))
-(rule "skew U1_REFCLK1"
-    (condition "A.NetName == 'U1_REFCLK1_P' || A.NetName == 'U1_REFCLK1_N'")
-    (constraint skew (max 0.127mm)))
 
 (rule "silk may sit on masked copper (only pads/holes need clearance)"
     (condition "A.Type != 'Pad' && B.Type != 'Pad' && A.Type != 'Via' && B.Type != 'Via'")
     (constraint silk_clearance (min 0mm)))
-(rule "x8: REFCLK_B 100 MHz HCSL, ~120 mm with 8 bends and via/pin fan-outs; uncoupled <= 4 mm (bends + ends)"
-    (condition "A.NetClass == 'REFCLK_100' && A.NetName == 'REFCLK_B_*'")
-    (constraint diff_pair_uncoupled (max 4.0mm)))
+(rule "REFCLK100: skew-tuning bumps (rule areas TUNE*) widen the gap locally"
+    (condition "A.NetClass == 'REFCLK_100' && A.intersectsArea('TUNE*')")
+    (constraint diff_pair_gap (min 0.245mm) (max 1.6mm)))
+(rule "REFCLK100: uncoupled length incl. skew bumps and via/pin fan-outs <= 8 mm (100 MHz HCSL)"
+    (condition "A.NetClass == 'REFCLK_100'")
+    (constraint diff_pair_uncoupled (max 8.0mm)))

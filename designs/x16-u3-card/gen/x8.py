@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pcbkit import *
 from symlib import U3_PINS
 import sideband
+import cardkit
 from router import Router
 
 OUT = os.path.join(ROOT, "boards", "x8")
@@ -26,8 +27,7 @@ U3FP = "Amphenol_PSAS4F213002_SFF-8639_U3_RA_SMD"
 FX = 45.65                 # finger footprint origin = pin 1 (CEM: 45.65 mm from the bracket-side edge)
 XA, XB = 48.0, 121.0       # receptacle centres (drive A / drive B)
 YP = -24.0                 # receptacle peg line
-YM = YP - 11.75            # mating face
-YE = YM + 1.0              # board edge in the drive windows (pulled back 1 mm under the housing front)
+YE = YP + sideband.YEDGE   # window edge: 0.65 mm short of the housing face (10.05 mm from the pegs)
 XR = 190.0                 # card length (room for drive B's sideband block and the aux 12 V plug)
 YTOP = -111.15             # CEM full height
 YVT = -20.4                # via row between the top pad row and the fingers
@@ -36,7 +36,6 @@ Y0 = -6.0                 # where pairs leave the finger field
 LVL_A = {0: -15.2, 1: -16.2, 2: -17.2, 3: -18.2}      # band A horizontals (lane 0 lowest)
 LVL_B = {7: -15.2, 6: -16.2, 5: -17.2, 4: -18.2}      # band B horizontals (lane 7 lowest)
 Y_REFIN = -14.2            # REFCLK input horizontal (L6), below band A
-Y_REFB = -34.0             # REFCLK_B run over drive A's mating end (L1), above the sideband blocks
 COLW = 12.0                # bracket-side column width
 
 # ------------------------------------------------------------------ CEM x8 edge pinout (side B = F.Cu, side A = B.Cu)
@@ -45,9 +44,9 @@ GND_A = [4, 12, 15, 18, 20, 23, 24, 27, 28, 31, 34, 37, 38, 41, 42, 45, 46, 49]
 fing = {f"B{n}": "GND" for n in GND_B}
 fing.update({f"A{n}": "GND" for n in GND_A})
 fing.update({"B1": "12V", "B2": "12V", "B3": "12V", "A2": "12V", "A3": "12V",
-             "B8": "3V3", "A9": "3V3", "A10": "3V3", "B10": "3V3_AUX", "A11": "PCIE_RST_N",
+             "B8": "3V3", "A9": "3V3", "A10": "3V3", "B10": "3V3_AUX_SLOT", "A11": "PCIE_RST_N",
              "A1": "PRSNT_N", "B48": "PRSNT_N", "A13": "REFCLK_IN_P", "A14": "REFCLK_IN_N",
-             "B5": "SMCLK", "B6": "SMDAT"})
+             "B5": "SMCLK_SLOT", "B6": "SMDAT_SLOT", "B11": "PCIE_WAKE_N", "B12": "CLKREQ_N"})
 PET_PINS = {0: (14, 15), 1: (19, 20), 2: (23, 24), 3: (27, 28), 4: (33, 34), 5: (37, 38), 6: (41, 42), 7: (45, 46)}
 PER_PINS = {0: (16, 17), 1: (21, 22), 2: (25, 26), 3: (29, 30), 4: (35, 36), 5: (39, 40), 6: (43, 44), 7: (47, 48)}
 for ln, (p, n) in PET_PINS.items():
@@ -74,7 +73,7 @@ for d, xc in (("A", XA), ("B", XB)):
     k.fp("u3adapter", U3FP, f"J{d}", "PSAS4F2130021TR", xc, YP, 180, bottom=True, pads=pads, lcsc="C22454449")
     JP[d] = lambda n, d=d: k.padxy(f"J{d}", n)
 R = Router(k)
-SB = {d: sideband.block(k, R, d, i, xc, YP, JP[d], 10 + 3 * i, 20 + 20 * i, 20 + 10 * i)
+SB = {d: sideband.block(k, R, d, i, xc, YP, JP[d], 10 + 4 * i, 20 + 20 * i, 20 + 10 * i)
       for i, (d, xc) in enumerate((("A", XA), ("B", XB)))}
 
 # ------------------------------------------------------------------ outline
@@ -338,7 +337,7 @@ k.track("3V3", "L6", [(xpin(9), -5.4), V33], 0.3)
 k.track("3V3", "L6", [(xpin(10), -5.4), (xpin(10), -5.9), V33], 0.3)
 # 3V3_AUX (B10, L1) and PERST# (A11, L6)
 VAUX = (xpin(10), -9.6); VRST = (xpin(11), -10.2)
-k.track("3V3_AUX", "L1", [(xpin(10), -5.4), VAUX], 0.3); k.via("3V3_AUX", *VAUX)
+k.track("3V3_AUX_SLOT", "L1", [(xpin(10), -5.4), VAUX], 0.3); k.via("3V3_AUX_SLOT", *VAUX)
 k.track("PCIE_RST_N", "L6", [(xpin(11), -5.4), VRST], 0.2); k.via("PCIE_RST_N", *VRST)
 # PRSNT1# (A1) -> PRSNT2# x8 (B48) on L3
 VPA = (xpin(1), -9.0); VPB = (95.6, -8.0)
@@ -360,153 +359,66 @@ for d in "AB":
     kp = k.padxy(ln_, "1")
     k.track(f"{d}_ACT_N", "L1", [kp, (xact, kp[1] - 0.4), (xact, YVM)], 0.2)
 
-# ------------------------------------------------------------------ REFCLK: slot -> 9DBL411B buffer (top) -> drives
-# 9DBL411B LP-HCSL outputs need series Rs = Zo - 17 = 33 R for a 100 ohm (50 ohm SE) line (datasheet, Terminations).
-UX, UY = 17.9, -20.55
-k.fp("Package_SO", "TSSOP-20_4.4x6.5mm_P0.65mm", "U1", "9DBL411BGLF", UX, UY, 0, pads={
-    "1": "GND", "2": "REFCLK_IN_N", "3": "REFCLK_IN_P", "4": "3V3", "5": "GND", "6": "3V3", "9": "3V3", "10": "GND",
-    "13": "3V3", "14": "U1_REFCLK1_N", "15": "U1_REFCLK1_P", "16": "GND", "17": "GND", "18": "3V3",
-    "19": "U1_REFCLK0_N", "20": "U1_REFCLK0_P"}, lcsc="C1520299")
-U = lambda n: k.padxy("U1", str(n))
-k.rule_area("NECKDOWN_U1", [(UX - 5.4, UY - 6.0), (UX + 6.0, UY - 6.0), (UX + 6.0, UY + 3.6), (UX - 5.4, UY + 3.6)])
-# input: L6 from A13/A14, up, left along Y_REFIN, north on the west side, vias, short L1 into pins 3/2
-xin = (xpin(13) + xpin(14)) / 2
-XW = UX - 4.3
-ym = (U(2)[1] + U(3)[1]) / 2
-XW = UX - 4.4
-yv = U(1)[1] - 0.9                     # via pair north of the pin row: L6 runs north, L1 comes back south (U-turn)
-cen6 = [(xin, -5.76), (xin, YKNEE_A), (xin - (YKNEE_A - Y_REFIN), Y_REFIN), (XW + 1.0, Y_REFIN),
-        (XW, Y_REFIN - 1.0), (XW, yv + 0.22)]
-cen1 = [(XW, yv + 0.22), (XW, ym - 0.4), (XW + 0.4, ym), (UX - 3.75, ym)]
-st = [("REFCLK_IN_P", [(xpin(13), -5.62)]), ("REFCLK_IN_N", [(xpin(14), -5.62)])]
-best = None
-for i in range(-6, 7):
-    for j in range(-6, 7):
-        vP, vN = (XW - 0.355, yv + 0.05 * i), (XW + 0.355, yv + 0.05 * j)
-        r6 = k.pair("L6", cen6, st, [(None, [vP]), (None, [vN])], RW, RG, dry=True)
-        r1 = k.pair("L1", cen1, [("REFCLK_IN_P", [vP]), ("REFCLK_IN_N", [vN])], [(None, [U(3)]), (None, [U(2)])], RW, RG, dry=True)
-        sk = sum(plen(r[n][0]) * (1 if n.endswith("P") else -1) for r in (r6, r1) for n in r)
-        sc = 10 * max(0.0, abs(sk) - 0.06) + 0.05 * (abs(i) + abs(j))
-        if best is None or sc < best[0]:
-            best = (sc, vP, vN, sk)
-_, vP, vN, sk = best
-print("REFCLK_IN residual skew", round(sk, 3))
-r6 = k.pair("L6", cen6, st, [(None, [vP]), (None, [vN])], w=RW, g=RG)
-r1 = k.pair("L1", cen1, [("REFCLK_IN_P", [vP]), ("REFCLK_IN_N", [vN])], [(None, [U(3)]), (None, [U(2)])], w=RW, g=RG)
-assert math.dist(r6["REFCLK_IN_P"][0][-1], vP) < 1e-6, ("REFCLK_IN polarity L6", r6["REFCLK_IN_P"][0][-2:], vP, vN)
-assert math.dist(r1["REFCLK_IN_P"][0][-1], U(3)) < 1e-6, ("REFCLK_IN polarity L1", r1["REFCLK_IN_P"][0][:2], r1["REFCLK_IN_P"][0][-2:], U(3), U(2))
-k.via("REFCLK_IN_P", *vP); k.via("REFCLK_IN_N", *vN)
-
-
-def series(ref, x, y, rot, n_in, n_out, near):
-    return two(ref, *R0402, "33R", x, y, rot, False, near, n_in, n_out, "C25105")
-
-
-# outputs: 33R series resistors stacked 1.0 mm apart right at the pins (DIF1 15/14 -> A, DIF0 20/19 -> B)
-xr = UX + 4.9
-
-
-def rs(refp, refn, pp, pn, nin, nout):
-    yc = (U(pp)[1] + U(pn)[1]) / 2; sgn = 1 if U(pn)[1] > U(pp)[1] else -1
-    r = {"P": series(refp, xr, yc - sgn * 0.475, 0, nin + "_P", nout + "_P", (xr - 1, 0)),
-         "N": series(refn, xr, yc + sgn * 0.475, 0, nin + "_N", nout + "_N", (xr - 1, 0))}
-    for pin, key in ((pp, "P"), (pn, "N")):
-        k.track(f"{nin}_{key}", "L1", [U(pin), (U(pin)[0] + 0.85, U(pin)[1]), r[key][0]], RW)
-    return r, yc
-
-
-RA, yA = rs("R1", "R2", 15, 14, "U1_REFCLK1", "REFCLK_A")
-RB, yB = rs("R3", "R4", 20, 19, "U1_REFCLK0", "REFCLK_B")
-E7A, E8A = JP["A"]("E7"), JP["A"]("E8")
-vAP, vAN = (E7A[0], -20.65), (E8A[0], -20.65)
-xmA = (vAP[0] + vAN[0]) / 2
-
-
-def clk_pair(d, center, starts, vp, vn):
-    """Route an L1 REFCLK pair to two vias that feed E7/E8 on L6; slide the vias along x so P and N match."""
-    pads = (JP[d]("E7")[0], -21.2), (JP[d]("E8")[0], -21.2)
-    best = None
-    for i in range(-6, 3):
-        for j in range(-2, 5):
-            a, b = (vp[0] + 0.05 * i, vp[1]), (vn[0] + 0.05 * j, vn[1])
-            if b[0] - a[0] < 0.749:
-                continue
-            r = k.pair("L1", center, starts, [(None, [a]), (None, [b])], RW, RG, dry=True)
-            lp = plen(r[f"REFCLK_{d}_P"][0]) + math.dist(a, pads[0])
-            ln_ = plen(r[f"REFCLK_{d}_N"][0]) + math.dist(b, pads[1])
-            sc = 10 * max(0.0, abs(lp - ln_) - 0.06) + 1.0 * abs(b[0] - a[0] - 0.75) + 0.05 * (abs(i) + abs(j))
-            if best is None or sc < best[0]:
-                best = (sc, a, b)
-    _, a, b = best
-    r = k.pair("L1", center, starts, [(None, [a]), (None, [b])], RW, RG)
-    assert math.dist(r[f"REFCLK_{d}_P"][0][-1], a) < 1e-6, f"REFCLK_{d} polarity"
-    for v, pad, net in ((a, pads[0], f"REFCLK_{d}_P"), (b, pads[1], f"REFCLK_{d}_N")):
-        k.via(net, *v); k.track(net, "L6", [v, pad], RW)
-    k.setpad(f"J{d}", "E7", f"REFCLK_{d}_P"); k.setpad(f"J{d}", "E8", f"REFCLK_{d}_N")
-    k.via("GND", JP[d]("E7")[0] - 1.6, -21.3)                    # return via beside the clock vias
-    return r
-
-
-ra = clk_pair("A", [(RA["P"][1][0] + 0.45, yA), (xmA - 0.4, yA), (xmA, yA - 0.4)],
-              [("REFCLK_A_P", [RA["P"][1]]), ("REFCLK_A_N", [RA["N"][1]])], vAP, vAN)
-# REFCLK_B: east, north past the IC, east under drive A at Y_REFB, south at x 97, east to drive B's E7/E8
-XBV = xr + 1.6
-E7B, E8B = JP["B"]("E7"), JP["B"]("E8")
-vBP, vBN = (E7B[0], -20.65), (E8B[0], -20.65)
-rb = clk_pair("B", [(RB["P"][1][0] + 0.45, yB), (XBV - 0.6, yB), (XBV, yB - 0.6), (XBV, Y_REFB + 0.8), (XBV + 0.8, Y_REFB),
-                   (96.0, Y_REFB), (96.8, Y_REFB + 0.8), (96.8, -21.0), (97.8, -20.0), (vBP[0] - 0.05, -20.0),
-                   (vBP[0] + 0.3, -20.35)],
-              [("REFCLK_B_P", [RB["P"][1]]), ("REFCLK_B_N", [RB["N"][1]])], vBP, vBN)
-
-# buffer power: GND vias under the body (inner column), 3V3 vias in a second inner column; decoupling on the
-# bottom over an L6 3V3 pour fed from the finger 3V3 via
-for p in (1, 5, 10):
-    k.track("GND", "L1", [U(p), (UX - 0.5, U(p)[1])], 0.2); k.via("GND", UX - 0.5, U(p)[1])
-for p in (4, 6, 9):
-    k.track("3V3", "L1", [U(p), (UX - 1.55, U(p)[1])], 0.2); k.via("3V3", UX - 1.55, U(p)[1])
-k.track("GND", "L1", [U(16), (UX + 1.1, U(16)[1]), (UX + 1.1, U(17)[1]), U(17)], 0.2)
-k.via("GND", UX + 1.1, (U(16)[1] + U(17)[1]) / 2)
-for p in (13, 18):
-    k.track("3V3", "L1", [U(p), (UX + 1.1, U(p)[1])], 0.2); k.via("3V3", UX + 1.1, U(p)[1])
-k.zone("3V3", "L6", [(UX - 3.0, -15.1), (UX + 4.4, -15.1), (UX + 4.4, -24.6), (UX - 3.0, -24.6)], prio=2)
-for i, (ref, val, fpn, lc) in enumerate((("C1", "100nF", C0402, "C1525"), ("C2", "100nF", C0402, "C1525"),
-                                         ("C3", "100nF", C0402, "C1525"),
-                                         ("C4", "10uF", ("Capacitor_SMD", "C_0603_1608Metric"), "C19702"))):
-    x, y = UX - 2.0 + 2.6 * (i % 2), (-16.3 if i < 2 else -23.6)
-    if i == 3:
-        x = UX + 2.6
-    g, v = two(ref, *fpn, val, x, y, 0, True, (x - 2, y), "GND", "3V3", lc)
-    gv = (g[0] - 0.75, g[1]); k.via("GND", *gv); k.track("GND", "L6", [g, gv], 0.3)
-# 3V3 feed: L1 north from the finger via, west at -13.6, via into the pour
-k.track("3V3", "L1", [V33, (V33[0], -13.6), (UX + 4.0, -13.6), (UX + 4.0, -15.6)], 0.3); k.via("3V3", UX + 4.0, -15.6)
-
-# ------------------------------------------------------------------ slot SMBus + management trunks (L3)
-# B5/B6 -> vias north of the PRSNT# run; east on L3 above the lane fan-out, north at x ~94 (between the drive A
-# block and REFCLK_B's descent), then east in the channel over the drive B mating end.  3V3_AUX and PERST# join.
+# ------------------------------------------------------------------ card-level parts, REFCLK, trunks
+import time; T0 = time.time()
+card = cardkit.Card(k, R, xpin, fpad, [(d, xc, YP, JP[d]) for d, xc in (("A", XA), ("B", XB))], YP)
+card.buffer({"A": 3, "B": 2})
+print("REFCLK_IN skew", round(card.refclk_in(), 3))
+card.parts()
+card.wake_clkreq()
+card.clock_direct("A", 3)
+card.clock_channel("B", 2, row=YP + sideband.CLK_Y[0], xdrop=XB - 25.0)
+# slot SMBus: B5/B6 -> vias -> the TCA9548A upstream port
 VSC, VSD = (xpin(5), -10.0), (xpin(6), -10.6)
-k.track("SMCLK", "L1", [(xpin(5), -5.4), VSC], 0.2); k.via("SMCLK", *VSC)
-k.track("SMDAT", "L1", [(xpin(6), -5.4), VSD], 0.2); k.via("SMDAT", *VSD)
-TR = [("SMCLK", VSC, -12.6, 93.4, YE + 0.65, 0.2, 39.4), ("SMDAT", VSD, -12.15, 94.1, YE + 1.25, 0.2, 38.6),
-      ("3V3_AUX", VAUX, -11.7, 94.8, YE + 1.85, 0.25, 37.8), ("PCIE_RST_N", VRST, -11.25, 95.5, YE + 2.45, 0.2, 37.0)]
-TRUNK = {}
-for i, (net, v0, ylow, xr_, ych, w, xtap) in enumerate(TR):
-    tA = (xr_, -26.0 - 0.8 * i)                                              # drive A tap (trunk vertex)
-    pts = [v0, (v0[0], ylow), (xr_, ylow), tA, (xr_, ych), (XB + xtap, ych)]  # channel ends at drive B's tap
-    k.track(net, "L3", pts, w)
-    TRUNK[net] = [("L3", "seg", (p[0], p[1], q[0], q[1], w / 2)) for p, q in zip(pts, pts[1:])]
-    # tap points are trunk vertices (no vias: blocks end on the vertex on L3, or drop their own via onto it)
-    R.seed(net, [("L3", "circle", (XB + xtap, ych, w / 2)), ("L3", "circle", (*tA, w / 2))])
-# DNP option: bridge 3V3 -> 3V3_AUX for slots that do not supply 3.3 Vaux (fit only then)
-k.fp(*R0402, "R9", "0R DNP (no 3.3Vaux)", 45.6, -12.0, 90, lcsc="C17168", dnp=True)
-pa, pb = sorted(("1", "2"), key=lambda q: k.padxy("R9", q)[1])          # pa: toward the 3V3 feed at -13.6
-k.setpad("R9", pa, "3V3"); k.setpad("R9", pb, "3V3_AUX")
-k.track("3V3", "L1", [k.padxy("R9", pa), (45.6, -13.6)], 0.3)
-R9AUX = ("L1", *k.padxy("R9", pb))
+k.track("SMCLK_SLOT", "L1", [(xpin(5), -5.4), VSC], 0.2); k.via("SMCLK_SLOT", *VSC)
+k.track("SMDAT_SLOT", "L1", [(xpin(6), -5.4), VSD], 0.2); k.via("SMDAT_SLOT", *VSD)
+first = card.trunks({"SMCLK": 13.5, "SMDAT": 14.5, "3V3_AUX": 15.5, "PCIE_RST_N": 26.85, "PCIE_WAKE_N": 27.9})
+# slot PERST#/WAKE#: west on L3 under the REFCLK_IN run (clear of the CEM notch), north up the left side of drive A's
+# receptacle to the trunk starts; the router only does the short hop from the finger vias
+RW_ = {"PCIE_RST_N": [(46.6, -12.45), (45.75, -13.3), (27.45, -13.3), (27.45, -20.0), (26.85, -20.6),
+                      first["PCIE_RST_N"]],
+       "PCIE_WAKE_N": [(47.0, -12.9), (46.15, -13.75), (27.9, -13.75), first["PCIE_WAKE_N"]]}
+for net, pts in RW_.items():
+    k.track(net, "L3", pts, sideband.TRK_W)
+# drive A's reset gate / WAKE buffer tap these verticals (1.05 mm apart, room for a via on each)
+for net, tv in (("PCIE_RST_N", (26.85, YP - 6.3)), ("PCIE_WAKE_N", (27.9, YP - 5.0))):
+    k.via(net, *tv); card.taps[net].append(tv)
+LCOST = dict(layer_cost={"L1": 2.5, "L6": 2.5}, via_cost=1.0, maxpad=12.0)
+U2 = lambda q: ("L1", *k.padxy("U2", q))
+U3 = lambda net: ("L1", *card.u3t[net])
+# local bus risers (hand-laid): U2 SC0/SD0 east -> vias -> L3 north along the column edge -> trunk starts
+for net, q, xv in (("SMCLK", "5", 10.6), ("SMDAT", "4", 11.4)):
+    pq = k.padxy("U2", q); f0 = first[net]
+    k.track(net, "L1", [pq, (xv, pq[1])], 0.15); k.via(net, xv, pq[1])
+    k.track(net, "L3", [(xv, pq[1]), (xv, f0[1]), f0], sideband.TRK_W)
+risers = [("3V3_AUX", U3("3V3_AUX"), ("L3", *first["3V3_AUX"])),
+          ("PCIE_RST_N", ("all", *VRST), ("L3", *RW_["PCIE_RST_N"][0])),
+          ("PCIE_WAKE_N", ("all", *card.vwake), ("L3", *RW_["PCIE_WAKE_N"][0])),
+          ("SMCLK_SLOT", ("all", *VSC), U2("22")), ("SMDAT_SLOT", ("all", *VSD), U2("23")),
+          ("3V3_AUX_SLOT", ("all", *VAUX), U3("3V3_AUX_SLOT")), ("3V3", ("all", *V33), U3("3V3"))]
+for net, a, b in risers:
+    try:
+        R.route(net, a, b, w=0.25 if "3V3" in net else 0.15, **LCOST)
+    except RuntimeError as e:
+        print("FAIL riser", net, e)
+for net, v in card.supply_vias.items():
+    if k.padnet("U1", str(net)) == "3V3":
+        try:
+            R.to_net("3V3", ("all", *v), w=0.25, **LCOST)
+        except RuntimeError as e:
+            print("FAIL 3V3 buffer", net, e)
+card.wire()
+import time
+print("t card", round(time.time() - T0))
+card.seed_trunks()
+for j, d in enumerate("AB" if os.environ.get("STAGE") != "card" else ""):
+    sideband.route_block(k, R, d, SB[d], JP[d], YVM, YVT)
+    card.after_block(j)
+    print("t block", d, round(time.time() - T0))
 
 # ------------------------------------------------------------------ aux 12 V: PCIe 6-pin at the card end (opt-in per drive)
 # Molex 45558 / Mini-Fit Jr 2x3 R/A, 1-3 +12V, 4-6 GND.  Feeds only the L4 12V_AUX plane, which reaches each
 # drive's jumper; never connected to slot 12 V.  Fit it only when a drive's jumper is set to aux.
-YJ5 = -21.0
 k.fp("Connector_Molex", "Molex_Mini-Fit_Jr_5569-06A2_2x03_P4.20mm_Horizontal", "J5", "PCIe 6-pin 45558-0003",
      XR - 14.4, -24.6, 270, pads={"1": "12V_AUX", "2": "12V_AUX", "3": "12V_AUX", "4": "GND", "5": "GND", "6": "GND"},
      lcsc="C7545781")
@@ -515,15 +427,9 @@ k.track("12V_AUX", "L1", [cva, (cva[0], cva[1] + 1.3)], 0.6); k.via("12V_AUX", c
 k.track("GND", "L1", [cga, (cga[0], cga[1] - 1.3)], 0.6); k.via("GND", cga[0], cga[1] - 1.3, 0.6, 0.3)
 k.text("AUX 12V", XR - 10.0, -30.0, P.F_SilkS, 1.0)
 
-# ------------------------------------------------------------------ sideband blocks: route
-for d in "AB":
-    sideband.route_block(k, R, d, SB[d], JP[d], YVM, YVT)
-R.seed("3V3_AUX", TRUNK["3V3_AUX"])
-R.to_net("3V3_AUX", R9AUX, maxpad=12.0, via_cost=1.0)
-
 # ------------------------------------------------------------------ planes
-# L4: slot 12 V in the lower band (fingers -> each drive's jumper pin 1), aux 12 V above it (6-pin -> pin 3)
-YSPL = YP - 3.3
+# L4: slot 12 V toward the fingers (to each jumper's SLOT via), 12V_AUX toward the window and at the card end (J5)
+YSPL = YP + sideband.YSPLIT
 XAUX = XB + 30.5
 k.zone("GND", "L2", BOARD, clearance=0.2)
 k.zone("GND", "L5", BOARD, clearance=0.2)
@@ -531,7 +437,6 @@ k.zone("12V", "L4", [(0, 1), (XAUX - 0.3, 1), (XAUX - 0.3, YSPL + 0.3), (0, YSPL
 k.zone("12V_AUX", "L4", [(0, YSPL - 0.3), (XAUX + 0.3, YSPL - 0.3), (XAUX + 0.3, 1), (XR + 1, 1), (XR + 1, YTOP - 1),
                          (0, YTOP - 1)], clearance=0.2, thermal=False)
 k.zone("GND", "L3", BOARD, clearance=0.25)
-
 # ------------------------------------------------------------------ holes: bracket screws + holder slots
 k.fp("MountingHole", "MountingHole_3.2mm_M3", "H1", "bracket", 7.5, -94.75, bom=False)
 k.fp("MountingHole", "MountingHole_3.2mm_M3", "H2", "bracket", 7.5, -9.35, bom=False)
@@ -539,7 +444,7 @@ for i, (x, y) in enumerate(((6.0, -30.0), (6.0, -60.0), (XR - 4.0, -38.0), (XR -
     k.fp("u3adapter", "MountingSlot_M3_3.2x6.2", f"H{3 + i}", "M3 slot", x, y, bom=False)
 
 # ------------------------------------------------------------------ silkscreen
-k.text("U.3 x8  rev B", 146.0, -14.0, P.F_SilkS, 1.0)
+k.text("U.3 x8  rev C", 146.0, -14.0, P.F_SilkS, 1.0)
 k.text("x4x4 bifurcation", 146.0, -15.6, P.F_SilkS, 1.0)
 k.text("DRIVE A", XA, -33.0, P.B_SilkS, 1.0, mirror=True)
 k.text("DRIVE B", XB, -33.0, P.B_SilkS, 1.0, mirror=True)
@@ -557,7 +462,7 @@ with open(os.path.join(OUT, "bom_raw.json"), "w") as f:
 VIA_H = 1.5784
 lens = {}
 for net, segs in k.lines.items():
-    if net.startswith(("PET", "PER", "C_PER", "REFCLK", "U1_REFCLK")):
+    if net.startswith(("PET", "PER", "C_PER", "REFCLK")):
         lens[net] = round(sum(plen(p) for _, p, _ in segs) + VIA_H * len(k.vias_by_net.get(net, [])), 3)
 lane = {}
 for ln in range(8):                         # finger -> receptacle copper per lane (PER lanes 0/1 include the cap)
@@ -576,10 +481,7 @@ if __name__ == "__main__":
     extra = """(rule "silk may sit on masked copper (only pads/holes need clearance)"
     (condition "A.Type != 'Pad' && B.Type != 'Pad' && A.Type != 'Via' && B.Type != 'Via'")
     (constraint silk_clearance (min 0mm)))"""
-    extra += """
-(rule "x8: REFCLK_B 100 MHz HCSL, ~120 mm with 8 bends and via/pin fan-outs; uncoupled <= 4 mm (bends + ends)"
-    (condition "A.NetClass == 'REFCLK_100' && A.NetName == 'REFCLK_B_*'")
-    (constraint diff_pair_uncoupled (max 4.0mm)))"""
+    extra += "\n" + cardkit.DRU
     bb, rpt = k.fill_and_check(skew + "\n" + extra)
     c, items = drc_summary(rpt)
     print("DRC:", dict(c))

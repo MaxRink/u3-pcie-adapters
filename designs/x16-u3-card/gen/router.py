@@ -74,7 +74,7 @@ class Router:
             if d.GetLayer() == P.Edge_Cuts:
                 a, b = d.GetStart(), d.GetEnd()
                 out.append(("all", "<edge>", "seg", (P.ToMM(a.x) - O[0], P.ToMM(a.y) - O[1],
-                                                     P.ToMM(b.x) - O[0], P.ToMM(b.y) - O[1], 0.15)))
+                                                     P.ToMM(b.x) - O[0], P.ToMM(b.y) - O[1], 0.05)))
         return out
 
     def _poly(self, sp):
@@ -173,15 +173,21 @@ class Router:
                 layer_cost=None, bbox=None, allow_via=True, maxpad=12.0):
         g = self.g
         b = goal[1] if goal[0] == "pt" else None
+        import time, os
         while True:
+            t0 = time.time()
             try:
                 return self._search1(net, a, goal, w, layers, via_cost, pad, viad, layer_cost, bbox, allow_via)
             except RuntimeError:
                 if bbox is not None or pad >= maxpad:
                     raise
                 pad *= 2
+            finally:
+                if os.environ.get("RTIME") and time.time() - t0 > 2.0:
+                    print(f"  slow {time.time() - t0:5.1f}s {net} {goal[0]} pad {pad} from {a}", flush=True)
 
     def _search1(self, net, a, goal, w, layers, via_cost, pad, viad, layer_cost, bbox, allow_via):
+        self._pad = pad
         g = self.g
         b = goal[1] if goal[0] == "pt" else None
         if bbox is None:
@@ -284,6 +290,28 @@ class Router:
                         dist[ns] = nd; prev[ns] = s
                         heapq.heappush(pq, (nd + h(i, j), nd, ns, None))
         if found is None:
+            import os
+            if os.environ.get("DUMP_FAIL") == net and not getattr(self, "_dumped", False) and \
+                    abs(a[1] - float(os.environ.get("DUMP_X", a[1]))) < 0.01 and self._pad >= float(os.environ.get("DUMP_PAD", 0)):
+                self._dumped = True
+                rows = []
+                for L in layers:
+                    img = np.zeros(M[L].shape + (3,), np.uint8) + 255
+                    img[M[L]] = (180, 180, 180)
+                    if goal[0] == "net":
+                        img[TM[L]] = (0, 170, 0)
+                    seen = np.zeros_like(M[L])
+                    for (L_, i_, j_) in dist:
+                        if L_ == L:
+                            seen[j_, i_] = True
+                    img[seen] = (120, 200, 255)
+                    if VM is not None:
+                        vv = ~VM & ~M[L]
+                        img[vv & ~seen] = (255, 240, 200)
+                    rows += [img, np.zeros((4, img.shape[1], 3), np.uint8)]
+                Image.fromarray(np.vstack(rows)).resize((W * 3, (H + 4) * len(layers) * 3), Image.NEAREST).save(
+                    os.environ.get("DUMP_PNG", "/tmp/dump.png"))
+                print("dumped", net, a, bbox)
             raise RuntimeError(f"router: no path for {net} {a} -> {goal[0]}")
         path = [found]
         while path[-1] in prev:
@@ -332,8 +360,8 @@ class Router:
 
 
 def _extra(n):
-    if n == "<edge>":
-        return 0.1
+    if n == "<edge>":                                    # 0.3 copper-to-edge: c + 0.04 + 0.05 (outline half width)
+        return 0.04
     if n.startswith("REFCLK") or n.startswith("U1_REFCLK"):
         return 0.3
     if n.startswith(("PET", "PER", "C_PER", "C_PET")):
