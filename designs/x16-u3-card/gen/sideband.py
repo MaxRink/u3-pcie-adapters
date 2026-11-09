@@ -224,31 +224,13 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
 FANOUTS = ((), ("U6", "U5"), ("U12", "U13", "E14", "E15", "U6", "U5"))
 
 
+BLOCK_CLEARANCE = 0.15          # Default netclass clearance; the card-level routes keep the router's 0.2
+
+
 def route_block(k, R, d, info, JP, yvm, yvt):
     """Wire the block with the maze router (after the trunks and clocks exist).  Tries a few fan-out strategies; a
     failed attempt is ripped up (its tracks and vias removed, router state restored)."""
-    best = None
-    import os
-    if os.environ.get("BLOCK_ONCE"):
-        fails = _route_block_once(k, R, d, info, JP, yvm, yvt, ())
-        for e in fails:
-            print("FAIL", e)
-        return fails
-    for fan in FANOUTS:
-        before = {t.m_Uuid.AsString() for t in k.b.GetTracks()}
-        conn = {n_: list(v) for n_, v in R.conn.items()}
-        fails = _route_block_once(k, R, d, info, JP, yvm, yvt, fan)
-        if not fails:
-            return []
-        print(f"block {d}: fan-out {fan or '-'} left {len(fails)} unrouted, ripping up")
-        new = [t for t in k.b.GetTracks() if t.m_Uuid.AsString() not in before]
-        for t in new:
-            k.b.Delete(t)
-        del new
-        R.conn = conn
-        if best is None or len(fails) < best[0]:
-            best = (len(fails), fan)
-    fails = _route_block_once(k, R, d, info, JP, yvm, yvt, best[1])
+    fails = _route_block_once(k, R, d, info, JP, yvm, yvt, ())
     for e in fails:
         print("FAIL", e)
     return fails
@@ -265,11 +247,12 @@ def _route_block_once(k, R, d, info, JP, yvm, yvt, fan):
     fails, retry = [], []
     L3 = dict(layer_cost={"L1": 2.0, "L6": 2.0}, via_cost=1.0)
 
+    tasks = []
+
     def tryit(f, *a, **kw):
-        try:
-            f(*a, **kw)
-        except RuntimeError:
-            retry.append((f, a, kw))
+        if a[0] not in ("GND", "3V3_AUX"):          # 0.127 / 0.15 signals in the block (fab min 0.1 / 0.1)
+            kw.setdefault("w", 0.127)
+        tasks.append((f, a, kw))
     ics = (um, ue, ug, uw, dl)
 
     def nearest(net, p):
@@ -335,16 +318,8 @@ def _route_block_once(k, R, d, info, JP, yvm, yvt, fan):
     for _, net, a in sorted(local):
         if _ >= 3.5:
             tryit(R.to_net, net, a, via_cost=1.0, maxpad=24.0)
-    for f, a, kw in retry:                       # second / third pass: wider search window, cheaper vias
-        for grow in (0.0, 3.0):
-            kw2 = dict(kw); kw2.update(maxpad=kw.get("maxpad", 12.0) + 2 * grow, via_cost=0.5 if not grow else 0.3)
-            if "bbox" in kw2:
-                x0, y0, x1, y1 = kw2["bbox"]
-                kw2["bbox"] = (x0 - grow, y0 - grow, x1 + grow, y1)
-            try:
-                f(*a, **kw2)
-                break
-            except RuntimeError as e:
-                if grow:
-                    fails.append(str(e))
-    return fails
+    c0, R.c = R.c, BLOCK_CLEARANCE
+    try:
+        return R.run_tasks(tasks)
+    finally:
+        R.c = c0

@@ -152,6 +152,8 @@ class Kit:
             t.SetStart(self.V(*a)); t.SetEnd(self.V(*c)); t.SetWidth(MM(w))
             t.SetLayer(LAYER[layer]); t.SetNet(self.net(net))
             self.b.Add(t)
+            if getattr(self, "made", None) is not None:
+                self.made.append(t)
         self.lines.setdefault(net, []).append((layer, list(pts), w))
 
     def via(self, net, x, y, d=None, drill=None):
@@ -163,6 +165,8 @@ class Kit:
         v.SetLayerPair(P.F_Cu, P.B_Cu); v.SetViaType(P.VIATYPE_THROUGH)
         v.SetNet(self.net(net))
         self.b.Add(v)
+        if getattr(self, "made", None) is not None:
+            self.made.append(v)
         self.vias_by_net.setdefault(net, []).append((x, y))
         return v
 

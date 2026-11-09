@@ -20,33 +20,45 @@ class Router:
         self.routed = []
         self.keepouts = []          # (layer, poly) no router copper (e.g. over a power pour)
         self.conn = {}              # net -> [(layer, kind, geo)] copper known to be connected to the net's root
+        # rip-up and reroute bookkeeping (run_tasks): copper made by a task is "soft" and may be ripped up
+        self.tasks, self.items, self.order, self.conn_add, self.rips = [], {}, {}, {}, {}
+        self.soft, self._soft_shapes, self._tick = {}, [], 0
+        self._soft_mode, self._last_conn = False, None
 
     def seed(self, net, items):
         self.conn.setdefault(net, []).extend(items)
 
     # ------------------------------------------------------------------ obstacles
-    def _shapes(self, bbox):
-        """List of (layers, net, kind, geom) inside bbox (board-local mm)."""
+    def _shapes(self, bbox, net_=None):
+        """List of (layers, net, kind, geom) inside bbox (board-local mm).  In soft mode, other nets' copper made
+        by run_tasks goes to self._soft_shapes (with its owning task) instead."""
         x0, y0, x1, y1 = bbox
         O = self.O
         out = []
+        self._soft_shapes = soft = []
+        chk = self._soft_mode and bool(self.soft)
 
         def inb(x, y, r):
             return x0 - r < x < x1 + r and y0 - r < y < y1 + r
 
         for t in self.k.b.GetTracks():
             net = t.GetNetname()
+            dst = out
+            if chk and net != net_:
+                o = self.soft.get(t.m_Uuid.AsString())
+                if o is not None:
+                    dst = _Tag(soft, o)
             if t.GetClass() == "PCB_VIA":
                 p = t.GetPosition(); x, y = P.ToMM(p.x) - O[0], P.ToMM(p.y) - O[1]
                 if inb(x, y, 2):
-                    out.append(("all", net, "circle", (x, y, P.ToMM(t.GetWidth()) / 2)))
+                    dst.append(("all", net, "circle", (x, y, P.ToMM(t.GetWidth()) / 2)))
             else:
                 a, b = t.GetStart(), t.GetEnd()
                 ax, ay, bx, by = P.ToMM(a.x) - O[0], P.ToMM(a.y) - O[1], P.ToMM(b.x) - O[0], P.ToMM(b.y) - O[1]
                 if max(ax, bx) < x0 - 2 or min(ax, bx) > x1 + 2 or max(ay, by) < y0 - 2 or min(ay, by) > y1 + 2:
                     continue
                 L = [n for n, l in LAYER.items() if l == t.GetLayer()]
-                out.append((L[0] if L else "x", net, "seg", (ax, ay, bx, by, P.ToMM(t.GetWidth()) / 2)))
+                dst.append((L[0] if L else "x", net, "seg", (ax, ay, bx, by, P.ToMM(t.GetWidth()) / 2)))
         for f in self.k.b.GetFootprints():
             for p in f.Pads():
                 c = p.GetPosition(); x, y = P.ToMM(c.x) - O[0], P.ToMM(c.y) - O[1]
@@ -95,31 +107,7 @@ class Router:
         for L, n, kind, geo in shapes:
             if n == net or (L != "all" and L != layer):
                 continue
-            ex = infl + _extra(n)                            # edge 0.3, PCIe 0.4, REFCLK 0.5 vs 0.2 copper
-            if kind == "circle":
-                x, y, r = geo; cx, cy = T(x, y); R = (r + ex) / g
-                dr.ellipse([cx - R, cy - R, cx + R, cy + R], fill=1)
-            elif kind == "seg":
-                ax, ay, bx, by, hw = geo
-                R = (hw + ex) / g
-                A, B = T(ax, ay), T(bx, by)
-                L_ = math.hypot(B[0] - A[0], B[1] - A[1])
-                if L_ > 1e-9:                                   # exact rectangle (PIL thins diagonal wide lines)
-                    nx, ny = -(B[1] - A[1]) / L_ * R, (B[0] - A[0]) / L_ * R
-                    dr.polygon([(A[0] + nx, A[1] + ny), (B[0] + nx, B[1] + ny), (B[0] - nx, B[1] - ny),
-                                (A[0] - nx, A[1] - ny)], fill=1)
-                for cx, cy in (A, B):
-                    dr.ellipse([cx - R, cy - R, cx + R, cy + R], fill=1)
-            else:
-                polys, add = geo
-                R = (ex + add) / g
-                for pts in polys:
-                    tp = [T(*q) for q in pts]
-                    if len(tp) > 2:
-                        dr.polygon(tp, fill=1)
-                    for q0, q1 in zip(tp, tp[1:] + tp[:1]):
-                        dr.line([q0, q1], fill=1, width=max(1, int(math.ceil(2 * R))))
-                        dr.ellipse([q0[0] - R, q0[1] - R, q0[0] + R, q0[1] + R], fill=1)
+            _draw(dr, T, g, kind, geo, infl + _extra(n), 1)   # edge 0.3, PCIe 0.4, REFCLK 0.5 vs 0.2 copper
         for L, poly in self.keepouts:
             if L == layer and net is not None:
                 dr.polygon([T(*q) for q in poly], fill=1)
@@ -169,24 +157,122 @@ class Router:
         """Short stub from terminal a to a new via (plane nets)."""
         return self._search(net, a, ("via",), w, **kw)
 
+    # ------------------------------------------------------------------ rip-up and reroute
+    def _goal(self, f, a):
+        nm = f.__name__
+        if nm == "route":
+            return ("pt", a[2]), 0.15
+        return (("net",), 0.15) if nm == "to_net" else (("via",), 0.2)
+
+    def _run(self, tid, f, a, kw):
+        self.k.made, self._last_conn = [], None
+        try:
+            f(*a, **kw)
+            ok = True
+        except RuntimeError as e:
+            ok = "no target copper" in str(e)          # everything of the net here is already connected
+        made, self.k.made = self.k.made, None
+        if not ok:
+            for it in made:
+                self.k.b.Delete(it)
+            return False
+        self.items[tid] = [(it.m_Uuid.AsString(), it) for it in made]
+        for u, _ in self.items[tid]:
+            self.soft[u] = tid
+        self._tick += 1
+        self.order[tid] = self._tick
+        if self._last_conn:
+            self.conn_add[tid] = self._last_conn
+        return True
+
+    def _rip(self, tid):
+        for u, it in self.items.pop(tid, []):
+            self.soft.pop(u, None)
+            self.k.b.Delete(it)
+        self.order.pop(tid, None)
+        if tid in self.conn_add:
+            net, lst = self.conn_add.pop(tid)
+            for it in lst:
+                try:
+                    self.conn[net].remove(it)
+                except ValueError:
+                    pass
+
+    def _cascade(self, o):
+        """o plus the later to_net tasks of the same net (they may end on o's copper)."""
+        net = self.tasks[o][1][0]
+        out = {o}
+        for t, tk in self.order.items():
+            f, a, _ = self.tasks[t]
+            if t != o and a[0] == net and f.__name__ == "to_net" and tk > self.order[o]:
+                out.add(t)
+        return out
+
+    def run_tasks(self, tasks, max_tries=12, log=print):
+        """Route (f, args, kw) tasks in order; a task that cannot route is searched again with the copper of
+        earlier tasks as costly-but-passable, the tasks it crosses are ripped up, it is routed, and they are
+        queued again.  Returns the failure messages."""
+        base = len(self.tasks)
+        self.tasks.extend(tasks)
+        queue = list(range(base, base + len(tasks)))
+        tries, fails = {}, []
+        while queue:
+            tid = queue.pop(0)
+            f, a, kw = self.tasks[tid]
+            first = tries.get(tid, 0) == 0
+            kw1 = dict(kw)
+            if not first:                                   # requeued: it routed before, keep the search small
+                kw1["maxpad"] = min(kw.get("maxpad", 12.0), 8.0)
+            if self._run(tid, f, a, kw1):
+                continue
+            tries[tid] = tries.get(tid, 0) + 1
+            goal, w0 = self._goal(f, a)
+            kws = {k_: v for k_, v in kw.items() if k_ not in ("pad", "maxpad")}
+            kws.setdefault("w", w0)
+            w_ = kws.pop("w")
+            try:
+                own = self._search(a[0], a[1], goal, w_, pad=4.0, maxpad=16.0, soft=True, **kws)
+            except RuntimeError:
+                own = None
+            if own is None or tries[tid] > max_tries:
+                fails.append(f"router: no path for {a[0]} {a[1]} -> {goal[0]}" + (" (gave up)" if own else ""))
+                continue
+            rip = set()
+            for o in own:
+                if o in self.order:
+                    rip |= self._cascade(o)
+            for o in rip:
+                self._rip(o)
+                self.rips[o] = self.rips.get(o, 0) + 1
+                tries[o] = max(tries.get(o, 0), 1)
+            self.rips[tid] = self.rips.get(tid, 0)
+            kw2 = dict(kw); kw2["maxpad"] = 16.0
+            if not self._run(tid, f, a, kw2):
+                queue.append(tid)
+            queue.extend(sorted(rip))
+            log(f"  ripup {a[0]} @({a[1][1]:.2f},{a[1][2]:.2f}): ripped {len(rip)} -> queue {len(queue)}")
+        return fails
+
     def _search(self, net, a, goal, w=0.15, layers=("L1", "L3", "L6"), via_cost=4.0, pad=3.0, viad=0.5,
-                layer_cost=None, bbox=None, allow_via=True, maxpad=12.0):
+                layer_cost=None, bbox=None, allow_via=True, maxpad=12.0, soft=False):
         g = self.g
         b = goal[1] if goal[0] == "pt" else None
         import time, os
         while True:
             t0 = time.time()
             try:
-                return self._search1(net, a, goal, w, layers, via_cost, pad, viad, layer_cost, bbox, allow_via)
+                self._soft_mode = soft
+                return self._search1(net, a, goal, w, layers, via_cost, pad, viad, layer_cost, bbox, allow_via, soft)
             except RuntimeError:
                 if bbox is not None or pad >= maxpad:
                     raise
                 pad *= 2
             finally:
+                self._soft_mode = False
                 if os.environ.get("RTIME") and time.time() - t0 > 2.0:
                     print(f"  slow {time.time() - t0:5.1f}s {net} {goal[0]} pad {pad} from {a}", flush=True)
 
-    def _search1(self, net, a, goal, w, layers, via_cost, pad, viad, layer_cost, bbox, allow_via):
+    def _search1(self, net, a, goal, w, layers, via_cost, pad, viad, layer_cost, bbox, allow_via, soft=False):
         self._pad = pad
         g = self.g
         b = goal[1] if goal[0] == "pt" else None
@@ -198,10 +284,25 @@ class Router:
         x0, y0, x1, y1 = bbox
         x0, y0 = math.floor(x0 / g) * g, math.floor(y0 / g) * g
         bbox = (x0, y0, x1, y1)
-        shapes = self._shapes(bbox)
+        shapes = self._shapes(bbox, net)
         infl = self.c + w / 2 + self.m
         M = {L: self._mask(shapes, L, net, infl, bbox) for L in layers}
         vinfl = self.c + viad / 2 + self.m
+        OW = VOW = None
+        if soft:                                          # owner rasters of rip-able copper (task id + 1)
+            Wd, Hd = M[layers[0]].shape[1], M[layers[0]].shape[0]
+            Tt = lambda x, y: ((x - x0) / g, (y - y0) / g)
+
+            def oras(Ls, inf):
+                im = Image.new("I", (Wd, Hd), 0); dr = ImageDraw.Draw(im)
+                for L_, n_, kind, geo, o in self._soft_shapes:
+                    if L_ == "all" or L_ in Ls:
+                        _draw(dr, Tt, g, kind, geo, inf + _extra(n_), o + 1)
+                return np.array(im, dtype=np.int64)
+            OW = {L: oras((L,), infl) for L in layers}
+            VOW = oras(("L1", "L3", "L6"), vinfl)
+            SC = 25.0
+            pen = lambda o: SC * (1 + self.rips.get(o - 1, 0))
         VM = None
         if (allow_via and len(layers) > 1) or goal[0] == "via":
             VM = np.zeros_like(M[layers[0]])
@@ -276,6 +377,8 @@ class Router:
                     continue
                 turn = 0.0 if dirn in (None, (di, dj)) else 0.6
                 nd = d + cst * (1 + lc.get(L, 0.0)) + turn
+                if OW is not None and OW[L][nj, ni]:
+                    nd += pen(OW[L][nj, ni])
                 ns = (L, ni, nj)
                 if nd < dist.get(ns, 1e18):
                     dist[ns] = nd; prev[ns] = s
@@ -286,6 +389,8 @@ class Router:
                         continue
                     ns = (L2, i, j)
                     nd = d + vstep
+                    if VOW is not None and VOW[j, i]:
+                        nd += pen(VOW[j, i])
                     if nd < dist.get(ns, 1e18):
                         dist[ns] = nd; prev[ns] = s
                         heapq.heappush(pq, (nd + h(i, j), nd, ns, None))
@@ -317,6 +422,17 @@ class Router:
         while path[-1] in prev:
             path.append(prev[path[-1]])
         path.reverse()
+        if soft:
+            own = set()
+            for p_, s_ in zip([None] + path[:-1], path):
+                o = OW[s_[0]][s_[2], s_[1]]
+                if o:
+                    own.add(int(o) - 1)
+                if p_ is not None and p_[0] != s_[0] and VOW[s_[2], s_[1]]:
+                    own.add(int(VOW[s_[2], s_[1]]) - 1)
+            if goal[0] == "via" and VOW[found[2], found[1]]:
+                own.add(int(VOW[found[2], found[1]]) - 1)
+            return own
         segs, vias = [], []
         cur_L, pts = path[0][0], [path[0]]
         for s in path[1:]:
@@ -352,11 +468,48 @@ class Router:
             vx, vy = x0 + found[1] * g, y0 + found[2] * g
             self.k.via(net, vx, vy, viad, 0.2 if viad <= 0.5 else 0.3)
         if net in self.conn and goal[0] == "net":          # only a route that reached the root copper is rooted
-            self.conn[net].extend(new)
-            self.conn[net].append(("all" if a[0] == "all" else a[0], "circle", (a[1], a[2], 0.1)))
+            add = list(new) + [("all" if a[0] == "all" else a[0], "circle", (a[1], a[2], 0.1))]
             if b is not None:
-                self.conn[net].append(("all" if b[0] == "all" else b[0], "circle", (b[1], b[2], 0.1)))
+                add.append(("all" if b[0] == "all" else b[0], "circle", (b[1], b[2], 0.1)))
+            self.conn[net].extend(add)
+            self._last_conn = (net, add)
         return out
+
+
+class _Tag:
+    """list proxy that appends (shape..., owner) to the soft list"""
+    def __init__(self, lst, o):
+        self.lst, self.o = lst, o
+
+    def append(self, sh):
+        self.lst.append(sh + (self.o,))
+
+
+def _draw(dr, T, g, kind, geo, ex, fill):
+    if kind == "circle":
+        x, y, r = geo; cx, cy = T(x, y); R = (r + ex) / g
+        dr.ellipse([cx - R, cy - R, cx + R, cy + R], fill=fill)
+    elif kind == "seg":
+        ax, ay, bx, by, hw = geo
+        R = (hw + ex) / g
+        A, B = T(ax, ay), T(bx, by)
+        L_ = math.hypot(B[0] - A[0], B[1] - A[1])
+        if L_ > 1e-9:                                   # exact rectangle (PIL thins diagonal wide lines)
+            nx, ny = -(B[1] - A[1]) / L_ * R, (B[0] - A[0]) / L_ * R
+            dr.polygon([(A[0] + nx, A[1] + ny), (B[0] + nx, B[1] + ny), (B[0] - nx, B[1] - ny),
+                        (A[0] - nx, A[1] - ny)], fill=fill)
+        for cx, cy in (A, B):
+            dr.ellipse([cx - R, cy - R, cx + R, cy + R], fill=fill)
+    else:
+        polys, add = geo
+        R = (ex + add) / g
+        for pts in polys:
+            tp = [T(*q) for q in pts]
+            if len(tp) > 2:
+                dr.polygon(tp, fill=fill)
+            for q0, q1 in zip(tp, tp[1:] + tp[:1]):
+                dr.line([q0, q1], fill=fill, width=max(1, int(math.ceil(2 * R))))
+                dr.ellipse([q0[0] - R, q0[1] - R, q0[0] + R, q0[1] + R], fill=fill)
 
 
 def _extra(n):
