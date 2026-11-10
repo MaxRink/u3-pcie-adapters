@@ -154,6 +154,8 @@ class Kit:
             self.b.Add(t)
             if getattr(self, "made", None) is not None:
                 self.made.append(t)
+            if getattr(self, "tag_router", False):
+                self.router_ids.add(t.m_Uuid.AsString())
         self.lines.setdefault(net, []).append((layer, list(pts), w))
 
     def via(self, net, x, y, d=None, drill=None):
@@ -167,6 +169,8 @@ class Kit:
         self.b.Add(v)
         if getattr(self, "made", None) is not None:
             self.made.append(v)
+        if getattr(self, "tag_router", False):
+            self.router_ids.add(v.m_Uuid.AsString())
         self.vias_by_net.setdefault(net, []).append((x, y))
         return v
 
@@ -281,8 +285,10 @@ class Kit:
 
     # ---------------------------------------------------------------- finish
     def prune(self):
-        """Remove router leftovers on signal nets (no zone): vias that join fewer than two layers and tracks with a
-        dangling end, repeated until nothing changes."""
+        """Remove router leftovers on signal nets (no zone): vias that join fewer than two layers and router tracks
+        with a dangling end, repeated until nothing changes.  Hand-laid tracks are never removed (a dangling one is
+        a real error for DRC to report), so an unused hand via cannot eat its trunk."""
+        rid = getattr(self, "router_ids", set())
         zn = {z.GetNetname() for z in self.b.Zones()}
         cu = [P.F_Cu, P.In1_Cu, P.In2_Cu, P.In3_Cu, P.In4_Cu, P.B_Cu]
         removed = 0
@@ -296,7 +302,7 @@ class Kit:
                 if t.GetClass() == "PCB_VIA":
                     if sum(1 for L in cu if c.IsConnectedOnLayer(t, L)) < 2:
                         dead.append(t)
-                elif c.TestTrackEndpointDangling(t, False):
+                elif t.m_Uuid.AsString() in rid and c.TestTrackEndpointDangling(t, False):
                     dead.append(t)
             if not dead:
                 return removed

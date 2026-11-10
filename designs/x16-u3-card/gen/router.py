@@ -9,6 +9,7 @@ import heapq, math
 import numpy as np
 from PIL import Image, ImageDraw
 import pcbnew as P
+MM = P.FromMM
 
 LAYER = {"L1": P.F_Cu, "L3": P.In2_Cu, "L6": P.B_Cu, "L2": P.In1_Cu, "L4": P.In3_Cu, "L5": P.In4_Cu}
 
@@ -82,11 +83,26 @@ class Router:
                     for n, l in LAYER.items():
                         if p.IsOnLayer(l) and n in ("L1", "L6"):
                             out.append((n, net, "poly", (poly, 0.0)))
-        for d in self.k.b.GetDrawings():
-            if d.GetLayer() == P.Edge_Cuts:
-                a, b = d.GetStart(), d.GetEnd()
-                out.append(("all", "<edge>", "seg", (P.ToMM(a.x) - O[0], P.ToMM(a.y) - O[1],
-                                                     P.ToMM(b.x) - O[0], P.ToMM(b.y) - O[1], 0.05)))
+        edges = [d for d in self.k.b.GetDrawings() if d.GetLayer() == P.Edge_Cuts]
+        for f in self.k.b.GetFootprints():                 # footprint outlines (CEM finger notches)
+            edges += [d for d in f.GraphicalItems() if d.GetLayer() == P.Edge_Cuts]
+        for d in edges:
+            pts = [d.GetStart(), d.GetEnd()]
+            if d.GetShape() == P.SHAPE_T_ARC:
+                c = d.GetCenter(); r = P.ToMM(d.GetRadius())
+                a0 = math.atan2(pts[0].y - c.y, pts[0].x - c.x)
+                am = math.atan2(d.GetArcMid().y - c.y, d.GetArcMid().x - c.x)
+                a1 = math.atan2(pts[1].y - c.y, pts[1].x - c.x)
+                d1 = (am - a0 + math.pi) % (2 * math.pi) - math.pi
+                d2 = (a1 - am + math.pi) % (2 * math.pi) - math.pi
+                cx, cy = P.ToMM(c.x) - O[0], P.ToMM(c.y) - O[1]
+                xy = [(cx + r * math.cos(a0 + (d1 + d2) * i / 12), cy + r * math.sin(a0 + (d1 + d2) * i / 12))
+                      for i in range(13)]
+            else:
+                xy = [(P.ToMM(q.x) - O[0], P.ToMM(q.y) - O[1]) for q in pts]
+            for (ax, ay), (bx, by) in zip(xy, xy[1:]):
+                if inb((ax + bx) / 2, (ay + by) / 2, abs(bx - ax) / 2 + abs(by - ay) / 2 + 1):
+                    out.append(("all", "<edge>", "seg", (ax, ay, bx, by, 0.05)))
         return out
 
     def _poly(self, sp):
@@ -107,7 +123,7 @@ class Router:
         for L, n, kind, geo in shapes:
             if n == net or (L != "all" and L != layer):
                 continue
-            _draw(dr, T, g, kind, geo, infl + _extra(n), 1)   # edge 0.3, PCIe 0.4, REFCLK 0.5 vs 0.2 copper
+            _draw(dr, T, g, kind, geo, infl + _extra(n, self.c), 1)   # edge 0.3, PCIe 0.4, REFCLK 0.5 vs 0.2 copper
         for L, poly in self.keepouts:
             if L == layer and net is not None:
                 dr.polygon([T(*q) for q in poly], fill=1)
@@ -166,11 +182,14 @@ class Router:
 
     def _run(self, tid, f, a, kw):
         self.k.made, self._last_conn = [], None
+        kw = dict(kw); strict = kw.pop("_strict", False)
         try:
             f(*a, **kw)
             ok = True
         except RuntimeError as e:
-            ok = "no target copper" in str(e)          # everything of the net here is already connected
+            # nothing of an unseeded net left to reach within maxpad: already connected.  A seeded net always has its
+            # root somewhere, so for it this is a failure (the window was too small)
+            ok = "no target copper" in str(e) and a[0] not in self.conn and not strict
         made, self.k.made = self.k.made, None
         if not ok:
             for it in made:
@@ -216,18 +235,65 @@ class Router:
         self.tasks.extend(tasks)
         queue = list(range(base, base + len(tasks)))
         tries, fails = {}, []
+        for _ in range(3):
+            fails += self._rr(queue, tries, max_tries, log)
+            queue = self._isolated(range(base, len(self.tasks)))
+            if not queue:
+                break
+            for t in queue:                 # keep its copper (other routes may end on it), add a link to the net
+                f, a, kw = self.tasks[t]
+                kw = dict(kw); kw["maxpad"] = 16.0; kw["_strict"] = True
+                self.tasks[t] = (f, a, kw)
+            log(f"  verify: {len(queue)} start pads not joined to their net, routing again")
+        return fails
+
+    def _isolated(self, tids):
+        """to_net tasks whose start pad pcbnew sees joined to no other pad of a multi-pad net (zone nets skipped)."""
+        b = self.k.b
+        zn = {z.GetNetname() for z in b.Zones()}
+        b.BuildConnectivity()
+        c = b.GetConnectivity()
+        pads = {}
+        for p in b.GetPads():
+            pads.setdefault(p.GetNetname(), []).append(p)
+        ox, oy = self.k.O
+        out = []
+        for t in tids:
+            f, a, _ = self.tasks[t]
+            net = a[0]
+            if f.__name__ != "to_net" or net in zn or len(pads.get(net, [])) < 2:
+                continue
+            x, y = MM(a[1][1] + ox), MM(a[1][2] + oy)
+            hit = [p for p in pads[net] if p.HitTest(P.VECTOR2I(int(x), int(y)))]
+            if hit and self._cluster_pads(c, hit[0]) == 0:
+                out.append(t)
+        return out
+
+    @staticmethod
+    def _cluster_pads(c, pad):
+        """Other pads reachable from pad over tracks and vias (GetConnectedPads only gives direct neighbours)."""
+        seen, st, n = {pad.m_Uuid.AsString()}, [pad], 0
+        while st:
+            it = st.pop()
+            for q in list(c.GetConnectedTracks(it)) + list(c.GetConnectedPads(it)):
+                u = q.m_Uuid.AsString()
+                if u in seen:
+                    continue
+                seen.add(u); st.append(q)
+                n += q.Type() == P.PCB_PAD_T
+        return n
+
+    def _rr(self, queue, tries, max_tries, log):
+        fails = []
         while queue:
             tid = queue.pop(0)
             f, a, kw = self.tasks[tid]
             first = tries.get(tid, 0) == 0
-            kw1 = dict(kw)
-            if not first:                                   # requeued: it routed before, keep the search small
-                kw1["maxpad"] = min(kw.get("maxpad", 12.0), 8.0)
-            if self._run(tid, f, a, kw1):
+            if self._run(tid, f, a, kw):
                 continue
             tries[tid] = tries.get(tid, 0) + 1
             goal, w0 = self._goal(f, a)
-            kws = {k_: v for k_, v in kw.items() if k_ not in ("pad", "maxpad")}
+            kws = {k_: v for k_, v in kw.items() if k_ not in ("pad", "maxpad", "_strict")}
             kws.setdefault("w", w0)
             w_ = kws.pop("w")
             try:
@@ -297,7 +363,7 @@ class Router:
                 im = Image.new("I", (Wd, Hd), 0); dr = ImageDraw.Draw(im)
                 for L_, n_, kind, geo, o in self._soft_shapes:
                     if L_ == "all" or L_ in Ls:
-                        _draw(dr, Tt, g, kind, geo, inf + _extra(n_), o + 1)
+                        _draw(dr, Tt, g, kind, geo, inf + _extra(n_, self.c), o + 1)
                 return np.array(im, dtype=np.int64)
             OW = {L: oras((L,), infl) for L in layers}
             VOW = oras(("L1", "L3", "L6"), vinfl)
@@ -342,7 +408,7 @@ class Router:
             items = self.conn.get(net)
             if items is None:
                 items = [(L, kind, geo) for L, n_, kind, geo in shapes if n_ == net]
-                items = _drop_connected(items, (a[1], a[2]))
+                items = _drop_connected(items, (a[1], a[2]), a[0])
             TM = {L: self._target(items, L, bbox, exclude=(a[1], a[2])) for L in layers}
             if not any(t.any() for t in TM.values()):
                 raise RuntimeError(f"router: no target copper for {net}")
@@ -444,6 +510,9 @@ class Router:
         segs.append((cur_L, pts))
         out = []
         new = []
+        if not hasattr(self.k, "router_ids"):
+            self.k.router_ids = set()
+        self.k.tag_router = True
         for idx, (L, pts) in enumerate(segs):
             xy = [(x0 + i * g, y0 + j * g) for _, i, j in pts]
             if idx == 0:
@@ -467,6 +536,7 @@ class Router:
         if goal[0] == "via":
             vx, vy = x0 + found[1] * g, y0 + found[2] * g
             self.k.via(net, vx, vy, viad, 0.2 if viad <= 0.5 else 0.3)
+        self.k.tag_router = False
         if net in self.conn and goal[0] == "net":          # only a route that reached the root copper is rooted
             add = list(new) + [("all" if a[0] == "all" else a[0], "circle", (a[1], a[2], 0.1))]
             if b is not None:
@@ -512,13 +582,17 @@ def _draw(dr, T, g, kind, geo, ex, fill):
                 dr.ellipse([q0[0] - R, q0[1] - R, q0[0] + R, q0[1] + R], fill=fill)
 
 
-def _extra(n):
-    if n == "<edge>":                                    # 0.3 copper-to-edge: c + 0.04 + 0.05 (outline half width)
-        return 0.04
+def _extra(n, c=0.2):
+    """clearance beyond the router's base clearance c (absolute targets: edge 0.3, PCIe 0.4, REFCLK 0.5, 12 V 0.2;
+    +0.02 on the HS classes for grid rounding)"""
+    if n == "<edge>":                                    # 0.3 copper-to-edge: c + extra + 0.05 (outline half width)
+        return 0.24 - c
     if n.startswith("REFCLK") or n.startswith("U1_REFCLK"):
-        return 0.3
+        return 0.52 - c
     if n.startswith(("PET", "PER", "C_PER", "C_PET")):
-        return 0.2
+        return 0.42 - c
+    if n.startswith("12V"):
+        return max(0.0, 0.2 - c)
     return 0.0
 
 
@@ -545,9 +619,11 @@ def _inside(p, poly):
 
 
 def _touch(it, pts_r):
-    """does shape it touch any (point, radius) in pts_r?"""
+    """does shape it touch any (point, radius, layer) in pts_r (same layer, or either one a through item)?"""
     L, kind, geo = it
-    for (px, py), pr in pts_r:
+    for (px, py), pr, Lq in pts_r:
+        if not (L == "all" or Lq == "all" or L == Lq):
+            continue
         if kind == "circle":
             x, y, r = geo
             if math.hypot(px - x, py - y) <= r + pr + 0.02:
@@ -568,22 +644,22 @@ def _touch(it, pts_r):
 def _keypts(it):
     L, kind, geo = it
     if kind == "circle":
-        return [((geo[0], geo[1]), geo[2])]
+        return [((geo[0], geo[1]), geo[2], L)]
     if kind == "seg":
         ax, ay, bx, by, hw = geo
         n = max(1, int(math.hypot(bx - ax, by - ay) / 0.1))
-        return [((ax + (bx - ax) * i / n, ay + (by - ay) * i / n), hw) for i in range(n + 1)]
+        return [((ax + (bx - ax) * i / n, ay + (by - ay) * i / n), hw, L) for i in range(n + 1)]
     out = []
     for poly in geo[0]:
         cx = sum(q[0] for q in poly) / len(poly); cy = sum(q[1] for q in poly) / len(poly)
-        out.append(((cx, cy), 0.0))
-        out += [((qx, qy), 0.0) for qx, qy in poly]
+        out.append(((cx, cy), 0.0, L))
+        out += [((qx, qy), 0.0, L) for qx, qy in poly]
     return out
 
 
-def _drop_connected(items, start):
-    """Remove the copper already connected to start (flood over touching same-net shapes)."""
-    seen = [((start), 0.05)]
+def _drop_connected(items, start, layer="all"):
+    """Remove the copper already connected to start (flood over touching same-net shapes on a shared layer)."""
+    seen = [((start), 0.05, layer)]
     rest = list(items)
     changed = True
     while changed:

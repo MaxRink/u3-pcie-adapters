@@ -294,7 +294,7 @@ for d in ("A", "B"):
     for n in BOT_ROW:
         net = k.padnet(ref, n)
         x, y = JP[d](n)
-        if not net or net.startswith(("PET", "PER", "C_PER")):
+        if not net or net.startswith(("PET", "PER", "C_PER", "12V_DRV")):      # 12V_DRV: the L6 pour takes P13-P15
             continue
         w = 0.5 if "12V" in net else (0.3 if net in ("GND", "3V3_AUX") else 0.2)
         dv = (0.6, 0.3) if "12V" in net else (None, None)
@@ -363,7 +363,7 @@ for d in "AB":
 import time; T0 = time.time()
 card = cardkit.Card(k, R, xpin, fpad, [(d, xc, YP, JP[d]) for d, xc in (("A", XA), ("B", XB))], YP)
 card.buffer({"A": 3, "B": 2})
-print("REFCLK_IN skew", round(card.refclk_in(), 3))
+print("REFCLK_IN skew", round(card.refclk_in(yrun=-13.55, ycross=-14.2, ykneeA=-9.0), 3))
 card.parts()
 card.wake_clkreq()
 card.clock_direct("A", 3)
@@ -372,16 +372,18 @@ card.clock_channel("B", 2, row=YP + sideband.CLK_Y[0], xdrop=XB - 25.0)
 VSC, VSD = (xpin(5), -10.0), (xpin(6), -10.6)
 k.track("SMCLK_SLOT", "L1", [(xpin(5), -5.4), VSC], 0.2); k.via("SMCLK_SLOT", *VSC)
 k.track("SMDAT_SLOT", "L1", [(xpin(6), -5.4), VSD], 0.2); k.via("SMDAT_SLOT", *VSD)
-first = card.trunks({"SMCLK": 13.5, "SMDAT": 14.5, "3V3_AUX": 15.5, "PCIE_RST_N": 26.85, "PCIE_WAKE_N": 27.9})
+first = card.trunks({"SMCLK": 13.5, "SMDAT": 14.5, "3V3_AUX": 15.5, "PCIE_RST_N": 27.45, "PCIE_WAKE_N": 28.3})
 # slot PERST#/WAKE#: west on L3 under the REFCLK_IN run (clear of the CEM notch), north up the left side of drive A's
 # receptacle to the trunk starts; the router only does the short hop from the finger vias
-RW_ = {"PCIE_RST_N": [(46.6, -12.45), (45.75, -13.3), (27.45, -13.3), (27.45, -20.0), (26.85, -20.6),
-                      first["PCIE_RST_N"]],
-       "PCIE_WAKE_N": [(47.0, -12.9), (46.15, -13.75), (27.9, -13.75), first["PCIE_WAKE_N"]]}
+# (diagonals on x - y = 58.54 / 59.18: >= 0.9 mm from the REFCLK_IN via at (47.5, -12.95), clear of the notch)
+RW_ = {"PCIE_RST_N": [(48.34, -10.2), (45.24, -13.3), (27.45, -13.3), first["PCIE_RST_N"]],
+       # WAKE# passes 0.2 from the peg hole (29, -24), then steps east to leave room for the PERST# tap via
+       "PCIE_WAKE_N": [(47.88, -11.3), (45.43, -13.75), (27.8, -13.75), (27.8, -26.0), (28.3, -26.5),
+                       first["PCIE_WAKE_N"]]}
 for net, pts in RW_.items():
     k.track(net, "L3", pts, sideband.TRK_W)
 # drive A's reset gate / WAKE buffer tap these verticals (1.05 mm apart, room for a via on each)
-for net, tv in (("PCIE_RST_N", (26.85, YP - 6.3)), ("PCIE_WAKE_N", (27.9, YP - 5.0))):
+for net, tv in (("PCIE_RST_N", (27.45, YP - 6.3)), ("PCIE_WAKE_N", (28.3, YP - 5.0))):
     k.via(net, *tv); card.taps[net].append(tv)
 LCOST = dict(layer_cost={"L1": 2.5, "L6": 2.5}, via_cost=1.0, maxpad=12.0)
 U2 = lambda q: ("L1", *k.padxy("U2", q))
@@ -391,27 +393,35 @@ for net, q, xv in (("SMCLK", "5", 10.6), ("SMDAT", "4", 11.4)):
     pq = k.padxy("U2", q); f0 = first[net]
     k.track(net, "L1", [pq, (xv, pq[1])], 0.15); k.via(net, xv, pq[1])
     k.track(net, "L3", [(xv, pq[1]), (xv, f0[1]), f0], sideband.TRK_W)
-risers = [("3V3_AUX", U3("3V3_AUX"), ("L3", *first["3V3_AUX"])),
-          ("PCIE_RST_N", ("all", *VRST), ("L3", *RW_["PCIE_RST_N"][0])),
+risers = [("PCIE_RST_N", ("all", *VRST), ("L3", *RW_["PCIE_RST_N"][0])),
           ("PCIE_WAKE_N", ("all", *card.vwake), ("L3", *RW_["PCIE_WAKE_N"][0])),
+          ("3V3", ("all", *V33), U3("3V3")), ("3V3_AUX", U3("3V3_AUX"), ("L3", *first["3V3_AUX"])),
           ("SMCLK_SLOT", ("all", *VSC), U2("22")), ("SMDAT_SLOT", ("all", *VSD), U2("23")),
-          ("3V3_AUX_SLOT", ("all", *VAUX), U3("3V3_AUX_SLOT")), ("3V3", ("all", *V33), U3("3V3"))]
+          ("3V3_AUX_SLOT", ("all", *VAUX), U3("3V3_AUX_SLOT"))]
+card.seed_trunks()
 for net, a, b in risers:
     try:
-        R.route(net, a, b, w=0.25 if "3V3" in net else 0.15, **LCOST)
+        w_ = 0.25 if "3V3" in net else 0.15
+        out = R.route(net, a, b, w=w_, **LCOST)
+        if net in ("3V3", "3V3_AUX"):              # root these supplies: later to_net calls must reach the source
+            R.seed(net, [(L, "seg", (p[0], p[1], q[0], q[1], w_ / 2)) for L, xy in out for p, q in zip(xy, xy[1:])] +
+                   [("all" if a[0] == "all" else a[0], "circle", (a[1], a[2], 0.1)),
+                    ("all" if b[0] == "all" else b[0], "circle", (b[1], b[2], 0.1))])
     except RuntimeError as e:
         print("FAIL riser", net, e)
 for net, v in card.supply_vias.items():
-    if k.padnet("U1", str(net)) == "3V3":
+    nn = k.padnet("U1", str(net))
+    if nn in ("3V3", "3V3_A"):
         try:
-            R.to_net("3V3", ("all", *v), w=0.25, **LCOST)
+            R.to_net(nn, ("all", *v), w=0.25, **LCOST)
         except RuntimeError as e:
-            print("FAIL 3V3 buffer", net, e)
+            if not ("no target copper" in str(e) and nn not in R.conn):
+                print("FAIL buffer supply", net, e)
 card.wire()
 import time
 print("t card", round(time.time() - T0))
-card.seed_trunks()
 for j, d in enumerate("AB" if os.environ.get("STAGE") != "card" else ""):
+    SB[d]["taps"] = {net: tv[j] for net, tv in card.taps.items()}
     sideband.route_block(k, R, d, SB[d], JP[d], YVM, YVT)
     card.after_block(j)
     print("t block", d, round(time.time() - T0))
@@ -446,8 +456,8 @@ for i, (x, y) in enumerate(((6.0, -30.0), (6.0, -60.0), (XR - 4.0, -38.0), (XR -
 # ------------------------------------------------------------------ silkscreen
 k.text("U.3 x8  rev C", 146.0, -14.0, P.F_SilkS, 1.0)
 k.text("x4x4 bifurcation", 146.0, -15.6, P.F_SilkS, 1.0)
-k.text("DRIVE A", XA, -33.0, P.B_SilkS, 1.0, mirror=True)
-k.text("DRIVE B", XB, -33.0, P.B_SilkS, 1.0, mirror=True)
+k.text("DRIVE A", XA, -32.2, P.B_SilkS, 1.0, mirror=True)
+k.text("DRIVE B", XB, -32.2, P.B_SilkS, 1.0, mirror=True)
 for ref, f in k.fps.items():
     for g in list(f.GraphicalItems()):          # library silk crowds the dense fields; JLC places by CPL
         if g.GetLayer() in (P.F_SilkS, P.B_SilkS) and g.GetClass() != "FP_TEXT":
