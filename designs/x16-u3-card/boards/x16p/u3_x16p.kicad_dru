@@ -267,17 +267,11 @@
 (rule "skew REFCLK_IN"
     (condition "A.NetName == 'REFCLK_IN_P' || A.NetName == 'REFCLK_IN_N'")
     (constraint skew (max 0.127mm)))
-(rule "skew U1_REFCLK0"
-    (condition "A.NetName == 'U1_REFCLK0_P' || A.NetName == 'U1_REFCLK0_N'")
+(rule "skew REFCLK_RB"
+    (condition "A.NetName == 'REFCLK_RB_P' || A.NetName == 'REFCLK_RB_N'")
     (constraint skew (max 0.127mm)))
-(rule "skew U1_REFCLK1"
-    (condition "A.NetName == 'U1_REFCLK1_P' || A.NetName == 'U1_REFCLK1_N'")
-    (constraint skew (max 0.127mm)))
-(rule "skew U1_REFCLK2"
-    (condition "A.NetName == 'U1_REFCLK2_P' || A.NetName == 'U1_REFCLK2_N'")
-    (constraint skew (max 0.127mm)))
-(rule "skew U1_REFCLK3"
-    (condition "A.NetName == 'U1_REFCLK3_P' || A.NetName == 'U1_REFCLK3_N'")
+(rule "skew REFCLK_RC"
+    (condition "A.NetName == 'REFCLK_RC_P' || A.NetName == 'REFCLK_RC_N'")
     (constraint skew (max 0.127mm)))
 
 (rule "silk may sit on masked copper (only pads/holes need clearance)"
@@ -286,6 +280,18 @@
 (rule "x16 passive: drives B-D exceed the 50.8 mm direct-attach cap by design (populate as needed)"
     (condition "A.NetClass == 'PCIe_85' && (A.NetName == '*PE?4_*' || A.NetName == '*PE?5_*' || A.NetName == '*PE?6_*' || A.NetName == '*PE?7_*' || A.NetName == '*PE?8_*' || A.NetName == '*PE?9_*' || A.NetName == '*PE?1?_*')")
     (constraint length (max 300mm)))
-(rule "x16 passive: REFCLK_B-D run 120-300 mm with up to 12 bends and layer changes; uncoupled <= 5 mm (bends + ends)"
-    (condition "A.NetClass == 'REFCLK_100' && (A.NetName == 'REFCLK_B_*' || A.NetName == 'REFCLK_C_*' || A.NetName == 'REFCLK_D_*')")
-    (constraint diff_pair_uncoupled (max 5.0mm)))
+(rule "REFCLK100: skew-tuning bumps (rule areas TUNE*) widen the gap locally"
+    (condition "A.NetClass == 'REFCLK_100' && A.intersectsArea('TUNE*')")
+    (constraint diff_pair_gap (min 0.245mm) (max 1.6mm)))
+(rule "REFCLK100: uncoupled length incl. skew bumps and via/pin fan-outs <= 8 mm (100 MHz HCSL)"
+    (condition "A.NetClass == 'REFCLK_100'")
+    (constraint diff_pair_uncoupled (max 8.0mm)))
+(rule "REFCLK100: slot clock input <= 16 mm uncoupled (P/N swap crossing at the buffer + its deskew bumps)"
+    (condition "A.NetClass == 'REFCLK_100' && A.NetName == 'REFCLK_IN_*'")
+    (constraint diff_pair_uncoupled (max 16.0mm)))
+(rule "PWR_12V: eFuse pin fan-out (0.5 mm pitch QFN pins, inside the EFUSE* areas; the pours carry the current)"
+    (condition "A.NetClass == 'PWR_12V' && A.intersectsArea('EFUSE*')")
+    (constraint track_width (min 0.2mm)))
+(rule "REFCLK100 x16: repeater links <= 12 mm uncoupled (two via fans, two QFN pin fan-outs, turn-skew bumps)"
+    (condition "A.NetClass == 'REFCLK_100' && (A.NetName == 'REFCLK_R*' || A.NetName == 'REFCLK_B_*' || A.NetName == 'REFCLK_C_*' || A.NetName == 'REFCLK_D_*')")
+    (constraint diff_pair_uncoupled (max 12.0mm)))

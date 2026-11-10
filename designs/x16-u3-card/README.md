@@ -11,8 +11,8 @@ with a 3D-printed cooling shroud.
 | Board | What it is | Status |
 | --- | --- | --- |
 | **x8 card** (`boards/x8/`) | x8 slot (x4x4 bifurcation), 2 drives standing upright on their connectors, connectors facing the motherboard, passive, 9DBL0442 REFCLK buffer, full sidebands, per-drive 12 V jumper and eFuse, 190 mm | rev C routed, DRC clean (Rev E, all lanes ≤50 mm) |
-| **x16 card, passive, 4 drives** (`boards/x16p/`) | x16 slot (x4x4x4x4), 4 upright drives in a row on a 312 mm card; drives B–D sit 5.7 mm higher so lanes 8–15 pass under drive B | rev B routed, DRC clean (rev C port in progress); drive A in budget, B 45–54 mm, C ~110 mm, D ~170 mm (populate as needed) |
-| **x16 card, passive, 3 drives** (`boards/x16p3/`) | same card with drives A–C only, 239 mm; host bifurcation x4x4x4 or x8x4x4, lanes 12–15 unused | rev B routed, DRC clean |
+| **x16 card, passive, 4 drives** (`boards/x16p/`) | x16 slot (x4x4x4x4), 4 upright drives in a row on a 312 mm card; drives B–D sit 5.7 mm higher so lanes 8–15 pass under drive B | rev C routed, DRC clean; drive A in budget, B 45–54 mm, C ~110 mm, D ~170 mm: C/D run at PCIe Gen3 (silk says so), Gen4 on all four comes with the retimer card |
+| **x16 card, passive, 3 drives** (`boards/x16p3/`) | same card with drives A–C only, 239 mm; host bifurcation x4x4x4 or x8x4x4, lanes 12–15 unused | rev C routed, DRC clean; drive C at PCIe Gen3 |
 | **x16 card with retimer** | as above, with a retimer on lanes 8–15 so all 4 drives stay compliant | planned (part search) |
 | **OCuLink cage board** (`boards/cage/`) | OCuLink 4i (SFF-8611) to U.3 breakout for a drive in a printed cage; 12 V in on a PCIe 6-pin | routed, DRC clean (design-rules Rev D); rev B only if cabled drives come back |
 
@@ -57,8 +57,15 @@ Same construction as the x8, four drives in a row (A–D, 73 mm pitch, 312 mm = 
 lane pads sit right above fingers 8–15, and right of the fingers the card edge rises to 12.75 mm, so lanes 8–15
 run in a 0.9 mm-pitch stack under drive B and drives B–D sit 5.7 mm higher than A to make room. Lane lengths
 finger→receptacle: A 30–46 mm, B 45–54 mm, C 107–115 mm, D 164–172 mm (the DRU documents the over-budget nets).
-One 9DBL411 feeds all four REFCLKs (B/C/D runs are about 100/205/265 mm), in channels between the sideband blocks
-and the window edges. Fab files: [`fab/x16p/`](fab/x16p/), [`fab/x16p3/`](fab/x16p3/).
+Drives C and D are past the Gen4 loss budget, so they are meant to run at PCIe Gen3 (silk: "C/D: PCIe Gen3 only"); the
+retimer card is the Gen4 option for all four.
+
+REFCLK (rev C): the card's 9DBL0442 (same buffer and card-level parts as the x8) feeds drive A directly and starts a
+chain on L6 in the channel under drive A's block. Left of drive B a second 9DBL0442 (U40) takes the chain, drives B and
+passes the clock on to a third one left of drive C (U41), which drives C and D. On the 3-drive card U40 drives B and C.
+So only one clock pair ever runs under a sideband block, every pair stays short between buffers, and each repeater
+gets 3.3 V aux from an extra tap on the L3 trunk. The 6-pin aux connector (J5) sits at the card end below drive D's
+(or C's) power parts, with its 22 µF bulk cap on the bottom next to the +12 V pins. Fab files: [`fab/x16p/`](fab/x16p/), [`fab/x16p3/`](fab/x16p3/).
 
 ## Sidebands and power
 
@@ -93,6 +100,8 @@ caps; its power-good holds that drive's PERST#.
 
 **Rules beyond the shared design rules (in each board's DRU):**
 - Sideband blocks route at 0.127 mm tracks and 0.15 mm clearance (fab minimum 0.1 / 0.1).
+- x16: REFCLK repeater links (REFCLK_R*, B, C, D) may have up to 12 mm uncoupled length (two via fans, two QFN pin
+  fan-outs and the skew bumps for the turns); the other REFCLK pairs keep 8 mm.
 - The eFuse's 0.5 mm-pitch QFN pins fan out at 0.2 mm on the 12 V nets inside the EFUSE rule areas; the pours carry the current.
 - The slot REFCLK input may run up to 16 mm uncoupled (P/N swap at the buffer plus its deskew bumps). REFCLK is 100 MHz, so this costs no margin.
 - The card's resistor array is RN10, so it does not clash with the drive blocks' RN1–RN4.

@@ -57,6 +57,38 @@ def bump(line, si, fracs, h, L):
     return line[:si + 1] + ins + line[si + 1:]
 
 
+def _dedupe(pts):
+    """Drop repeated and collinear interior vertices."""
+    out = [pts[0]]
+    for q in pts[1:]:
+        if math.dist(q, out[-1]) < 1e-6:
+            continue
+        if len(out) >= 2:
+            a, b = out[-2], out[-1]
+            if abs((b[0] - a[0]) * (q[1] - b[1]) - (b[1] - a[1]) * (q[0] - b[0])) < 1e-9 and \
+                    (b[0] - a[0]) * (q[0] - b[0]) + (b[1] - a[1]) * (q[1] - b[1]) > 0:
+                out[-1] = q
+                continue
+        out.append(q)
+    return out
+
+
+def _split_at(pts, q, t):
+    """Insert the projection of q into the segment of pts that runs along t and has q's foot inside it."""
+    for i in range(len(pts) - 1):
+        a, c = pts[i], pts[i + 1]; sl = math.dist(a, c)
+        if sl < 1e-6:
+            continue
+        u = ((c[0] - a[0]) / sl, (c[1] - a[1]) / sl)
+        if abs(u[0] * t[1] - u[1] * t[0]) > 1e-6:
+            continue
+        pr = (q[0] - a[0]) * u[0] + (q[1] - a[1]) * u[1]
+        off = abs((q[0] - a[0]) * u[1] - (q[1] - a[1]) * u[0])
+        if 1e-3 < pr < sl - 1e-3 and off < 1.0:
+            return pts[:i + 1] + [(a[0] + u[0] * pr, a[1] + u[1] * pr)] + pts[i + 1:]
+    return pts
+
+
 def plen(pts):
     return sum(math.dist(pts[i], pts[i + 1]) for i in range(len(pts) - 1))
 
@@ -192,12 +224,24 @@ class Kit:
         s = sorted(starts, key=lambda e: -side(e[1][-1], center[0], n0))   # [+side, -side]
         e = sorted(ends, key=lambda e: -side(e[1][-1], center[-1], n1))
         out = {}
-        for (sn, sp), (en, ep), line, sg in ((s[0], e[0], lp, 1), (s[1], e[1], ln, -1)):
+        legs = ((s[0], e[0], lp, 1, ln), (s[1], e[1], ln, -1, lp))
+        for (sn, sp), (en, ep), line, sg, other in legs:
             net = sn or en
             assert net, "pair needs at least one named end"
             for (si, fracs, h, L) in (tune or {}).get(net, []):
                 line = bump(line, si, fracs, sg * h, L)
-            full = list(sp) + line + list(reversed(ep))
+            full = _dedupe(list(sp) + line + list(reversed(ep)))
+            # KiCad's DRC couples each P segment with only its nearest parallel N segment (first one on a tie, and
+            # collinear N pieces touching end to end tie).  So the N line never gets split points (redundant
+            # collinear vertices are dropped above), and when N carries the bumps the straight P line is split at
+            # the bump ends, so each straight P piece has exactly one parallel N piece over it
+            onet = [(l_[0][0] or l_[1][0]) for l_ in legs if l_[2] is other][0]
+            if net.endswith("_P") and not (tune or {}).get(net):
+                for (si, fracs, h, L) in (tune or {}).get(onet, []):
+                    ta, tc = other[si], other[si + 1]           # the tuned line's (unbumped) segment
+                    tt = _unit(tc, ta); sl = math.dist(ta, tc)
+                    for sc in (f * sl + dd for f in fracs for dd in (-(L / 2 + h), L / 2 + h)):
+                        full = _split_at(full, (ta[0] + tt[0] * sc, ta[1] + tt[1] * sc), tt)
             if not dry:
                 self.track(net, layer, full, w)
             out[net] = (full, sn, en)

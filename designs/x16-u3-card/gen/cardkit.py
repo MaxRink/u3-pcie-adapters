@@ -385,18 +385,19 @@ class Card:
         print(f"REFCLK_{d}: {lp:.2f} / {ln:.2f} mm, skew {lp - ln:+.3f}")
 
     # ------------------------------------------------------------------ management trunks (L3)
-    def trunks(self, starts, steps=()):
+    def trunks(self, starts, steps=(), aux_taps=()):
         """starts: {net: x of the line start at the card's left end}.  Lines run at sideband.TRK_Y (relative to each
         drive's peg line).  At every block the line dips into a U on L3 under the gap between the I/O expander and
         the SMBus switch (nested: the edge-side line makes the smallest, shallowest U), with a tap via on the U's
         bottom below the band; the last block gets a hook down to its tap via.  The blocks' parts connect to the tap
         vias on L1.  steps: [(x0, x1)] where the channel moves between peg lines (x16 window step).
-        Returns {net: start point} for the risers."""
+        aux_taps: x positions between blocks where 3V3_AUX gets an extra tap via (lines 2-4 dip in nested U's;
+        the vias go to self.aux_taps).  Returns {net: start point} for the risers."""
         k, R = self.k, self.R
         P_ = 1.2
         E_MID = [1.5 - P_ * i for i in range(5)]
         S_MID = [3.5 + P_ * i for i in range(5)]
-        self.tr_lines, self.taps = {}, {}
+        self.tr_lines, self.taps, self.aux_taps = {}, {}, []
         first = {}
         for i, net in enumerate(sb.TRUNKS):
             ty, yu = sb.TRK_Y[i], sb.TAP_Y[i]
@@ -407,10 +408,18 @@ class Card:
             ypr = self.drives[0][2]
             for j, (d, xs, yp, JP) in enumerate(self.drives):
                 if yp != ypr:
+                    sg = 1 if yp < ypr else -1         # stepping north: the edge-side line turns first
                     for (sx0, sx1) in steps:
                         if pts[-1][0] < sx0 < xs:
-                            pts += [(sx0 - 0.4 * i, ypr + ty), (sx1 - 0.4 * i, yp + ty)]
+                            pts += [(sx0 + sg * 0.4 * i, ypr + ty), (sx1 + sg * 0.4 * i, yp + ty)]
                 ypr = yp
+                for xd in sorted(aux_taps):
+                    if i >= 2 and pts[-1][0] < xd < xs:
+                        hw = 0.6 + 0.45 * (i - 2)                 # 3V3_AUX innermost; PERST#, WAKE# around it
+                        yd = yp + sb.TRK_Y[2] + 1.25 + 0.6 * (i - 2)
+                        pts += [(xd - hw, yp + ty), (xd - hw, yd), (xd + hw, yd), (xd + hw, yp + ty)]
+                        if i == 2:
+                            self.aux_taps.append((xd, yd)); k.via(net, xd, yd)
                 xe, xr = xs + E_MID[i], xs + S_MID[i]
                 if j == len(self.drives) - 1:
                     pts += [(xe, yp + ty), (xe, yp + yu)]
@@ -428,7 +437,8 @@ class Card:
         """Root the trunks (call after the risers from the sources are routed)."""
         for net, pts in self.tr_lines.items():
             self.R.seed(net, [("L3", "seg", (p[0], p[1], q[0], q[1], sb.TRK_W / 2)) for p, q in zip(pts, pts[1:])] +
-                        [("all", "circle", (x, y, 0.25)) for x, y in self.taps[net]])
+                        [("all", "circle", (x, y, 0.25)) for x, y in self.taps[net] +
+                         (self.aux_taps if net == "3V3_AUX" else [])])
 
     def after_block(self, j):
         pass
