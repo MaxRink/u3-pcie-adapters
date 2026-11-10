@@ -232,6 +232,7 @@ class Router:
         earlier tasks as costly-but-passable, the tasks it crosses are ripped up, it is routed, and they are
         queued again.  Returns the failure messages."""
         base = len(self.tasks)
+        self.failed = []
         self.tasks.extend(tasks)
         queue = list(range(base, base + len(tasks)))
         tries, fails = {}, []
@@ -245,7 +246,13 @@ class Router:
                 kw = dict(kw); kw["maxpad"] = 16.0; kw["_strict"] = True
                 self.tasks[t] = (f, a, kw)
             log(f"  verify: {len(queue)} start pads not joined to their net, routing again")
+        self.failed = [t - base for t in dict.fromkeys(self.failed) if t not in self.order]
         return fails
+
+    def rip_since(self, base):
+        """Rip every routed task with id >= base (to route a block again in another order)."""
+        for t in [t for t in list(self.order) if t >= base]:
+            self._rip(t)
 
     def _isolated(self, tids):
         """to_net tasks whose start pad pcbnew sees joined to no other pad of a multi-pad net (zone nets skipped)."""
@@ -306,6 +313,7 @@ class Router:
                     continue
             if own is None or tries[tid] > max_tries:
                 fails.append(f"router: no path for {a[0]} {a[1]} -> {goal[0]}" + (" (gave up)" if own else ""))
+                self.failed.append(tid)
                 continue
             rip = set()
             for o in own:
