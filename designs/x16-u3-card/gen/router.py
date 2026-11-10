@@ -300,6 +300,10 @@ class Router:
                 own = self._search(a[0], a[1], goal, w_, pad=4.0, maxpad=16.0, soft=True, **kws)
             except RuntimeError:
                 own = None
+            if (own is None or tries[tid] > max_tries) and f.__name__ == "to_via":
+                # no room for a plane via: join the net's existing copper (another via of the plane) instead
+                if self._run(tid, self.to_net, (a[0], a[1]), {"w": w0, "maxpad": 8.0, "via_cost": 1.0, "_strict": True}):
+                    continue
             if own is None or tries[tid] > max_tries:
                 fails.append(f"router: no path for {a[0]} {a[1]} -> {goal[0]}" + (" (gave up)" if own else ""))
                 continue
