@@ -71,7 +71,7 @@
   "fp": "LED_SMD:LED_0603_1608Metric",
   "lcsc": "C72038",
   "side": "top",
-  "x": 58.0,
+  "x": 57.6,
   "y": -32.4,
   "rot": 180,
   "dnp": false
@@ -82,7 +82,7 @@
   "fp": "Resistor_SMD:R_Array_Convex_4x0603",
   "lcsc": "C29718",
   "side": "top",
-  "x": 44.0,
+  "x": 44.2,
   "y": -28.95,
   "rot": 0,
   "dnp": false
@@ -126,7 +126,7 @@
   "fp": "Resistor_SMD:R_0402_1005Metric",
   "lcsc": "C25744",
   "side": "top",
-  "x": 32.8,
+  "x": 33.0,
   "y": -32.75,
   "rot": 0,
   "dnp": false
@@ -171,7 +171,7 @@
   "lcsc": "C1525",
   "side": "top",
   "x": 33.0,
-  "y": -30.6,
+  "y": -29.95,
   "rot": 90,
   "dnp": false
  },
@@ -181,7 +181,7 @@
   "fp": "Capacitor_SMD:C_0402_1005Metric",
   "lcsc": "C1525",
   "side": "top",
-  "x": 41.95,
+  "x": 42.12,
   "y": -27.75,
   "rot": 90,
   "dnp": false
@@ -192,7 +192,7 @@
   "fp": "Capacitor_SMD:C_0402_1005Metric",
   "lcsc": "C1525",
   "side": "top",
-  "x": 67.6,
+  "x": 67.8,
   "y": -32.45,
   "rot": 0,
   "dnp": false
@@ -203,7 +203,7 @@
   "fp": "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical_SMD_Pin1Left",
   "lcsc": "C6886650",
   "side": "top",
-  "x": 77.2,
+  "x": 76.2,
   "y": -26.2,
   "rot": 0,
   "dnp": false
@@ -225,7 +225,7 @@
   "fp": "Capacitor_SMD:C_1206_3216Metric",
   "lcsc": "C12891",
   "side": "bottom",
-  "x": 74.6,
+  "x": 79.0,
   "y": -24.7,
   "rot": 0,
   "dnp": false
@@ -236,7 +236,7 @@
   "fp": "Capacitor_SMD:C_1206_3216Metric",
   "lcsc": "C12891",
   "side": "bottom",
-  "x": 69.6,
+  "x": 74.0,
   "y": -24.7,
   "rot": 0,
   "dnp": false
@@ -247,8 +247,8 @@
   "fp": "Capacitor_SMD:C_1206_3216Metric",
   "lcsc": "C13585",
   "side": "bottom",
-  "x": 79.0,
-  "y": -23.9,
+  "x": 84.0,
+  "y": -24.7,
   "rot": 0,
   "dnp": false
  },
@@ -258,7 +258,7 @@
   "fp": "Resistor_SMD:R_0402_1005Metric",
   "lcsc": "C25741",
   "side": "top",
-  "x": 81.61,
+  "x": 81.3,
   "y": -25.75,
   "rot": 90,
   "dnp": false
@@ -269,9 +269,9 @@
   "fp": "Resistor_SMD:R_0402_1005Metric",
   "lcsc": "C25756",
   "side": "top",
-  "x": 81.1,
-  "y": -24.75,
-  "rot": 0,
+  "x": 81.3,
+  "y": -23.75,
+  "rot": 90,
   "dnp": false
  },
  {
@@ -281,7 +281,7 @@
   "lcsc": "C25117",
   "side": "top",
   "x": 83.35,
-  "y": -23.0,
+  "y": -22.65,
   "rot": 90,
   "dnp": false
  },
@@ -291,8 +291,8 @@
   "fp": "Resistor_SMD:R_0402_1005Metric",
   "lcsc": "C25744",
   "side": "top",
-  "x": 84.25,
-  "y": -22.5,
+  "x": 84.35,
+  "y": -22.65,
   "rot": 90,
   "dnp": false
  },
@@ -302,7 +302,7 @@
   "fp": "Capacitor_SMD:C_0402_1005Metric",
   "lcsc": "C1523",
   "side": "top",
-  "x": 87.5,
+  "x": 87.75,
   "y": -25.75,
   "rot": 0,
   "dnp": false
@@ -313,8 +313,8 @@
   "fp": "Capacitor_SMD:C_1206_3216Metric",
   "lcsc": "C13585",
   "side": "top",
-  "x": 80.8,
-  "y": -28.75,
+  "x": 81.95,
+  "y": -30.0,
   "rot": 0,
   "dnp": false
  },
@@ -368,7 +368,7 @@
   "fp": "LED_SMD:LED_0603_1608Metric",
   "lcsc": "C72038",
   "side": "top",
-  "x": 131.0,
+  "x": 130.6,
   "y": -32.4,
   "rot": 180,
   "dnp": false
@@ -379,7 +379,7 @@
   "fp": "Resistor_SMD:R_Array_Convex_4x0603",
   "lcsc": "C29718",
   "side": "top",
-  "x": 117.0,
+  "x": 117.2,
   "y": -28.95,
   "rot": 0,
   "dnp": false
@@ -423,7 +423,7 @@
   "fp": "Resistor_SMD:R_0402_1005Metric",
   "lcsc": "C25744",
   "side": "top",
-  "x": 105.8,
+  "x": 106.0,
   "y": -32.75,
   "rot": 0,
   "dnp": false
@@ -468,7 +468,7 @@
   "lcsc": "C1525",
   "side": "top",
   "x": 106.0,
-  "y": -30.6,
+  "y": -29.95,
   "rot": 90,
   "dnp": false
  },
@@ -478,7 +478,7 @@
   "fp": "Capacitor_SMD:C_0402_1005Metric",
   "lcsc": "C1525",
   "side": "top",
-  "x": 114.95,
+  "x": 115.12,
   "y": -27.75,
   "rot": 90,
   "dnp": false
@@ -489,7 +489,7 @@
   "fp": "Capacitor_SMD:C_0402_1005Metric",
   "lcsc": "C1525",
   "side": "top",
-  "x": 140.6,
+  "x": 140.8,
   "y": -32.45,
   "rot": 0,
   "dnp": false
@@ -500,7 +500,7 @@
   "fp": "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical_SMD_Pin1Left",
   "lcsc": "C6886650",
   "side": "top",
-  "x": 150.2,
+  "x": 149.2,
   "y": -26.2,
   "rot": 0,
   "dnp": false
@@ -522,7 +522,7 @@
   "fp": "Capacitor_SMD:C_1206_3216Metric",
   "lcsc": "C12891",
   "side": "bottom",
-  "x": 147.6,
+  "x": 152.0,
   "y": -24.7,
   "rot": 0,
   "dnp": false
@@ -533,7 +533,7 @@
   "fp": "Capacitor_SMD:C_1206_3216Metric",
   "lcsc": "C12891",
   "side": "bottom",
-  "x": 142.6,
+  "x": 147.0,
   "y": -24.7,
   "rot": 0,
   "dnp": false
@@ -544,8 +544,8 @@
   "fp": "Capacitor_SMD:C_1206_3216Metric",
   "lcsc": "C13585",
   "side": "bottom",
-  "x": 152.0,
-  "y": -23.9,
+  "x": 157.0,
+  "y": -24.7,
   "rot": 0,
   "dnp": false
  },
@@ -555,7 +555,7 @@
   "fp": "Resistor_SMD:R_0402_1005Metric",
   "lcsc": "C25741",
   "side": "top",
-  "x": 154.61,
+  "x": 154.3,
   "y": -25.75,
   "rot": 90,
   "dnp": false
@@ -566,9 +566,9 @@
   "fp": "Resistor_SMD:R_0402_1005Metric",
   "lcsc": "C25756",
   "side": "top",
-  "x": 154.1,
-  "y": -24.75,
-  "rot": 0,
+  "x": 154.3,
+  "y": -23.75,
+  "rot": 90,
   "dnp": false
  },
  {
@@ -578,7 +578,7 @@
   "lcsc": "C25117",
   "side": "top",
   "x": 156.35,
-  "y": -23.0,
+  "y": -22.65,
   "rot": 90,
   "dnp": false
  },
@@ -588,8 +588,8 @@
   "fp": "Resistor_SMD:R_0402_1005Metric",
   "lcsc": "C25744",
   "side": "top",
-  "x": 157.25,
-  "y": -22.5,
+  "x": 157.35,
+  "y": -22.65,
   "rot": 90,
   "dnp": false
  },
@@ -599,7 +599,7 @@
   "fp": "Capacitor_SMD:C_0402_1005Metric",
   "lcsc": "C1523",
   "side": "top",
-  "x": 160.5,
+  "x": 160.75,
   "y": -25.75,
   "rot": 0,
   "dnp": false
@@ -610,8 +610,8 @@
   "fp": "Capacitor_SMD:C_1206_3216Metric",
   "lcsc": "C13585",
   "side": "top",
-  "x": 153.8,
-  "y": -28.75,
+  "x": 154.95,
+  "y": -30.0,
   "rot": 0,
   "dnp": false
  },
@@ -836,7 +836,7 @@
   "dnp": false
  },
  {
-  "ref": "RN3",
+  "ref": "RN10",
   "value": "10k x4",
   "fp": "Resistor_SMD:R_Array_Convex_4x0603",
   "lcsc": "C29718",
@@ -929,7 +929,7 @@
   "fp": "Capacitor_SMD:C_0603_1608Metric",
   "lcsc": "C19702",
   "side": "top",
-  "x": 15.0,
+  "x": 14.9,
   "y": -15.2,
   "rot": 90,
   "dnp": false
@@ -943,17 +943,6 @@
   "x": 17.2,
   "y": -16.4,
   "rot": 0,
-  "dnp": false
- },
- {
-  "ref": "R5",
-  "value": "0R (CLKREQ# low)",
-  "fp": "Resistor_SMD:R_0402_1005Metric",
-  "lcsc": "C17168",
-  "side": "top",
-  "x": 59.00000000000001,
-  "y": -8.6,
-  "rot": 90,
   "dnp": false
  },
  {

@@ -22,7 +22,7 @@ The receptacle sits on the bottom side; its housing face is at Y -10.05, the win
     drive's P13-P15 and the bulk caps.  Its PG gates the drive's PERST#.
 Everything logic runs from 3V3_AUX, the card's local 3.3 V (slot 3.3Vaux, or slot 3.3 V through the ideal-diode OR).
 """
-import math
+import math, os
 
 R0402 = ("Resistor_SMD", "R_0402_1005Metric")
 C0402 = ("Capacitor_SMD", "C_0402_1005Metric")
@@ -106,7 +106,7 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
           ("3V3_AUX", n("MUXCTL"), "10k", 10.0, -5.6, 0),
           ("3V3_AUX", n("LOCA"), "1k", 10.0, -7.15, 0)]
     cc = [("3V3_AUX", "GND", "100nF", -15.0, -4.1, 90),           # G07
-          ("3V3_AUX", "GND", "100nF", -15.0, -6.6, 90),           # G11
+          ("3V3_AUX", "GND", "100nF", -15.0, -5.95, 90),          # G11
           ("3V3_AUX", "GND", "100nF", -5.88, -3.75, 90),          # expander (pin 16 top right)
           ("3V3_AUX", "GND", "100nF", 19.8, -8.45, 0)]           # switch (pin 14 top right)
     for i, (na, nb, val, x, y, rot) in enumerate(rr):
@@ -340,10 +340,11 @@ def _route_block_once(k, R, d, info, JP, yvm, yvt, fan):
     try:
         # a block that leaves pins unrouted is routed again with those pins first (the order decides who gets the
         # few via sites over the trunk strip)
-        for attempt in range(3):
+        n_try = int(os.environ.get("BLOCK_TRIES", "1"))
+        for attempt in range(n_try):
             base = len(R.tasks)
             fails = R.run_tasks(tasks)
-            if not fails or attempt == 2:
+            if not fails or attempt == n_try - 1:
                 return fails
             bad = R.failed
             print(f"  block {d}: {len(fails)} unrouted, routing the block again with them first")

@@ -211,3 +211,9 @@
 (rule "REFCLK100: uncoupled length incl. skew bumps and via/pin fan-outs <= 8 mm (100 MHz HCSL)"
     (condition "A.NetClass == 'REFCLK_100'")
     (constraint diff_pair_uncoupled (max 8.0mm)))
+(rule "REFCLK100: slot clock input <= 16 mm uncoupled (P/N swap crossing at the buffer + its deskew bumps)"
+    (condition "A.NetClass == 'REFCLK_100' && A.NetName == 'REFCLK_IN_*'")
+    (constraint diff_pair_uncoupled (max 16.0mm)))
+(rule "PWR_12V: eFuse pin fan-out (0.5 mm pitch QFN pins, inside the EFUSE* areas; the pours carry the current)"
+    (condition "A.NetClass == 'PWR_12V' && A.intersectsArea('EFUSE*')")
+    (constraint track_width (min 0.2mm)))
