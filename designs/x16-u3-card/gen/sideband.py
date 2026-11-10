@@ -100,7 +100,7 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
                    (n("WAKE"), n("IFDET2"), n("IFDET"), n("PRSNT")), -10.2)
     parts += array(f"RN{2 * idx + 1}", "4.7k x4", "C1980", 20.4, -5.6,
                    (n("SC1"), n("SD1"), n("SMBDAT"), n("SMBCLK")), 15.0)
-    rr = [("GND", n("PWRDIS"), "10k", -5.0, -7.55, 0),
+    rr = [(n("PWRDIS"), "GND", "10k", -5.0, -7.55, 0),         # GND pad east: its via sits in the gap toward RN
           ("3V3_AUX", n("RSTEN"), "10k", -5.0, -8.55, 0),
           ("3V3_AUX", n("PG"), "10k", -15.0, -8.75, 0),
           ("3V3_AUX", n("MUXCTL"), "10k", 10.0, -5.6, 0),
@@ -112,6 +112,10 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
     for i, (na, nb, val, x, y, rot) in enumerate(rr):
         ref = f"R{rbase + i}"
         parts.append((ref, place2(k, ref, R0402, val, X(x), Y(y), rot, False, (na, nb), LCSC[val]), (na, nb), False))
+    # PWRDIS pull-down: the pad is boxed in by the expander's L1 fan-out once routed, so its GND via is laid now
+    gp = parts[-len(rr)][1][1]
+    hand_gnd = [gp]
+    k.via("GND", gp[0] + 0.85, gp[1]); k.track("GND", "L1", [gp, (gp[0] + 0.85, gp[1])], 0.2)
     for i, (na, nb, val, x, y, rot) in enumerate(cc):
         ref = f"C{cbase + i}"
         parts.append((ref, place2(k, ref, C0402, val, X(x), Y(y), rot, False, (na, nb), LCSC[val]), (na, nb), False))
@@ -227,7 +231,7 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
     R.keepouts.append(("L1", [XY(JX - 2.4, JY - 3.8), XY(EX + 2.3, JY - 3.8), XY(EX + 2.3, JY + 2.0), XY(JX - 2.4, JY + 2.0)]))
     R.keepouts.append(("L6", [XY(12.2, 1.2), XY(EX + 2.5, 1.2), XY(EX + 2.5, EY - 3.0), XY(32.9, EY - 3.0), XY(32.9, -2.7),
                              XY(16.7, -2.7), XY(16.7, -3.1), XY(12.5, -3.1), XY(12.5, -1.7), XY(12.2, -1.7)]))
-    return dict(parts=parts, um=um, ue=ue, ug=ug, uw=uw, uf=uf, jh=jh, dl=dl, bulk=bulk, xs=xs, yp=yp, vpg=vpg)
+    return dict(parts=parts, hand_gnd=hand_gnd, um=um, ue=ue, ug=ug, uw=uw, uf=uf, jh=jh, dl=dl, bulk=bulk, xs=xs, yp=yp, vpg=vpg)
 
 
 FANOUTS = ((), ("U6", "U5"), ("U12", "U13", "E14", "E15", "U6", "U5"))
@@ -310,7 +314,7 @@ def _route_block_once(k, R, d, info, JP, yvm, yvt, fan):
     for ref, (pa, pb), (na, nb), bot in info["parts"]:
         L = "L6" if bot else "L1"
         for p, net in ((pa, na), (pb, nb)):
-            if net == "GND":
+            if net == "GND" and p not in info.get("hand_gnd", ()):
                 tryit(R.to_via, net, (L, *p))
     for ref, pins in ((um, ("1", "2", "7")), (ue, ("1", "2", "3", "8")), (ug, ("2",)), (uw, ("3",))):
         for p in pins:
