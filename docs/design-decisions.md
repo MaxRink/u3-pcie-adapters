@@ -285,15 +285,15 @@ the rev E changes that the layout thread has accepted but not yet pushed.
 | --- | --- | --- | --- |
 | 9DBL0442**C**KILF | the successor revision of the same part | 33-week lead time; pin compatibility with B is expected but was not read from the C datasheet | Mouser, 33 weeks |
 | 9DBL0442BKILF from LCSC "other suppliers" | the part the footprint was drawn for | $772 for 100 when 6 are needed; broker stock | 100 pcs |
-| Diodes PI6CB33401ZHIEX-13R | in stock, cheaper; 4 outputs, 100 ohm default, 5x5 mm QFN-32, 0.05 ps additive jitter on the product page; the layout thread compared the pin tables of both datasheets and found all 32 pins the same, so it fits the footprint with no layout change | the Diodes datasheet that was read is from 2020; the pin 1 mode levels and the fan-out delay still have to be compared with the Renesas values that D3 and D4 rely on | Mouser 2,200 pcs, 3.27 EUR |
+| Diodes PI6CB33401ZHIEX-13R | in stock, cheaper; 4 outputs, 100 ohm default, 5x5 mm QFN-32, 0.05 ps additive jitter on the product page; the layout thread compared the pin tables of both datasheets and found all 32 pins the same, so it fits the footprint with no layout change | the Diodes datasheet that was read is DS41292 Rev 5-2 from January 2020, from a mirror. In it pin 1 behaves the same (open = fan-out, low = low-bandwidth PLL, high = high-bandwidth PLL), the fan-out delay is 2.0 / 2.5 / 3.0 ns (shorter than Renesas, so two stages are 6 ns), PLL-mode delay is within 200 ps and PLL-mode jitter is 0.25 ps typical, 0.4 ps maximum for Gen3 and Gen4; terminations default to 100 ohm and can be set to 85 ohm over SMBus | Mouser 2,200 pcs, 3.27 EUR |
 | 9DBL0452 (85 ohm version) | same pinout family | clock traces are 100 ohm; stock not checked | not checked |
 | Skyworks Si53204, TI CDCDB400 (from memory) | other 4-output PCIe buffers | different pinouts, not checked | not checked |
 | One 8-output buffer for the x16 card (9DBL08xx class) | removes the chain (D4) | long clock pairs under three drive blocks, bigger QFN | not checked |
 
 - **Verdict: Change.** First choice is the PI6CB33401, the only one of these in stock at a normal
-  distributor, on the unchanged footprint; the 9DBL0442C stays in the BOM as the alternate. Before
-  ordering, check the current Diodes datasheet revision once more, and confirm that pin 1 open selects
-  fan-out mode and that the fan-out delay is no more than 4.5 ns (D3, D4). Order the buffers before or
+  distributor, on the unchanged footprint; the 9DBL0442C stays in the BOM as the alternate. Its mode pin, delay
+  and termination fit D3, D4 and B5 without changes. Before ordering, check the current Diodes
+  datasheet revision once more, because the copy that was read is from 2020. Order the buffers before or
   with the boards.
 
 ### D3. Buffer mode: fan-out (bypass), pin 1 open
@@ -611,7 +611,7 @@ Owned by the backplane thread; recorded here so the reasons are in one place.
 | Item | Risk if wrong | How to check |
 | --- | --- | --- |
 | SOT-89 pinout of HT7533-1 and MCP1703A (cage rev B uses 1 GND, 2 VIN, 3 VOUT, from memory; the datasheets could not be fetched from here) | regulator dead or shorted | first page of either datasheet |
-| PI6CB33401: pin table matches the 9DBL0442B on all 32 pins (layout thread, 2020 datasheet); pin 1 mode levels and fan-out delay not yet compared | wrong clock mode, or the x16 chain exceeds 12 ns | current Diodes datasheet |
+| PI6CB33401: pins, mode pin, delay and termination were read from a 2020 datasheet (Rev 5-2) on a mirror site | a later revision changed something | current Diodes datasheet |
 | 9DBL0442C pin and mode compatibility with B | same | Renesas product change notice |
 | TPS25982 custom footprint against TI's RGE land pattern | poor soldering of the split pad | TI drawing RGE0024 |
 | 9DBL0442 jitter in low-bandwidth PLL mode | U41 choice (D4) | datasheet table |
