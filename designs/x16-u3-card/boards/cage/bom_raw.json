@@ -34,12 +34,12 @@
  },
  {
   "ref": "U1",
-  "value": "AMS1117-3.3",
-  "fp": "Package_TO_SOT_SMD:SOT-223-3_TabPin2",
-  "lcsc": "C6186",
+  "value": "MCP1703AT-3302E/MB",
+  "fp": "Package_TO_SOT_SMD:SOT-89-3",
+  "lcsc": "",
   "side": "bottom",
   "x": -6.0,
-  "y": 4.4,
+  "y": 5.4,
   "rot": 0,
   "dnp": false
  },
@@ -49,8 +49,8 @@
   "fp": "Capacitor_SMD:C_0805_2012Metric",
   "lcsc": "C15850",
   "side": "bottom",
-  "x": -0.6,
-  "y": 4.4,
+  "x": -10.2,
+  "y": 5.2,
   "rot": 90,
   "dnp": false
  },
@@ -60,9 +60,9 @@
   "fp": "Capacitor_SMD:C_0805_2012Metric",
   "lcsc": "C15850",
   "side": "bottom",
-  "x": -11.5,
-  "y": 4.4,
-  "rot": 90,
+  "x": -1.3,
+  "y": 5.9,
+  "rot": 0,
   "dnp": false
  },
  {
@@ -85,6 +85,17 @@
   "x": -0.635,
   "y": 8.0,
   "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "R6",
+  "value": "100k",
+  "fp": "Resistor_SMD:R_0402_1005Metric",
+  "lcsc": "C25741",
+  "side": "bottom",
+  "x": 3.3,
+  "y": 7.65,
+  "rot": 90,
   "dnp": false
  },
  {
@@ -122,9 +133,9 @@
  },
  {
   "ref": "C3",
-  "value": "100nF 16V X7R",
+  "value": "100nF 50V X7R",
   "fp": "Capacitor_SMD:C_0402_1005Metric",
-  "lcsc": "C1525",
+  "lcsc": "C307331",
   "side": "bottom",
   "x": -12.6,
   "y": 7.6,
@@ -155,9 +166,9 @@
  },
  {
   "ref": "D2",
-  "value": "LED green",
+  "value": "KT-0603YG",
   "fp": "LED_SMD:LED_0603_1608Metric",
-  "lcsc": "C72043",
+  "lcsc": "C2289",
   "side": "top",
   "x": -19.6,
   "y": 16.6,
@@ -166,12 +177,56 @@
  },
  {
   "ref": "F1",
-  "value": "PTC 1812 Ihold>=2.6A 16V+",
+  "value": "mSMD300-16V (3 A hold)",
   "fp": "Fuse:Fuse_1812_4532Metric",
-  "lcsc": "",
+  "lcsc": "C6851473",
   "side": "bottom",
   "x": -16.2,
   "y": 33.5,
+  "rot": 90,
+  "dnp": false
+ },
+ {
+  "ref": "C13",
+  "value": "220nF 16V X7R",
+  "fp": "Capacitor_SMD:C_0402_1005Metric",
+  "lcsc": "C16772",
+  "side": "bottom",
+  "x": 3.38,
+  "y": 17.0,
+  "rot": 90,
+  "dnp": false
+ },
+ {
+  "ref": "C14",
+  "value": "220nF 16V X7R",
+  "fp": "Capacitor_SMD:C_0402_1005Metric",
+  "lcsc": "C16772",
+  "side": "bottom",
+  "x": 4.38,
+  "y": 17.0,
+  "rot": 90,
+  "dnp": false
+ },
+ {
+  "ref": "C11",
+  "value": "220nF 16V X7R",
+  "fp": "Capacitor_SMD:C_0402_1005Metric",
+  "lcsc": "C16772",
+  "side": "bottom",
+  "x": 9.53,
+  "y": 12.0,
+  "rot": 90,
+  "dnp": false
+ },
+ {
+  "ref": "C12",
+  "value": "220nF 16V X7R",
+  "fp": "Capacitor_SMD:C_0402_1005Metric",
+  "lcsc": "C16772",
+  "side": "bottom",
+  "x": 10.799999999999999,
+  "y": 12.0,
   "rot": 90,
   "dnp": false
  }
