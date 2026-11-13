@@ -8,6 +8,7 @@
 Photoreal renders: mech/render.py (Blender Cycles).
 """
 import argparse
+import re
 import collections
 import json
 import os
@@ -22,6 +23,7 @@ sys.path.insert(0, HERE)
 import backplane_cage  # noqa: E402
 import boardio  # noqa: E402
 import card_shroud  # noqa: E402
+import card_shroud_multi  # noqa: E402
 import card_shroud_top  # noqa: E402
 import parts  # noqa: E402
 import procedural  # noqa: E402
@@ -32,7 +34,9 @@ OUT = os.path.join(HERE, "out")
 BOARDS = json.load(open(os.path.join(HERE, "boards.json")))
 CARDS = [n for n, c in BOARDS.items() if c["kind"] == "card"]
 # every card gets both shroud styles: "<card>" = end fan, air along the card; "<card>_top" = top-feed, fans behind the drives
-ALL = list(BOARDS) + [n + "_top" for n in CARDS] + ["backplane", "backplane6"]      # plus "parts" for the bought-part STEP library
+# shared fan: "<card>_end<n>" = n cards on one end fan, "<card>_hood<n>" = n cards under one hood with fans on top
+MULTI = re.compile(r"^(.+)_(end|hood)(\d)$")
+ALL = list(BOARDS) + [n + "_top" for n in CARDS] + ["x8_end3", "x8_hood3", "x16p_hood3"] + ["backplane", "backplane6"]      # plus "parts" for the bought-part STEP library
 
 
 def kind_of(name):
@@ -40,16 +44,22 @@ def kind_of(name):
         return "backplane"
     if name.endswith("_top"):
         return "card_top"
+    m = MULTI.match(name)
+    if m:
+        return "card_" + m.group(2)
     return BOARDS[name]["kind"]
 
 
 def title_of(name):
     if name == "backplane":
-        return "4-drive backplane cage (stand-in board)"
+        return "4-drive top-loading hot-plug cage behind a 120 mm case fan (stand-in board)"
     if name == "backplane6":
-        return "6-drive backplane cage (stand-in board, concept)"
+        return "6-drive top-loading hot-plug cage, 120 mm wide (stand-in board)"
     if name.endswith("_top"):
         return BOARDS[name[:-4]]["title"] + ", top-feed shroud"
+    m = MULTI.match(name)
+    if m:
+        return f"{m.group(3)} x " + BOARDS[m.group(1)]["title"] + (", one shared end fan" if m.group(2) == "end" else ", shared hood with fans on top")
     return BOARDS[name]["title"] + (", end-fan shroud" if BOARDS[name]["kind"] == "card" else "")
 
 
@@ -83,9 +93,22 @@ def assemble(name):
     """Return dict(board, result, items) for one assembly."""
     kind = kind_of(name)
     if kind == "backplane":
-        res = backplane_cage.build(backplane_cage.spec6() if name == "backplane6" else None)
+        res = (backplane_cage.build(backplane_cage.spec6(), backplane_cage.CageParams(max_width=120.0)) if name == "backplane6"
+               else backplane_cage.build(None, backplane_cage.CageParams(max_width=80.0)))   # 80 / 120 mm wide: modules tile at the board pitch
         items = [dict(mesh=scene.tess(res["board_solid"]), material="fr4", group="board", name="pcb")]
         board = None
+    elif kind in ("card_end", "card_hood"):
+        m = MULTI.match(name)
+        board = boardio.load(m.group(1))
+        res = card_shroud_multi.build(board, int(m.group(3)), m.group(2))
+        one = scene.board_items(board) + scene.printed_items(res["printed"]) + scene.hardware_items(res["hardware"])
+        items = []
+        for dz in res["replicas"]:
+            M = np.eye(4)
+            M[2, 3] = dz
+            items += scene.transform(one, M)
+        items += scene.printed_items(res["shared_printed"]) + scene.hardware_items(res["shared_hardware"])
+        return dict(board=board, result=res, items=items)
     else:
         board = boardio.load(name[:-4] if kind == "card_top" else name)
         res = {"sled": sled, "card": card_shroud, "card_top": card_shroud_top}[kind].build(board)
@@ -94,10 +117,39 @@ def assemble(name):
     return dict(board=board, result=res, items=items)
 
 
-def fit_report(res):
+def shift(loc, dz):
+    if isinstance(loc, np.ndarray):
+        M = loc.copy()
+        M[2, 3] += dz
+        return M
+    return cq.Location(cq.Vector(0, 0, dz)) * loc
+
+
+def expand(res):
+    """Flatten a shared-fan result (per-card parts + replicas + shared parts) into one plain result."""
+    if "replicas" not in res:
+        return res, [0.0]
+    printed, hw = {}, []
+    for k, dz in enumerate(res["replicas"]):
+        for nm, wp in res["printed"].items():
+            printed[f"card{k + 1}_{nm}"] = wp.translate((0, 0, dz))
+        hw += [(d, nm, fn, args, shift(loc, dz)) for (d, nm, fn, args, loc) in res["hardware"]]
+    printed.update(res["shared_printed"])
+    return dict(printed=printed, hardware=hw + list(res["shared_hardware"]), info=res["info"], board_solid=res["board_solid"]), list(res["replicas"])
+
+
+def _vol(a, b):
+    ba, bb = a.val().BoundingBox(), b.val().BoundingBox()
+    if (ba.xmax < bb.xmin or bb.xmax < ba.xmin or ba.ymax < bb.ymin or bb.ymax < ba.ymin or ba.zmax < bb.zmin or bb.zmax < ba.zmin):
+        return 0.0
+    i = a.intersect(b)
+    return i.val().Volume() if i.vals() else 0.0
+
+
+def fit_report(res, offsets=(0.0,)):
     """Interference volumes (mm^3) between printed parts and the things they must clear."""
     rep = {}
-    solids = [("board", res["board_solid"])]
+    solids = [(f"board{k + 1}" if len(offsets) > 1 else "board", res["board_solid"].translate((0, 0, dz))) for k, dz in enumerate(offsets)]
     for (desc, nm, fn, args, loc) in res["hardware"]:
         if nm.startswith(("drive", "fan", "bracket")):
             L = loc_of(loc)
@@ -105,30 +157,34 @@ def fit_report(res):
     names = list(res["printed"])
     for k, wp in res["printed"].items():
         for nm, s in solids:
-            v = wp.intersect(s).val().Volume() if wp.intersect(s).vals() else 0.0
+            v = _vol(wp, s)
             if v > 0.5:
                 rep[f"{k} x {nm}"] = round(v, 1)
         for k2 in names[names.index(k) + 1:]:
-            i = wp.intersect(res["printed"][k2])
-            v = i.val().Volume() if i.vals() else 0.0
+            v = _vol(wp, res["printed"][k2])
             if v > 0.5:
                 rep[f"{k} x {k2}"] = round(v, 1)
     return rep
 
 
 def export(name, a, check=True):
-    res, board = a["result"], a["board"]
+    raw, board = a["result"], a["board"]
+    res, offsets = expand(raw)
     od = os.path.join(OUT, name)
     os.makedirs(os.path.join(od, "print"), exist_ok=True)
     asm = cq.Assembly(name=name)
-    asm.add(res["board_solid"], name="pcb", color=color("fr4"))
-    if board is not None:
-        for ref, mats, L in connector_solids(board):
-            for i, (w, m) in enumerate(mats):
-                asm.add(w, name=f"{ref}_{i}", loc=L, color=color(m))
-    for k, wp in res["printed"].items():
+    for c, dz in enumerate(offsets):
+        sfx = f"_card{c + 1}" if len(offsets) > 1 else ""
+        asm.add(res["board_solid"], name="pcb" + sfx, loc=cq.Location(cq.Vector(0, 0, dz)), color=color("fr4"))
+        if board is not None:
+            for ref, mats, L in connector_solids(board):
+                for i, (w, m) in enumerate(mats):
+                    asm.add(w, name=f"{ref}_{i}{sfx}", loc=cq.Location(cq.Vector(0, 0, dz)) * L, color=color(m))
+    unique = dict(raw["printed"], **raw.get("shared_printed", {}))      # print files: every different part once
+    for k, wp in unique.items():
         cq.exporters.export(wp, os.path.join(od, "print", f"{name}_{k}.step"))
         cq.exporters.export(wp, os.path.join(od, "print", f"{name}_{k}.stl"), tolerance=0.02, angularTolerance=0.2)
+    for k, wp in res["printed"].items():
         asm.add(wp, name=f"print_{k}", color=color("petg"))
     cnt = collections.Counter()
     cache = {}
@@ -151,9 +207,11 @@ def export(name, a, check=True):
                printed={k: dict(volume_cm3=round(wp.val().Volume() / 1000, 1),
                                 size_mm=[round(v, 1) for v in (wp.val().BoundingBox().xlen, wp.val().BoundingBox().ylen, wp.val().BoundingBox().zlen)],
                                 petg_g=round(wp.val().Volume() / 1000 * 1.27 * 0.45, 0))
-                        for k, wp in res["printed"].items()})
+                        for k, wp in unique.items()})
+    if len(offsets) > 1:
+        man["print_each_per_card"] = list(raw["printed"])
     if check:
-        man["interference_mm3"] = fit_report(res)
+        man["interference_mm3"] = fit_report(res, offsets)
     json.dump(man, open(os.path.join(od, "manifest.json"), "w"), indent=1, default=lambda o: float(o) if isinstance(o, np.floating) else str(o))
     return man
 
@@ -173,7 +231,7 @@ def main():
         man = export(name, asm, check=not a.no_check)
         if a.preview:
             import preview
-            up = (0, 0, 1) if name == "cage" else (0, 1, 0)
+            up = (0, 0, 1) if name == "cage" or name.startswith("backplane") else (0, 1, 0)
             d1, d2 = ((0.6, -0.6, 0.6), (-0.5, -0.7, -0.5)) if name == "cage" else ((0.5, 0.4, 0.8), (-0.5, 0.5, -0.8))
             preview.shot(asm["items"], os.path.join(OUT, name, "preview_front.png"), d1, up=up)
             preview.shot(asm["items"], os.path.join(OUT, name, "preview_xray.png"), d2, up=up, opacity={"printed": 0.35})

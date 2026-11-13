@@ -243,6 +243,9 @@ def axial_fan(size=92, thick=38.0, blades=7):
 BRACKET = dict(t=0.86, w=18.42, z0=-4.11, y0=-9.2, y1=112.75, x=-0.9)
 
 
+BRACKET_TAB_Y = (9.35, 94.75)      # bracket tab holes on a full-height card, above the bottom of the gold fingers
+
+
 def pcie_bracket(tab_y=(9.35, 94.75), tab_x=7.5):
     """Full-height PCI/PCIe bracket in the card frame (x along the card from its bracket-end edge,
     y up from the bottom of the gold fingers, z = 0 on the component side). Appearance-level: the

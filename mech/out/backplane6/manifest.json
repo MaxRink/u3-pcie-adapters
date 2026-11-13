@@ -1,11 +1,11 @@
 {
  "name": "backplane6",
- "title": "6-drive backplane cage (stand-in board, concept)",
+ "title": "6-drive top-loading hot-plug cage, 120 mm wide (stand-in board)",
  "board": "stand-in from the backplane layout's reported geometry",
  "info": {
   "spec": {
    "width": 119.6,
-   "height": 84.5,
+   "height": 90.5,
    "thickness": 1.6,
    "drive_x": [
     9.8,
@@ -19,82 +19,56 @@
    "seat_z": 6.5,
    "holes": [
     [
-     3.5,
-     80.5
+     3.2,
+     75.0
     ],
     [
-     116.1,
-     80.5
+     116.4,
+     75.0
     ],
     [
-     35.8,
-     4.0
+     36.0,
+     4.2
     ],
     [
-     114.6,
-     4.0
+     76.0,
+     4.2
+    ],
+    [
+     116.0,
+     4.2
     ]
    ],
    "vents": [
     [
-     14.6,
-     20.1,
-     34.4,
-     52.5
+     17.05,
+     22.55,
+     28.75,
+     55.25
     ],
     [
-     17.4,
-     20.1,
-     26.0,
-     34.5
+     37.05,
+     42.55,
+     28.75,
+     55.25
     ],
     [
-     34.6,
-     40.1,
-     34.4,
-     52.5
+     57.05,
+     62.55,
+     28.75,
+     55.25
     ],
     [
-     37.4,
-     40.1,
-     26.0,
-     34.5
+     77.05,
+     82.55,
+     28.75,
+     55.25
     ],
     [
-     54.6,
-     60.1,
-     34.4,
-     52.5
-    ],
-    [
-     57.4,
-     60.1,
-     26.0,
-     34.5
-    ],
-    [
-     74.6,
-     80.1,
-     34.4,
-     52.5
-    ],
-    [
-     77.4,
-     80.1,
-     26.0,
-     34.5
-    ],
-    [
-     94.6,
-     100.1,
-     34.4,
-     52.5
-    ],
-    [
-     97.4,
-     100.1,
-     26.0,
-     34.5
+     97.05,
+     102.55,
+     28.75,
+     55.25
     ]
    ],
    "slimsas_x": [
@@ -103,137 +77,155 @@
     95.8
    ],
    "power_x": [
-    28.0,
+    48.0,
     72.0
    ],
    "placeholder": true
   },
   "params": {
    "gap_side": 2.5,
-   "wall": 2.4,
+   "max_width": 120.0,
+   "side": 1.6,
+   "floor": 2.4,
+   "under": 15.0,
    "fan": 120,
    "fan_thick": 25.0,
-   "plenum": 14.0,
-   "funnel_len": 30.0,
-   "rail": 2.2,
+   "duct": 34.0,
+   "duct_wall": 2.0,
+   "post": 8.0,
+   "bar": 3.0,
+   "shelf": 2.0,
+   "grip": 6.0,
    "fit": 0.3,
    "insert_d": 4.0,
    "insert_depth": 6.5,
    "m3_clear": 3.4
   },
+  "drives": 6,
+  "width": 120.0,
+  "gap_side": 0.9,
   "envelope": {
    "x": [
-    -8.6,
-    128.2
+    0,
+    120.0
    ],
    "y": [
-    0,
-    84.5
+    -25.0,
+    148.0
    ],
    "z": [
-    -1.6,
-    181.95
+    0,
+    128.35
    ]
   },
-  "board_holes": [
-   [
-    3.5,
-    80.5
+  "board": {
+   "top_z": 19.0,
+   "origin_corner": [
+    119.8,
+    133.0
    ],
-   [
-    116.1,
-    80.5
-   ],
-   [
-    35.8,
-    4.0
-   ],
-   [
-    114.6,
-    4.0
-   ]
+   "turned_deg": 180,
+   "clear_under": 15.0,
+   "plug_room_fan_side": 39.5
+  },
+  "fan_centre": {
+   "x": 60.0,
+   "z": 60.0
+  },
+  "drive_x": [
+   110.0,
+   90.0,
+   70.0,
+   50.0,
+   30.0,
+   10.0
   ],
-  "drive_side_screws": [
-   [
-    14.3,
-    20.5
-   ],
-   [
-    14.3,
-    97.1
-   ],
-   [
-    34.3,
-    20.5
-   ],
-   [
-    34.3,
-    97.1
-   ],
-   [
-    54.3,
-    20.5
-   ],
-   [
-    54.3,
-    97.1
-   ],
-   [
-    74.3,
-    20.5
-   ],
-   [
-    74.3,
-    97.1
-   ],
-   [
-    94.3,
-    20.5
-   ],
-   [
-    94.3,
-    97.1
-   ],
-   [
-    114.3,
-    20.5
-   ],
-   [
-    114.3,
-    97.1
-   ]
-  ]
+  "drive_z": [
+   25.5,
+   125.95
+  ],
+  "guide_shelves_z": [
+   53.5,
+   118.0
+  ],
+  "comb_top_z": 120.0
  },
  "bom": {
   "U.3 vertical receptacle PSAS5F3130021TR": 6,
   "SlimSAS 8i right-angle receptacle U10A474240T": 3,
-  "Mini-Fit Jr 2x4 vertical header (PCIe 8-pin)": 2,
+  "Mini-Fit Jr 2x4 right-angle header (PCIe 8-pin)": 2,
   "drive": 6,
-  "M3x8 cap screw (backplane to cage)": 4,
-  "M3 heat-set insert": 8,
-  "M3x6 cap screw (drive side hole)": 24,
-  "M3x8 cap screw (fan plate)": 4,
-  "120x120x25 mm fan": 1,
+  "M3x6 cap screw (backplane to base)": 5,
+  "M3 heat-set insert": 19,
+  "M3x8 countersunk screw (base to comb)": 4,
+  "M3x6 countersunk screw (side plate)": 8,
+  "M3x8 countersunk screw (duct to cage)": 2,
+  "120x120x25 mm fan (the case's front fan)": 1,
   "M4x12 self-tapping fan screw": 4
  },
  "printed": {
-  "cage": {
-   "volume_cm3": 108.9,
+  "fan_duct": {
+   "volume_cm3": 41.0,
    "size_mm": [
-    132.0,
-    84.5,
-    109.0
+    120.0,
+    42.1,
+    122.4
    ],
-   "petg_g": 62.0
+   "petg_g": 23.0
   },
-  "fan_plate": {
-   "volume_cm3": 43.3,
+  "base": {
+   "volume_cm3": 36.0,
    "size_mm": [
-    137.4,
-    80.7,
-    28.0
+    120.0,
+    114.0,
+    17.4
    ],
-   "petg_g": 25.0
+   "petg_g": 21.0
+  },
+  "comb_front": {
+   "volume_cm3": 41.7,
+   "size_mm": [
+    116.8,
+    26.1,
+    117.6
+   ],
+   "petg_g": 24.0
+  },
+  "comb_rear": {
+   "volume_cm3": 41.8,
+   "size_mm": [
+    116.8,
+    26.1,
+    117.6
+   ],
+   "petg_g": 24.0
+  },
+  "side_left": {
+   "volume_cm3": 18.2,
+   "size_mm": [
+    1.6,
+    114.0,
+    100.0
+   ],
+   "petg_g": 10.0
+  },
+  "side_right": {
+   "volume_cm3": 18.2,
+   "size_mm": [
+    1.6,
+    114.0,
+    100.0
+   ],
+   "petg_g": 10.0
+  },
+  "lid": {
+   "volume_cm3": 29.5,
+   "size_mm": [
+    120.0,
+    114.0,
+    12.7
+   ],
+   "petg_g": 17.0
   }
  },
  "interference_mm3": {}

@@ -91,7 +91,7 @@ def build(board, p=None):
     y_in = drives[-1]["y_face"] - 0.8                  # lower edge of the duct opening at the fan end
 
     holes = board.mount_holes()
-    bracket_holes = [h for h in holes if abs(h[2] - h[3]) < 0.01 and h[0] < 12]
+    bracket_holes = [h for h in holes if abs(h[2] - h[3]) < 0.01 and h[0] < 12 and min(abs(h[1] - y) for y in parts.BRACKET_TAB_Y) < 3.0]
     clamps = [h for h in holes if h not in bracket_holes]
 
     def bay_of(x):
@@ -138,7 +138,8 @@ def build(board, p=None):
     for (x, y) in corners:
         cov.append(cyl(4.2, z_ci - zb, "z", (x, y, zb)))
     lug_y = [y_in + 16.0, y_ti - 22.0]
-    for y in lug_y:                                                         # lugs for the fan adapter
+    lug_yc = [lug_y[0] + 12.0, lug_y[1] - 12.0]       # cover lugs offset from the body lugs: neighbouring cards interleave
+    for y in lug_yc:                                                        # lugs for the fan adapter
         cov.append(box(xb - 12, xb, y - 4.5, y + 4.5, z_co, z_co + 9.0))
     cover = _union(cov)
     # exhaust slots over the bracket-end column, clear of bosses
@@ -150,7 +151,7 @@ def build(board, p=None):
         yy += 17.0
     holes_c = [cyl(p.m3_clear / 2, 30, "z", (x, y, zb - 5)) for (x, y) in drive_screws + corners]
     holes_c += [cyl(p.m3_clear / 2, 30, "z", (x, y, -5)) for (x, y, _, _) in clamps]
-    for y in lug_y:
+    for y in lug_yc:
         holes_c.append(cyl(p.insert_d / 2, p.insert_depth, "x", (xb - p.insert_depth, y, z_co + 4.5)))
     cover = cover.cut(_union(holes_c)).cut(keepout).intersect(box(0.3, xb, -50, 400, -100, 100))
 
@@ -189,14 +190,15 @@ def build(board, p=None):
     flange = cq.Workplane("YZ").rect(s, s).extrude(4.0).edges("|X").fillet(s * 0.055).translate((x2, cyc, czc))
     flange = flange.cut(cyl(r_i, 6, "x", (x2 - 1, cyc, czc)))
     ears = []
-    for y in lug_y:
+    lugs = [(y, z_co + 4.5) for y in lug_yc] + [(y, z_bo - 4.5) for y in lug_y]
+    for y in lug_yc:
         ears.append(box(x0, x0 + 4.0, y - 4.5, y + 4.5, z_co - 0.1, z_co + 9.0))
+    for y in lug_y:
         ears.append(box(x0, x0 + 4.0, y - 4.5, y + 4.5, z_bo - 9.0, z_bo + 0.1))
     adapter = neck.union(funnel).union(flange).union(_union(ears))
     acut = []
-    for y in lug_y:
-        for z in (z_co + 4.5, z_bo - 4.5):
-            acut.append(cyl(p.m3_clear / 2, 6, "x", (x0 - 1, y, z)))
+    for (y, z) in lugs:
+        acut.append(cyl(p.m3_clear / 2, 6, "x", (x0 - 1, y, z)))
     fan_holes = [(cyc + sy * hs / 2, czc + sz * hs / 2) for sy in (-1, 1) for sz in (-1, 1)]
     for (y, z) in fan_holes:
         acut.append(cyl(1.9, 6, "x", (x2 - 1, y, z)))      # M4 self-tapping into the flange
@@ -256,10 +258,9 @@ def build(board, p=None):
     for (x, y) in corners:
         hw.append(("M3x12 cap screw (cover-card-body)", "scr_corner", parts.screw_shcs, (3.0, 12.0), T(x, y, z_co)))
         hw.append(("M3 heat-set insert", "ins", parts.heat_insert_m3, (), T(x, y, zb)))
-    for y in lug_y:
-        for z in (z_co + 4.5, z_bo - 4.5):
-            hw.append(("M3x8 cap screw (fan adapter)", "scr_adp", parts.screw_shcs, (3.0, 8.0), T(x0 + 4.0, y, z, ry=90)))
-            hw.append(("M3 heat-set insert", "ins", parts.heat_insert_m3, (), T(xb, y, z, ry=90)))
+    for (y, z) in lugs:
+        hw.append(("M3x8 cap screw (fan adapter)", "scr_adp", parts.screw_shcs, (3.0, 8.0), T(x0 + 4.0, y, z, ry=90)))
+        hw.append(("M3 heat-set insert", "ins", parts.heat_insert_m3, (), T(xb, y, z, ry=90)))
     xf = x2 + 4.0
     hw.append((f"{p.fan}x{p.fan}x{int(p.fan_thick)} mm fan", "fan", parts.axial_fan, (p.fan, p.fan_thick), T(xf + p.fan_thick, cyc, czc, ry=-90)))
     for (y, z) in fan_holes:
@@ -277,5 +278,6 @@ def build(board, p=None):
         corner_points=[(round(x, 2), round(y, 2)) for (x, y) in corners],
         drive_screw_points=[(round(x, 2), round(y, 2)) for (x, y) in drive_screws],
         fan_centre=dict(x=xf, y=cyc, z=czc),
+        adapter=dict(x0=x0, lugs=lugs, rect_i=rect_i, rect_o=rect_o),
     )
     return dict(printed=printed, hardware=hw, info=info, board_solid=pcb)

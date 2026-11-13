@@ -38,6 +38,8 @@ class TopParams:
     insert_d: float = 4.0
     insert_depth: float = 6.5
     m3_clear: float = 3.4
+    open_top: bool = False      # no manifold: the duct ends in an open collar for a shared hood (card_shroud_multi)
+    collar: float = 8.0         # height of that collar above the drive ends
 
 
 def build(board, p=None):
@@ -53,8 +55,8 @@ def build(board, p=None):
     z_fi = z_bo - p.chamber                    # fan wall, chamber side
     z_fo = z_fi - w
     y_dtop = max(d["y_top"] for d in drives)
-    y_ti = y_dtop + p.cap
-    y_to = y_ti + w
+    y_ti = y_dtop + (p.collar if p.open_top else p.cap)
+    y_to = y_ti if p.open_top else y_ti + w
     W2 = parts.DRIVE["W"] / 2
     fs, hs, _hub = parts.FANS[p.fan]
     # fans: one per pair of drives
@@ -73,14 +75,14 @@ def build(board, p=None):
     y_sk = [d["y_face"] - 2.4 for d in drives]
 
     holes = board.mount_holes()
-    bracket_holes = [h for h in holes if abs(h[2] - h[3]) < 0.01 and h[0] < 12]
+    bracket_holes = [h for h in holes if abs(h[2] - h[3]) < 0.01 and h[0] < 12 and min(abs(h[1] - y) for y in parts.BRACKET_TAB_Y) < 3.0]
     clamps = [h for h in holes if h not in bracket_holes]
     direct = [h for h in clamps if h[1] < min(y_sk) - 8.0]
     clamps = [h for h in clamps if h not in direct]
     y_corner = y_dtop - 6.0
     corners = [(min(6.5, drives[0]["xc"] - W2 - 6.0), y_corner), (max(drives[-1]["xc"] + W2 + 6.0, xb_card - 5.5), y_corner)]
     if corners[1][0] > xb_card - 4.3:           # no room beyond the last drive (4-drive card): go above its end
-        corners[1] = (xb_card - 6.5, y_dtop + p.cap / 2)
+        corners[1] = (xb_card - 6.5, y_dtop + (3.4 if p.open_top else p.cap / 2))
 
     pcb = board.solid(holes_min=99)
     keep = [pcb]
@@ -96,8 +98,9 @@ def build(board, p=None):
     cov = []
     for (x0, x1), ys in zip(bays, y_sk):
         cov.append(box(x0, x1, ys, y_to, z_ci, z_co))
-    cov.append(box(xa, xb_card, y_ti, y_to, zb, z_ci))                       # top wall
-    cov.append(box(xa, xb_card, y_ti + 0.6, y_ti + 1.8, zb - 1.5, zb))       # tongue into the manifold's top wall
+    if not p.open_top:
+        cov.append(box(xa, xb_card, y_ti, y_to, zb, z_ci))                       # top wall
+        cov.append(box(xa, xb_card, y_ti + 0.6, y_ti + 1.8, zb - 1.5, zb))       # tongue into the manifold's top wall
     cov.append(box(xa, xa + w, y_sk[0], y_to, zb, z_ci))                     # end ribs close the channel sideways
     cov.append(box(xb_card - w, xb_card, y_sk[-1], y_to, zb, z_ci))
     drive_screws = []
@@ -118,9 +121,13 @@ def build(board, p=None):
     cover = cover.cut(_union(hc)).cut(keepout).intersect(box(0.3, xb_card, -50, 400, -100, 100))
 
     # ------------------------------------------------------------ body: back wall up to the drive ends, end walls, pillars
-    y_bw = y_dtop + 1.0
+    y_bw = y_ti if p.open_top else y_dtop + 1.0
+    y_ew = y_ti if p.open_top else y_ti - p.fit
+    hood_y = y_ti - 5.5                       # hood screw / hook height (open_top)
     bod = [box(xa, xb_card, p.y_bottom, y_bw, z_bo, z_bi),
-           box(xa, xa + w, p.y_bottom, y_ti - p.fit, z_bo, zb), box(xb_card - w, xb_card, p.y_bottom, y_ti - p.fit, z_bo, zb)]
+           box(xa, xa + w, p.y_bottom, y_ew, z_bo, zb), box(xb_card - w, xb_card, p.y_bottom, y_ew, z_bo, zb)]
+    if p.open_top:                                                          # boss for the hood screw at the card end
+        bod.append(box(xb_card - 9.0, xb_card, hood_y - 4.5, hood_y + 4.5, z_bo, z_bi + 9.0))
     for (x, y, dx, dy) in clamps + direct:
         bod.append(cyl(4.4, zb - z_bi, "z", (x, y, z_bi)))
     for (x, y) in corners:
@@ -133,7 +140,7 @@ def build(board, p=None):
     for x in sorted({round(v, 2) for f in xf for v in (f - fs / 2 - 6, f + fs / 2 + 6)}):
         if xa + 6 < x < xb_card - 6:
             sp += [(x, yc - 38), (x, yc + 30)]
-    sp = [(x, y) for (x, y) in sp if y < y_bw - 6 and all(abs(x - d["xc"]) > 0 for d in drives)]
+    sp = [] if p.open_top else [(x, y) for (x, y) in sp if y < y_bw - 6 and all(abs(x - d["xc"]) > 0 for d in drives)]
     bc = [cyl(p.insert_d / 2, p.insert_depth, "z", (x, y, zb - p.insert_depth)) for (x, y, _, _) in clamps + direct]
     bc += [cyl(p.insert_d / 2, p.insert_depth, "z", (x, y, zb - p.insert_depth)) for (x, y) in corners]
     for (x, y) in sp:                                                       # countersunk from the channel side
@@ -141,16 +148,20 @@ def build(board, p=None):
         bc.append(cq.Workplane("XY").circle(3.1).workplane(offset=-1.5).circle(1.6).loft(combine=True).translate((x, y, z_bi + 0.01)))
     for d in drives:
         bc.append(box(d["xc"] - W2 - 0.4, d["xc"] + W2 + 0.4, d["y_face"] - 0.6, d["y_top"] + 0.5, zt - 0.3, zb + 1))
+    if p.open_top:
+        bc.append(cyl(p.insert_d / 2, p.insert_depth, "x", (xb_card - p.insert_depth, hood_y, z_bi + 4.5)))
+        bc.append(box(xa - 1, xa + w + 1, hood_y - 1.5, hood_y + 1.5, z_bi + 2.0, z_bi + 8.0))     # pocket for the hood's hook
     body = body.cut(_union(bc)).cut(keepout)
 
     # ------------------------------------------------------------ manifold: fan wall, chamber walls, top cap
-    man = [box(xa, xb, y_ch0 - w, y_to, z_fo, z_fi),                        # fan wall
+    y_tm = y_ti + w
+    man = [box(xa, xb, y_ch0 - w, y_tm, z_fo, z_fi),                        # fan wall
            box(xa, xb, y_ch0 - w, y_ch0, z_fi, z_bo),                       # chamber floor
-           box(xa, xa + w, y_ch0 - w, y_to, z_fi, z_bo), box(xb - w, xb, y_ch0 - w, y_to, z_fi, z_bo),
-           box(xa, xb, y_ti, y_to, z_fi, zb)]                               # top wall over chamber, back wall and drives
+           box(xa, xa + w, y_ch0 - w, y_tm, z_fi, z_bo), box(xb - w, xb, y_ch0 - w, y_tm, z_fi, z_bo),
+           box(xa, xb, y_ti, y_tm, z_fi, zb)]                               # top wall over chamber, back wall and drives
     if xb > xb_card + 0.5:                                                  # chamber overhangs the card end: close it
-        man.append(box(xb_card + p.fit, xb, y_ch0 - w, y_to, z_bo, z_bo + w))
-        man.append(box(xb_card + p.fit, xb_card + p.fit + w, y_bw, y_to, z_bo, zb))
+        man.append(box(xb_card + p.fit, xb, y_ch0 - w, y_tm, z_bo, z_bo + w))
+        man.append(box(xb_card + p.fit, xb_card + p.fit + w, y_bw, y_tm, z_bo, zb))
     for (x, y) in sp:
         man.append(cyl(4.4, p.chamber, "z", (x, y, z_fi)))
     manifold = _union(man)
@@ -186,7 +197,8 @@ def build(board, p=None):
 
     printed = {}
     printed.update(split(body, xa, xb_card, "body"))
-    printed.update(split(manifold, xa, xb, "manifold"))
+    if not p.open_top:
+        printed.update(split(manifold, xa, xb, "manifold"))
     printed.update(split(cover, xa, xb_card, "cover"))
     for i, f in enumerate(fillers):
         printed[f"slot_filler_{i + 1}"] = f
@@ -212,9 +224,9 @@ def build(board, p=None):
     for (x, y) in sp:
         hw.append(("M3x8 countersunk screw (body to manifold)", "scr_man", parts.screw_csk, (3.0, 8.0), T(x, y, z_bi)))
         hw.append(("M3 heat-set insert", "ins_man", parts.heat_insert_m3, (), T(x, y, z_bo)))
-    for f in xf:
+    for f in ([] if p.open_top else xf):
         hw.append((f"{p.fan}x{p.fan}x{int(p.fan_thick)} mm fan", "fan", parts.axial_fan, (p.fan, p.fan_thick), T(f, yc, z_fo - p.fan_thick)))
-    for (x, y) in fan_holes:
+    for (x, y) in ([] if p.open_top else fan_holes):
         hw.append(("M4x12 self-tapping fan screw", "scr_fan", parts.screw_shcs, (4.0, 12.0), T(x, y, z_fo - 4.5, rx=180)))
 
     info = dict(
@@ -225,5 +237,6 @@ def build(board, p=None):
         direct_points=[(round(x, 2), round(y, 2)) for (x, y, _, _) in direct],
         corner_points=[(round(x, 2), round(y, 2)) for (x, y) in corners],
         manifold_points=[(round(x, 2), round(y, 2)) for (x, y) in sp],
+        duct=dict(x=[xa, xb_card], z=[z_bo, z_co], zi=[z_bi, z_ci], y_edge=y_ti, hood_y=hood_y, pair_x=[round(f, 2) for f in xf]),
     )
     return dict(printed=printed, hardware=hw, info=info, board_solid=pcb)

@@ -23,7 +23,7 @@ from mathutils import Vector  # noqa: E402
 
 S = 0.01          # mm -> Blender units
 IMG = os.path.join(os.path.dirname(HERE), "docs", "img", "mech")
-UP = {"cage": "z"}    # default: board y is up (card standing in its slot)
+UP = {"cage": "z", "backplane": "z", "backplane6": "z"}    # default: board y is up (card standing in its slot)
 
 
 def to_world(pts, up):
@@ -252,12 +252,25 @@ VIEWS = {
                                                               "fan": (0, 75, 0), "scr_fan": (0, 100, 0), "drive": (0, 0, 18), "scr_drv": (0, 0, -25)}),
         "board": dict(direction=(0.5, -0.7, 0.55), hide=("printed", "hardware")),
     },
-    "backplane": {
-        "hero": dict(direction=(0.65, -0.6, 0.45)),
-        "back": dict(direction=(-0.6, 0.65, 0.4)),
-        "xray": dict(direction=(0.65, -0.6, 0.45), alpha={"printed": 0.28}),
-        "exploded": dict(direction=(0.65, -0.6, 0.5), explode={"fan_plate": (0, 0, 45), "scr_plate": (0, 0, 45), "fan": (0, 0, 80), "scr_fan": (0, 0, 110),
-                                                              "drive": (0, 0, 0), "pcb": (0, 0, -30), "J": (0, 0, -30), "scr_bp": (0, 0, -50)}),
+    "backplane": {      # cage frame: fan at -y, z up
+        "hero": dict(direction=(0.6, -0.7, 0.55), hide=("lid",)),
+        "closed": dict(direction=(-0.65, 0.6, 0.5)),
+        "xray": dict(direction=(-0.6, 0.7, 0.45), alpha={"printed": 0.28}),
+        "exploded": dict(direction=(0.65, -0.6, 0.5), explode={"lid": (0, 0, 60), "fan_duct": (0, -45, 0), "scr_duct": (0, 0, 40), "fan": (0, -80, 0), "scr_fan": (0, -25, 0),
+                                                              "side_left": (-40, 0, 0), "side_right": (40, 0, 0), "scr_side": (0, 0, 0), "drive": (0, 0, 70),
+                                                              "comb_front": (0, -18, 0), "comb_rear": (0, 25, 0), "base": (0, 0, -30), "scr_base": (0, 0, -45)}),
+    },
+    "card_end": {
+        "hero": dict(direction=(0.6, -0.6, 0.5)),
+        "back": dict(direction=(0.55, 0.75, 0.4)),
+        "xray": dict(direction=(0.55, 0.75, 0.42), alpha={"printed": 0.28}),
+        "exploded": dict(direction=(0.6, -0.6, 0.5), explode={"shared_fan_adapter": (60, 0, 0), "fan": (110, 0, 0), "scr_fan": (140, 0, 0)}),
+    },
+    "card_hood": {
+        "hero": dict(direction=(0.55, -0.65, 0.55)),
+        "back": dict(direction=(-0.55, 0.7, 0.5)),
+        "xray": dict(direction=(-0.5, 0.75, 0.45), alpha={"printed": 0.28}),
+        "exploded": dict(direction=(0.55, -0.65, 0.55), explode={"hood": (0, 70, 0), "scr_joint": (0, 70, 0), "fan": (0, 120, 0), "scr_fan": (0, 150, 0)}),
     },
 }
 
