@@ -141,7 +141,7 @@ four eFuses, the rest small), per host card roughly 30 USD. Shipping and tax are
 cd designs/u3-backplane/gen
 ND=4 python3 bp.py        # 4-drive backplane (ND=6 for six), about 30 min
 python3 host.py           # passive host card
-cd .. && tools/outputs.sh backplane u3_backplane "Cabled U.3 backplane, 4 drives"
+cd .. && tools/outputs.sh backplane u3_backplane "Cabled U.3 backplane, 4 drives"        # backplane6 / u3_backplane6 for six
 ```
 
 `tools/outputs.sh` runs the DRC (`tools/drc.py`) and writes the Gerber zip, BOM, CPL, the board-only STEP, the lane
