@@ -23,6 +23,9 @@ YG2 = 27.4               # second GND via row
 YBR = 24.695             # between-rows
 YVR = 14.95              # via row behind U.3 top pad row
 YH = 9.15                # via row under the U.3 housing (front of bottom pad row)
+YE = 2.35                # drive-side board edge: 9.4 mm from the peg line, 0.65 mm short of the housing face (the
+                         # seated drive overlaps the PCB top by ~0.65 mm in Z, so the board must end before the face)
+YLS1, YLS2 = 27.9, 28.8  # low-speed via rows in front of the OCuLink A row (off the PET via row, review M1)
 
 # ------------------------------------------------------------------ nets on the U.3 receptacle
 # HPT0 (S15) tied low = SFF-TA-1001 host (single x4 on the S lanes); HPT0 open would select U.2 quad-PCIe lanes.
@@ -69,39 +72,41 @@ C0402 = ("Capacitor_SMD", "C_0402_1005Metric")
 C0805 = ("Capacitor_SMD", "C_0805_2012Metric")
 C1206 = ("Capacitor_SMD", "C_1206_3216Metric")
 
-# 3.3 V aux LDO (bottom, under the receptacle)
-U1 = k.fp("Package_TO_SOT_SMD", "SOT-223-3_TabPin2", "U1", "AMS1117-3.3", -6.0, 4.4, 0, bottom=True,
-          pads={"1": "GND", "2": "3V3_AUX", "3": "12V"}, lcsc="C6186")
-u1in, u1gnd, u1tab = k.padxy("U1", "3"), k.padxy("U1", "1"), k.padxy("U1", "2", 1)
-if abs(u1tab[0] - (-9.15)) > 0.1:
-    u1tab = k.padxy("U1", "2", 0)
-c4v, c4g = two("C4", *C0805, "10uF 25V X5R", -0.6, 4.4, 90, True, (-0.6, 6.0), "12V", "GND", "C15850")
-c5v, c5g = two("C5", *C0805, "10uF 25V X5R", -11.5, 4.4, 90, True, (-11.5, 0), "3V3_AUX", "GND", "C15850")
+# 3.3 V aux LDO (bottom, under the receptacle): SOT-89, 1 GND / 2 VIN (tab) / 3 VOUT.  MCP1703AT-3302E/MB (16 V in,
+# Mouser/Digi-Key; pinout per Microchip DS20005122B table 3-1).  HT7533-1 (30 V in, LCSC C14289) is an alternative
+# only after its SOT-89 pinout has been read from the Holtek datasheet.
+U1 = k.fp("Package_TO_SOT_SMD", "SOT-89-3", "U1", "MCP1703AT-3302E/MB", -6.0, 5.4, 0, bottom=True,
+          pads={"1": "GND", "2": "12V", "3": "3V3_AUX"}, lcsc="")
+u1gnd, u1in, u1out = k.padxy("U1", "1"), k.padxy("U1", "2"), k.padxy("U1", "3")
+c4v, c4g = two("C4", *C0805, "10uF 25V X5R", -10.2, 5.2, 90, True, (-10.2, 7.0), "12V", "GND", "C15850")
+c5v, c5g = two("C5", *C0805, "10uF 25V X5R", -1.3, 5.9, 0, True, (-3.0, 5.9), "3V3_AUX", "GND", "C15850")
 c6v, c6g = two("C6", *C0402, "100nF", 7.0, 7.0, 0, True, (0, 7.0), "3V3_AUX", "GND", "C1525")
 r3s, r3g = two("R3", *R0402, "10k", -0.635, 8.0, 0, True, (0, 8.0), "PWRDIS", "GND", "C25744")
+# PERST# pull-down: a missing or sideband-less cable holds the drive in reset instead of floating E5 (review M2)
+r6s, r6g = two("R6", *R0402, "100k", 3.3, 7.65, 90, True, (3.3, 9.0), "PCIE_RST_N", "GND", "C25741")
 Q1 = k.fp("Package_TO_SOT_SMD", "SOT-23-3", "Q1", "2N7002", 3.0, 4.5, 0, bottom=True,
           pads={"1": "3V3_AUX", "2": "GND", "3": "CPRSNT_N"}, lcsc="C8545")
 q1g, q1s, q1d = k.padxy("Q1", "1"), k.padxy("Q1", "2"), k.padxy("Q1", "3")
 # 12 V bulk at the drive power pins
 c1v, c1g = two("C1", *C1206, "22uF 25V X5R", -16.0, 6.6, 0, True, (-14.0, 6.6), "12V", "GND", "C12891")
 c2v, c2g = two("C2", *C1206, "22uF 25V X5R", -20.9, 6.6, 0, True, (-18.0, 6.6), "12V", "GND", "C12891")
-c3v, c3g = two("C3", *C0402, "100nF 16V X7R", -12.6, 7.6, 0, True, (-14.5, 7.6), "12V", "GND", "C1525")
+c3v, c3g = two("C3", *C0402, "100nF 50V X7R", -12.6, 7.6, 0, True, (-14.5, 7.6), "12V", "GND", "C307331")
 # top band behind the receptacle: DualPortEn# pull-up, activity LED
 r4v, r4s = two("R4", *R0402, "10k", -17.0, 16.6, 0, False, (-20, 16.6), "3V3_AUX", "DUALPORTEN_N", "C25744")
 r5v, r5a = two("R5", *R0402, "1k", -22.6, 16.6, 0, False, (-25, 16.6), "3V3_AUX", "LED_A", "C11702")
-D2 = k.fp("LED_SMD", "LED_0603_1608Metric", "D2", "LED green", -19.6, 16.6, 180,
-          pads={"1": "ACT_N", "2": "LED_A"}, lcsc="C72043")
+D2 = k.fp("LED_SMD", "LED_0603_1608Metric", "D2", "KT-0603YG", -19.6, 16.6, 180,
+          pads={"1": "ACT_N", "2": "LED_A"}, lcsc="C2289")
 # input polyfuse (bottom, next to the power connector)
-f1i, f1o = two("F1", "Fuse", "Fuse_1812_4532Metric", "PTC 1812 Ihold>=2.6A 16V+", -16.2, 33.5, 90, True, (-16.2, 25),
-               "12V_IN", "12V", "")
+f1i, f1o = two("F1", "Fuse", "Fuse_1812_4532Metric", "mSMD300-16V (3 A hold)", -16.2, 33.5, 90, True, (-16.2, 25),
+               "12V_IN", "12V", "C6851473")
 # holder screws: M3 slots elongated along the drive insertion axis (Y), +-1.5 mm travel
 for i, (x, y) in enumerate([(21.5, 20.0), (21.5, 35.8), (-27.8, 21.0), (-27.8, 35.8)]):
     k.fp("u3adapter", "MountingSlot_M3_3.2x6.2", f"H{i+1}", "M3 slot", x, y, bom=False)
 
 # ------------------------------------------------------------------ outline + rule areas
-k.outline([(-31.5, 0), (25, 0), (25, 40), (14, 40), (14, EF), (-8, EF), (-8, 40), (-31.5, 40)])
+k.outline([(-31.5, YE), (25, YE), (25, 40), (14, 40), (14, EF), (-8, EF), (-8, 40), (-31.5, 40)])
 k.rule_area("NECKDOWN_J1", [(-17.0, 7.3), (17.4, 7.3), (17.4, 16.3), (-17.0, 16.3)])
-k.rule_area("NECKDOWN_J2", [(-2.4, 22.3), (8.6, 22.3), (8.6, 27.1), (-2.4, 27.1)])
+k.rule_area("NECKDOWN_J2", [(-2.4, 22.3), (8.6, 22.3), (8.6, 29.4), (-2.4, 29.4)])
 
 # ------------------------------------------------------------------ U.3 pad escapes
 J1p = lambda n: k.padxy("J1", n)
@@ -184,13 +189,45 @@ pet("0", [(13.97, 9.2), (13.97, 8.3), (14.37, 7.9), (16.5, 7.9), (16.9, 8.3), (1
     (6.35, 7.15), tune={"PET0_P": [(4, [0.286, 0.455, 0.623, 0.792], 0.24, 0.5), (2, [0.5], 0.24, 0.5)]})
 
 
-def per(lane, center, bottom_row=False):
-    """PER: U.3 pad -> via (already placed) -> L6 pair -> B row pad (B row reached from the U.3 side)."""
+def void_under(ref, layer, margin=0.15):
+    """No-pour keepout on one plane layer under each pad of ref (AC cap pads: less pad-to-plane capacitance)."""
+    for p in k.fps[ref].Pads():
+        bb = p.GetBoundingBox()
+        x0, y0 = P.ToMM(bb.GetX()) - k.O[0] - margin, P.ToMM(bb.GetY()) - k.O[1] - margin
+        x1, y1 = x0 + P.ToMM(bb.GetWidth()) + 2 * margin, y0 + P.ToMM(bb.GetHeight()) + 2 * margin
+        z = P.ZONE(k.b); ls = P.LSET(); ls.AddLayer(LAYER[layer]); z.SetLayerSet(ls)
+        o = z.Outline(); o.NewOutline()
+        for x, y in ((x0, y0), (x1, y0), (x1, y1), (x0, y1)):
+            o.Append(MM(x + k.O[0]), MM(y + k.O[1]))
+        z.SetIsRuleArea(True); z.SetZoneName(f"VOID_{ref}_{p.GetNumber()}")
+        z.SetDoNotAllowCopperPour(True); z.SetDoNotAllowVias(False); z.SetDoNotAllowTracks(False)
+        z.SetDoNotAllowPads(False); z.SetDoNotAllowFootprints(False)
+        k.b.Add(z)
+
+
+def per(lane, center, cap=None):
+    """PER: U.3 pad -> via (already placed) -> L6 pair -> B row pad (B row reached from the U.3 side).
+    cap = (yc, dx): lanes 0/1 get 220 nF 0402 caps on the bottom at y yc, x = pair centre +- dx (SFF-TA-1001 Rev 1.1
+    sec. 4.5, Table 4-11: a U.3 drive has no TX caps on lanes 0/1); the nets after the caps are C_PERn_P/N."""
     pn = {"0": ("S5", "S6"), "1": ("S12", "S13"), "2": ("S20", "S21"), "3": ("S26", "S27")}[lane]
     yv = YH if lane == "0" else YVR
     starts = [(j1pads[n], [(J1p(n)[0], yv)]) for n in pn]
     bp = {"0": ("B3", "B4"), "1": ("B6", "B7"), "2": ("B15", "B16"), "3": ("B18", "B19")}[lane]
     ends = [(None, [(J2p(n)[0], YB - 0.355)]) for n in bp]
+    res0 = {}
+    if cap:
+        yc, dx = cap
+        xc = center[0][0]
+        starts2 = []
+        for i, n in enumerate(sorted(pn, key=lambda n: J1p(n)[0])):
+            net = j1pads[n]; x = xc + (-dx if i == 0 else dx); ref = f"C{11 + 2 * int(lane) + i}"
+            near, far = two(ref, *C0402, "220nF 16V X7R", x, yc, 90, True, (x, yc - 1), net, "C_" + net, "C16772")
+            void_under(ref, "L5")
+            k.track(net, "L6", [(J1p(n)[0], yv), (J1p(n)[0], yv + 0.5), (x, near[1] - 0.5), near], PCIE_W)
+            starts2.append(("C_" + net, [far, (far[0], far[1] + 0.35)]))
+            res0[net] = None
+        starts = starts2
+        center = [(xc, yc + 1.05)] + [p for p in center if p[1] > yc + 1.3]
     res = k.pair("L6", center, starts, ends)
     for net, (full, sn, en) in res.items():
         pad = min(bp, key=lambda n: math.dist(J2p(n), full[-1]))
@@ -200,8 +237,8 @@ def per(lane, center, bottom_row=False):
 
 per("3", [(-7.32, 15.4), (-7.32, 15.9), (-0.5, 22.72), (-0.5, 22.85)])
 per("2", [(-2.52, 15.4), (-2.52, 15.9), (1.0, 19.42), (1.0, 22.85)])
-per("1", [(3.88, 15.4), (3.88, 15.9), (6.0, 18.02), (6.0, 22.0), (5.5, 22.5), (5.5, 22.85)])
-per("0", [(10.16, 9.8), (10.16, 15.8), (7.0, 18.96), (7.0, 22.85)])
+per("1", [(3.88, 15.4), (3.88, 18.05), (6.0, 20.17), (6.0, 22.0), (5.5, 22.5), (5.5, 22.85)], cap=(17.0, 0.5))
+per("0", [(10.165, 9.8), (10.165, 15.8), (7.0, 18.965), (7.0, 22.85)], cap=(12.0, 0.635))
 
 # REFCLK0: E7/E8 (L1) -> 100 ohm pair -> via pair -> L6 -> B12/B13.  Polarity must be preserved.
 starts = [(j1pads[n], [(J1p(n)[0], 14.6), (J1p(n)[0], 15.2)]) for n in ("E7", "E8")]
@@ -220,10 +257,11 @@ for net, (full, sn, en) in res.items():
 assert k.padnet("J2", "B12") == "REFCLK0_P", "REFCLK polarity flipped!"
 
 # ------------------------------------------------------------------ OCuLink GND / low-speed vias
-lsv = {"A13": 1.8, "A12": 2.43, "A10": 3.07, "A9": 3.7}
-for pad, x in lsv.items():
+lsv = {"A13": (1.8, YLS1), "A12": (2.43, YLS2), "A10": (3.07, YLS1), "A9": (3.7, YLS2)}
+for pad, (x, y) in lsv.items():
     net = j2pads[pad]; px, py = J2p(pad)
-    k.track(net, "L6", [(px, 26.15), (x, YV)], 0.12); k.via(net, x, YV)
+    k.track(net, "L6", [(px, 26.15), (x, YV), (x, y)], 0.127); k.via(net, x, y)
+k.via("GND", -0.25, YBR)                       # trace-side return via between the PET3 and PET2 transitions
 for x in (-1.75, -0.25, 1.25, 4.25, 5.875, 7.5):
     k.via("GND", x, YG2)
 for x in (-2.5, 3.3, 4.0):
@@ -238,31 +276,37 @@ k.zone("GND", "L6", [(-4.9, 23.4), (10.9, 23.4), (10.9, EF - 0.3), (-4.9, EF - 0
 
 # ------------------------------------------------------------------ low-speed on L3
 LS = 0.15
-k.track("CPRSNT_N", "L3", [(1.8, YV), (1.8, 16.4), (1.68, 16.0), (1.68, 8.0)], LS); k.via("CPRSNT_N", 1.68, 8.0)
-k.track("PCIE_RST_N", "L3", [(2.43, YV), (2.43, 16.4), (2.08, 16.0), (2.08, 12.0), (3.88, 10.2), (3.88, 9.0)], LS)
+k.track("CPRSNT_N", "L3", [(1.8, YLS1), (1.8, 16.4), (1.68, 16.0), (1.68, 8.0)], LS); k.via("CPRSNT_N", 1.68, 8.0)
+k.track("PCIE_RST_N", "L3", [(2.43, YLS2), (2.43, 16.4), (2.08, 16.0), (2.08, 12.0), (3.88, 10.2), (3.88, 9.0)], LS)
 x24 = J1p("E24")[0]; x23 = J1p("E23")[0]
-k.track("SMBDAT", "L3", [(3.07, YV), (3.07, 27.8), (2.77, 28.1), (-6.7, 28.1), (-7.0, 27.8), (-7.0, 16.6),
+k.track("SMBDAT", "L3", [(3.07, YLS1), (3.07, 29.1), (2.77, 29.4), (-6.7, 29.4), (-7.0, 29.1), (-7.0, 16.6),
                          (-7.3, 16.3), (x24 + 0.3, 16.3), (x24, 16.0), (x24, YVR)], LS)
-k.track("SMBCLK", "L3", [(3.7, YV), (3.7, 28.2), (3.1, 28.6), (-7.2, 28.6), (-7.5, 28.3), (-7.5, 17.1),
+k.track("SMBCLK", "L3", [(3.7, YLS2), (3.7, 29.5), (3.3, 29.9), (-7.2, 29.9), (-7.5, 29.6), (-7.5, 17.1),
                          (-7.8, 16.8), (x23 + 0.2, 16.8), (x23, 17.0), (x23, 17.3)], LS)
 
 # ------------------------------------------------------------------ bottom (L6) power + misc
 P3 = 0.3
 k.track("CPRSNT_N", "L6", [(1.68, 8.0), (q1d[0], 7.4), q1d], 0.2)
-k.via("GND", q1s[0], 6.6); k.track("GND", "L6", [q1s, (q1s[0], 6.6)], 0.3)
-# 3V3 aux spine: tab -> west to the top-band via, -> east under the housing to Q1 gate, C6, E3
-k.track("3V3_AUX", "L6", [u1tab, (u1tab[0], 3.45), c5v], 0.4)
-k.track("3V3_AUX", "L6", [c5v, (-24.0, 3.45), (-24.0, 17.45)], P3); k.via("3V3_AUX", -24.0, 17.45)
-k.track("3V3_AUX", "L6", [(u1tab[0], 2.4), (u1tab[0], 0.7), (5.48, 0.7), (5.48, 9.0)], P3)
-k.track("3V3_AUX", "L6", [(q1g[0], 0.7), q1g], P3)
+k.via("GND", q1s[0], 6.45); k.track("GND", "L6", [q1s, (q1s[0], 6.45)], 0.3)
+k.track("GND", "L6", [r6g, (q1s[0], 6.45)], 0.25)
+k.track("PCIE_RST_N", "L6", [r6s, (3.88, 9.0)], 0.2)
+# 3V3 aux: LDO out -> C5 -> via -> L1 spine at y 7.2 under the receptacle housing: east to E3 (and on L6 to Q1's gate
+# and C6), west to the pull-up / LED band behind the receptacle
+YS3 = 7.2
+V3 = (-2.6, 7.75)
+k.track("3V3_AUX", "L6", [u1out, (c5v[0], u1out[1]), c5v], 0.4)
+k.track("3V3_AUX", "L6", [(c5v[0], u1out[1]), V3], 0.4); k.via("3V3_AUX", *V3)
+k.track("3V3_AUX", "L1", [(-24.0, 17.45), (-24.0, YS3), (5.48, YS3), (5.48, 9.0)], P3)
+k.track("3V3_AUX", "L1", [V3, (V3[0], YS3)], P3)
+k.track("3V3_AUX", "L6", [(5.48, 9.0), (5.48, q1g[1]), q1g], P3)
 k.track("3V3_AUX", "L6", [(5.48, c6v[1]), c6v], P3)
 k.via("GND", c6g[0], c6g[1] - 1.1); k.track("GND", "L6", [c6g, (c6g[0], c6g[1] - 1.1)], P3)
-k.via("GND", c5g[0], c5g[1] + 1.1); k.track("GND", "L6", [c5g, (c5g[0], c5g[1] + 1.1)], P3)
-k.via("GND", u1gnd[0] + 1.3, u1gnd[1]); k.track("GND", "L6", [u1gnd, (u1gnd[0] + 1.3, u1gnd[1])], 0.5)
-k.track("12V", "L6", [u1in, (-1.5, u1in[1]), (c4v[0], u1in[1] - 0.9), c4v], 0.5); k.via("12V", u1in[0], 8.0, 0.6, 0.3)
-k.track("3V3_AUX", "L6", [k.padxy("U1", "2", 0), k.padxy("U1", "2", 1)], 0.6)
-k.track("12V", "L6", [u1in, (u1in[0], 8.0)], 0.5)
-k.via("GND", c4g[0], 2.2); k.track("GND", "L6", [c4g, (c4g[0], 2.2)], 0.4)
+k.via("GND", c5g[0], c5g[1] - 1.5); k.track("GND", "L6", [c5g, (c5g[0], c5g[1] - 1.5)], 0.4)
+k.via("GND", u1gnd[0] + 1.4, u1gnd[1]); k.track("GND", "L6", [u1gnd, (u1gnd[0] + 1.4, u1gnd[1])], 0.4)
+# 12 V into the LDO: tab -> C4 -> via to the L4 plane
+k.track("12V", "L6", [u1in, (c4v[0], u1in[1]), c4v], 0.5)
+k.via("12V", c4v[0] + 1.3, u1in[1], 0.6, 0.3)
+k.via("GND", c4g[0], c4g[1] - 1.2); k.track("GND", "L6", [c4g, (c4g[0], c4g[1] - 1.2)], 0.4)
 k.track("PWRDIS", "L6", [(J1p("P3")[0], YH), r3s], 0.2)
 k.via("GND", -1.75, 8.75); k.track("GND", "L6", [r3g, (-1.75, 8.75)], 0.25)
 p14, p15 = J1p("P14")[0], J1p("P15")[0]
@@ -293,7 +337,7 @@ for x in (-17.6, -16.2, -14.8):
         k.via("12V", x, y, 0.6, 0.3)
 
 # ------------------------------------------------------------------ planes
-BOARD = [(-31.5, 0), (25, 0), (25, 40), (14, 40), (14, EF), (-8, EF), (-8, 40), (-31.5, 40)]
+BOARD = [(-31.5, YE), (25, YE), (25, 40), (14, 40), (14, EF), (-8, EF), (-8, 40), (-31.5, 40)]
 k.zone("GND", "L2", BOARD, clearance=0.2)
 k.zone("GND", "L5", BOARD, clearance=0.2)
 k.zone("12V", "L4", BOARD, clearance=0.2)
@@ -301,7 +345,7 @@ k.zone("GND", "L3", BOARD, clearance=0.25)
 
 # ------------------------------------------------------------------ silkscreen
 k.text("U.3 CAGE", 19.5, 28.0, P.F_SilkS, 1.0)
-k.text("rev A", 19.5, 30.0, P.F_SilkS, 1.0)
+k.text("rev B", 19.5, 30.0, P.F_SilkS, 1.0)
 k.text("12V IN", -27.5, 29.0, P.F_SilkS, 1.0)
 k.text("J2 OCuLink", 19.0, 28.0, P.B_SilkS, 1.0, mirror=True)
 
@@ -319,14 +363,15 @@ with open(os.path.join(OUT, "bom_raw.json"), "w") as f:
 VIA_H = 1.5784
 lens = {}
 for net, segs in k.lines.items():
-    if net.startswith(("PET", "PER", "REFCLK")):
+    if net.startswith(("PET", "PER", "C_PER", "REFCLK")):
         L = sum(plen(p) for _, p, _ in segs) + VIA_H * len(k.vias_by_net.get(net, []))
         lens[net] = round(L, 3)
 with open(os.path.join(OUT, "lengths.json"), "w") as f:
     json.dump(lens, f, indent=1)
 for base in sorted({n.rsplit("_", 1)[0] for n in lens}):
     p, n = lens.get(base + "_P"), lens.get(base + "_N")
-    print(f"{base:8s} P {p:7.3f}  N {n:7.3f}  skew {abs(p - n):.3f}")
+    if p is not None and n is not None:
+        print(f"{base:8s} P {p:7.3f}  N {n:7.3f}  skew {abs(p - n):.3f}")
 
 # ------------------------------------------------------------------ skew rules + zone fill + DRC
 if __name__ == "__main__":
@@ -341,6 +386,10 @@ if __name__ == "__main__":
 (rule "PET0 uncoupled exception (skew bumps, approved by design-rules Rev B)"
     (condition "A.NetName == 'PET0_P' || A.NetName == 'PET0_N'")
     (constraint diff_pair_uncoupled (max 7mm)))
+(rule "PER0/PER1 AC caps: via-to-cap fan (0402 pads sit wider than the pair), <= 4 mm per line"
+    (condition "A.NetName == 'PER0_P' || A.NetName == 'PER0_N' || A.NetName == 'PER1_P' || A.NetName == 'PER1_N'")
+    (constraint diff_pair_gap (min 0.14mm) (max 1.3mm))
+    (constraint diff_pair_uncoupled (max 6mm)))
 (rule "J2 locating NPTH vs unused corner pads"
     (condition "A.Type == 'Pad' && !A.isPlated() && B.Type == 'Pad' && B.NetName == ''")
     (constraint hole_clearance (min 0.1mm)))
