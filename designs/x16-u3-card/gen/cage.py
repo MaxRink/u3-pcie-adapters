@@ -72,10 +72,11 @@ C0402 = ("Capacitor_SMD", "C_0402_1005Metric")
 C0805 = ("Capacitor_SMD", "C_0805_2012Metric")
 C1206 = ("Capacitor_SMD", "C_1206_3216Metric")
 
-# 3.3 V aux LDO (bottom, under the receptacle): SOT-89, 1 GND / 2 VIN (tab) / 3 VOUT.  HT7533-1 (30 V in, LCSC) or
-# MCP1703AT-3302E/MB (16 V in, Mouser/Digi-Key) share this pinout; both are stable with the 10 uF ceramic.
-U1 = k.fp("Package_TO_SOT_SMD", "SOT-89-3", "U1", "HT7533-1 (alt MCP1703AT-3302E/MB)", -6.0, 5.4, 0, bottom=True,
-          pads={"1": "GND", "2": "12V", "3": "3V3_AUX"}, lcsc="C14289")
+# 3.3 V aux LDO (bottom, under the receptacle): SOT-89, 1 GND / 2 VIN (tab) / 3 VOUT.  MCP1703AT-3302E/MB (16 V in,
+# Mouser/Digi-Key; pinout per Microchip DS20005122B table 3-1).  HT7533-1 (30 V in, LCSC C14289) is an alternative
+# only after its SOT-89 pinout has been read from the Holtek datasheet.
+U1 = k.fp("Package_TO_SOT_SMD", "SOT-89-3", "U1", "MCP1703AT-3302E/MB", -6.0, 5.4, 0, bottom=True,
+          pads={"1": "GND", "2": "12V", "3": "3V3_AUX"}, lcsc="")
 u1gnd, u1in, u1out = k.padxy("U1", "1"), k.padxy("U1", "2"), k.padxy("U1", "3")
 c4v, c4g = two("C4", *C0805, "10uF 25V X5R", -10.2, 5.2, 90, True, (-10.2, 7.0), "12V", "GND", "C15850")
 c5v, c5g = two("C5", *C0805, "10uF 25V X5R", -1.3, 5.9, 0, True, (-3.0, 5.9), "3V3_AUX", "GND", "C15850")

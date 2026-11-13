@@ -22,8 +22,8 @@ Renders are regenerated from the KiCad files whenever a board changes (see
 
 Rev B. 56.5 x 37.65 mm, 6 layers (JLC06161H-3313), PCIe lanes on L1/L6 only. The OCuLink receptacle sits on the
 bottom in the edge notch, the U.3 receptacle on top mates the drive at the upper edge, and a PCIe 6-pin
-(Molex Mini-Fit Jr) brings 12 V through a 3 A PTC fuse; a SOT-89 LDO (HT7533-1, or MCP1703AT-3302E/MB from
-Mouser/Digi-Key, same pinout) makes 3.3 V aux. Four M3 slots (3.2 x 6.2 mm, along the insertion axis) hold it in
+(Molex Mini-Fit Jr) brings 12 V through a 3 A PTC fuse; a SOT-89 LDO (MCP1703AT-3302E/MB, pinout checked
+against the Microchip datasheet; the HT7533-1 is an LCSC alternative only after its pinout is checked) makes 3.3 V aux. Four M3 slots (3.2 x 6.2 mm, along the insertion axis) hold it in
 the printed cage.
 
 Rev B changes (from the rev A review, `docs/reviews/cage-board-review.md`, and `docs/reviews/full-review-2026-11-13.md`):

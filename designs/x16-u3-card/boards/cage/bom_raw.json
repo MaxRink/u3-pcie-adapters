@@ -34,9 +34,9 @@
  },
  {
   "ref": "U1",
-  "value": "HT7533-1 (alt MCP1703AT-3302E/MB)",
+  "value": "MCP1703AT-3302E/MB",
   "fp": "Package_TO_SOT_SMD:SOT-89-3",
-  "lcsc": "C14289",
+  "lcsc": "",
   "side": "bottom",
   "x": -6.0,
   "y": 5.4,
