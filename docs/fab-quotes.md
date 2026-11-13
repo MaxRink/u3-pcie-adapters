@@ -51,6 +51,23 @@ the cards stay on 6 layers. The boards use 0.2 mm vias on the low-speed sideband
 4-drive card) and 0.25 mm vias on the PCIe lanes. Saving the roughly $20 via surcharge at JLCPCB would mean
 0.3 / 0.6 mm vias everywhere, which needs the sideband blocks rerouted and larger lane vias, so it was not done.
 
+### 4, 6 and 8 layers
+
+Same spec, only the layer count and matching stackup changed (JLC04161H-3313 / JLC06161H-3313 / JLC08161H-3313).
+
+| Board | Qty | JLCPCB 4L | JLCPCB 6L | JLCPCB 8L | PCBWay 4L | PCBWay 6L | PCBWay 8L |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| x8 | 5 | $154.89 | $140.76 | $290.14 | $172.13 | $266.70 | $326.65 |
+| x8 | 10 | $177.84 | $161.42 | $316.97 | $198.19 | $297.91 | $367.96 |
+| x16, 3 drives | 5 | $160.92 | $146.14 | $296.93 | n/q | $280.85 | $344.60 |
+| x16, 3 drives | 10 | $189.77 | $172.16 | $330.34 | n/q | $320.13 | $396.46 |
+| x16, 4 drives | 5 | $169.68 | $153.99 | $307.80 | $201.44 | $301.95 | $371.33 |
+| x16, 4 drives | 10 | $207.29 | $187.86 | $349.98 | $255.40 | $363.91 | $439.05 |
+
+PCBWay prices are with ENIG fingers. 8 layers would ease the sideband routing and let the x16 clock pass under
+the sideband blocks without the two repeater buffers, but it does not shorten the lanes to drives C and D, and
+PCIe lanes on inner layers would need back-drilled vias. 6 layers at JLCPCB is the cheapest of the six options.
+
 ## Assembly
 
 Neither site gives an assembly quote without uploaded Gerber, BOM and placement files, so these are built from
