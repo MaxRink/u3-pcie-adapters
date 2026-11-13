@@ -56,7 +56,7 @@ def title_of(name):
     if name == "backplane":
         return "4-drive top-loading hot-plug cage behind a 120 mm case fan"
     if name == "backplane6":
-        return "6-drive top-loading hot-plug cage, 120 mm wide (stand-in board)"
+        return "6-drive top-loading hot-plug cage, 120 mm wide"
     if name.endswith("_top"):
         return BOARDS[name[:-4]]["title"] + ", top-feed shroud"
     m = MULTI.match(name)

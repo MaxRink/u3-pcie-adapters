@@ -1,12 +1,16 @@
 {
  "name": "backplane6",
- "title": "6-drive top-loading hot-plug cage, 120 mm wide (stand-in board)",
- "board": "stand-in from the backplane layout's reported geometry",
+ "title": "6-drive top-loading hot-plug cage, 120 mm wide",
+ "board": {
+  "ref": "origin/claude/project-thread-5y5t4p",
+  "path": "designs/u3-backplane/boards/backplane6/u3_backplane6.kicad_pcb",
+  "commit": "8f72bab"
+ },
  "info": {
   "spec": {
    "width": 119.6,
    "height": 90.5,
-   "thickness": 1.6,
+   "thickness": 1.5784,
    "drive_x": [
     9.8,
     29.8,
@@ -23,10 +27,6 @@
      75.0
     ],
     [
-     116.4,
-     75.0
-    ],
-    [
      36.0,
      4.2
     ],
@@ -37,50 +37,16 @@
     [
      116.0,
      4.2
+    ],
+    [
+     116.4,
+     75.0
     ]
    ],
-   "vents": [
-    [
-     17.05,
-     22.55,
-     28.75,
-     55.25
-    ],
-    [
-     37.05,
-     42.55,
-     28.75,
-     55.25
-    ],
-    [
-     57.05,
-     62.55,
-     28.75,
-     55.25
-    ],
-    [
-     77.05,
-     82.55,
-     28.75,
-     55.25
-    ],
-    [
-     97.05,
-     102.55,
-     28.75,
-     55.25
-    ]
-   ],
-   "slimsas_x": [
-    15.8,
-    55.8,
-    95.8
-   ],
-   "power_x": [
-    48.0,
-    72.0
-   ],
-   "placeholder": true
+   "vents": [],
+   "slimsas_x": [],
+   "power_x": [],
+   "placeholder": false
   },
   "params": {
    "gap_side": 2.5,
@@ -115,11 +81,11 @@
    ],
    "z": [
     0,
-    128.35
+    128.3284
    ]
   },
   "board": {
-   "top_z": 19.0,
+   "top_z": 18.978399999999997,
    "origin_corner": [
     119.8,
     133.0
@@ -141,19 +107,17 @@
    10.0
   ],
   "drive_z": [
-   25.5,
-   125.95
+   25.48,
+   125.93
   ],
   "guide_shelves_z": [
    53.5,
    118.0
   ],
-  "comb_top_z": 120.0
+  "comb_top_z": 120.0,
+  "board_part_clashes_mm3": {}
  },
  "bom": {
-  "U.3 vertical receptacle PSAS5F3130021TR": 6,
-  "SlimSAS 8i right-angle receptacle U10A474240T": 3,
-  "Mini-Fit Jr 2x4 right-angle header (PCIe 8-pin)": 2,
   "drive": 6,
   "M3x6 cap screw (backplane to base)": 5,
   "M3 heat-set insert": 19,
@@ -219,11 +183,11 @@
    "petg_g": 10.0
   },
   "lid": {
-   "volume_cm3": 29.5,
+   "volume_cm3": 29.4,
    "size_mm": [
     120.0,
     114.0,
-    12.7
+    12.6
    ],
    "petg_g": 17.0
   }

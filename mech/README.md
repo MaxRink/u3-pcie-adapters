@@ -15,8 +15,7 @@ board changes. All designs are built around 120 mm fans.
 | `x8_end3` | three cards in neighbouring slot pairs on **one shared end fan** | one 120 mm for 6 drives | from the board file |
 | `x8_hood3`, `x16p_hood3` | three cards under **one shared hood** | one 120 mm per 6 drives, on top | from the board file |
 | `cage` | OCuLink cage board, 1 drive, sled | 60x25 | from the board file |
-| `backplane` | top-loading hot-plug cage for 4 drives behind a front case fan | the case's 120 mm front fan | from the board file |
-| `backplane6` | the same for 6 drives, 120 mm wide | the case's 120 mm front fan | **stand-in board** from the layout's reported geometry |
+| `backplane`, `backplane6` | top-loading hot-plug cage for 4 / 6 drives behind a front case fan, 80 / 120 mm wide | the case's 120 mm front fan | from the board files |
 
 Any card and card count works for the shared styles: `python3 mech/build.py x16p3_end2`.
 
@@ -151,12 +150,9 @@ thermal model does not cover; without the lid, air escapes upwards and the rear 
 runs hotter; the height of the case's fan above the compartment floor is not known, so the fan
 position is a parameter (`fan` centre at half the fan size above the underside).
 
-The 4-drive cage is generated from the routed board: receptacle and hole positions are read
-from the board file, and the build checks that no printed part touches a part on the board
-(`board_part_clashes_mm3` in the manifest, empty). The 6-drive board is not pushed yet, so
-`backplane6` still uses a stand-in from the geometry its layout reported on 2026-11-13
-(119.6 x 90.5 mm, `spec6()` in [`backplane_cage.py`](backplane_cage.py)); add it to `boards.json`
-as `backplane6` when it lands and it is picked up the same way.
+Both cages are generated from the routed boards: receptacle and hole positions are read from the
+board files, and the build checks that no printed part touches a part on the board
+(`board_part_clashes_mm3` in the manifest, empty for both).
 
 ## Single-drive sled (`cage`)
 
@@ -230,7 +226,6 @@ the bottom of the gold fingers.
 | Drive envelope 100.45 x 69.85 x 15, bottom holes 61.72 mm apart at 14.0 and 90.6 mm from the connector end | SFF-8201 values from memory; the spec could not be fetched from here | **check against a drive before printing** |
 | Plug centred on the drive width | assumption shared with the board layout | **check** |
 | Vertical receptacle PSAS5F313: 8.15 mm tall, drive end face 6.5 mm above the board | height from the datasheet; the drawing gives no mated height | **unverified** |
-| 6-drive backplane geometry | reported by the layout thread, board not pushed | stand-in |
 | Jonsbo N5 compartment and the position of its front fans | not measured | **unknown** |
 | SlimSAS, OCuLink, Mini-Fit, fan, bracket models | envelope dimensions, appearance level | fine for renders, not for fit |
 | Interference | checked numerically between printed parts, boards, drives, fans and bracket for every build (`manifest.json`) | no overlaps |

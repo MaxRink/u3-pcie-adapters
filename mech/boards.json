@@ -3,5 +3,6 @@
   "x16p3": {"ref": "origin/claude/project-thread-tt8pfu", "path": "designs/x16-u3-card/boards/x16p3/u3_x16p3.kicad_pcb", "kind": "card", "title": "x16 card, 3 drives"},
   "x16p": {"ref": "origin/claude/project-thread-tt8pfu", "path": "designs/x16-u3-card/boards/x16p/u3_x16p.kicad_pcb", "kind": "card", "title": "x16 card, 4 drives"},
   "cage": {"ref": "origin/claude/project-thread-o4epuj", "path": "designs/x16-u3-card/boards/cage/u3_cage.kicad_pcb", "kind": "sled", "title": "OCuLink cage board, 1 drive"},
-  "backplane": {"ref": "origin/claude/project-thread-5y5t4p", "path": "designs/u3-backplane/boards/backplane/u3_backplane.kicad_pcb", "kind": "backplane", "title": "4-drive backplane"}
+  "backplane": {"ref": "origin/claude/project-thread-5y5t4p", "path": "designs/u3-backplane/boards/backplane/u3_backplane.kicad_pcb", "kind": "backplane", "title": "4-drive backplane"},
+  "backplane6": {"ref": "origin/claude/project-thread-5y5t4p", "path": "designs/u3-backplane/boards/backplane6/u3_backplane6.kicad_pcb", "kind": "backplane", "title": "6-drive backplane"}
 }
