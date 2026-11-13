@@ -1,12 +1,16 @@
 {
  "name": "backplane",
- "title": "4-drive top-loading hot-plug cage behind a 120 mm case fan (stand-in board)",
- "board": "stand-in from the backplane layout's reported geometry",
+ "title": "4-drive top-loading hot-plug cage behind a 120 mm case fan",
+ "board": {
+  "ref": "origin/claude/project-thread-5y5t4p",
+  "path": "designs/u3-backplane/boards/backplane/u3_backplane.kicad_pcb",
+  "commit": "9bbe40e"
+ },
  "info": {
   "spec": {
    "width": 79.6,
    "height": 90.5,
-   "thickness": 1.6,
+   "thickness": 1.5784,
    "drive_x": [
     9.8,
     29.8,
@@ -21,47 +25,22 @@
      75.0
     ],
     [
-     76.4,
-     75.0
-    ],
-    [
      36.0,
      4.2
     ],
     [
      76.0,
      4.2
-    ]
-   ],
-   "vents": [
-    [
-     17.05,
-     22.55,
-     28.75,
-     55.25
     ],
     [
-     37.05,
-     42.55,
-     28.75,
-     55.25
-    ],
-    [
-     57.05,
-     62.55,
-     28.75,
-     55.25
+     76.4,
+     75.0
     ]
    ],
-   "slimsas_x": [
-    15.8,
-    55.8
-   ],
-   "power_x": [
-    28.0,
-    52.0
-   ],
-   "placeholder": true
+   "vents": [],
+   "slimsas_x": [],
+   "power_x": [],
+   "placeholder": false
   },
   "params": {
    "gap_side": 2.5,
@@ -96,11 +75,11 @@
    ],
    "z": [
     0,
-    128.35
+    128.3284
    ]
   },
   "board": {
-   "top_z": 19.0,
+   "top_z": 18.978399999999997,
    "origin_corner": [
     79.8,
     133.0
@@ -120,19 +99,17 @@
    10.0
   ],
   "drive_z": [
-   25.5,
-   125.95
+   25.48,
+   125.93
   ],
   "guide_shelves_z": [
    53.5,
    118.0
   ],
-  "comb_top_z": 120.0
+  "comb_top_z": 120.0,
+  "board_part_clashes_mm3": {}
  },
  "bom": {
-  "U.3 vertical receptacle PSAS5F3130021TR": 4,
-  "SlimSAS 8i right-angle receptacle U10A474240T": 2,
-  "Mini-Fit Jr 2x4 right-angle header (PCIe 8-pin)": 2,
   "drive": 4,
   "M3x6 cap screw (backplane to base)": 4,
   "M3 heat-set insert": 18,
@@ -198,11 +175,11 @@
    "petg_g": 10.0
   },
   "lid": {
-   "volume_cm3": 20.9,
+   "volume_cm3": 20.8,
    "size_mm": [
     80.0,
     114.0,
-    12.7
+    12.6
    ],
    "petg_g": 12.0
   }

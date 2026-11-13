@@ -47,6 +47,8 @@ procedural.REGISTRY.update({
     "Molex_Mini-Fit_Jr_5569-06A2_2x03_P4.20mm_Horizontal": _as_proc(parts.minifit, 3),
     "Molex_Mini-Fit_Jr_5569-08A2_2x04_P4.20mm_Horizontal": _as_proc(parts.minifit, 4),
     "PinHeader_1x03_P2.54mm_Vertical_SMD": _as_proc(parts.pin_header, 3, shunt_at=1),
+    "Amphenol_PSAS5F313002_SFF-8639_U3_Vertical_SMD": _as_proc(parts.u3_receptacle_vertical),
+    "Amphenol_U10A474_SlimSAS_8i_SFF-8654_RA_SMD": _as_proc(parts.slimsas_8i_ra),
 })
 
 

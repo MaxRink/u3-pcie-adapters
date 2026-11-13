@@ -36,12 +36,14 @@ CARDS = [n for n, c in BOARDS.items() if c["kind"] == "card"]
 # every card gets both shroud styles: "<card>" = end fan, air along the card; "<card>_top" = top-feed, fans behind the drives
 # shared fan: "<card>_end<n>" = n cards on one end fan, "<card>_hood<n>" = n cards under one hood with fans on top
 MULTI = re.compile(r"^(.+)_(end|hood)(\d)$")
-ALL = list(BOARDS) + [n + "_top" for n in CARDS] + ["x8_end3", "x8_hood3", "x16p_hood3"] + ["backplane", "backplane6"]      # plus "parts" for the bought-part STEP library
+ALL = [n for n in BOARDS if not n.startswith("backplane")] + [n + "_top" for n in CARDS] + ["x8_end3", "x8_hood3", "x16p_hood3"] + ["backplane", "backplane6"]      # plus "parts" for the bought-part STEP library
 
 
 def kind_of(name):
     if name.startswith("backplane"):
         return "backplane"
+    if name.endswith("_top") and name[:-4] not in BOARDS:
+        raise KeyError(name)
     if name.endswith("_top"):
         return "card_top"
     m = MULTI.match(name)
@@ -52,7 +54,7 @@ def kind_of(name):
 
 def title_of(name):
     if name == "backplane":
-        return "4-drive top-loading hot-plug cage behind a 120 mm case fan (stand-in board)"
+        return "4-drive top-loading hot-plug cage behind a 120 mm case fan"
     if name == "backplane6":
         return "6-drive top-loading hot-plug cage, 120 mm wide (stand-in board)"
     if name.endswith("_top"):
@@ -93,6 +95,8 @@ def assemble(name):
     """Return dict(board, result, items) for one assembly."""
     kind = kind_of(name)
     if kind == "backplane":
+        if name in BOARDS:                              # the real board is pushed: take the geometry from it
+            return assemble_backplane(name)
         res = (backplane_cage.build(backplane_cage.spec6(), backplane_cage.CageParams(max_width=120.0)) if name == "backplane6"
                else backplane_cage.build(None, backplane_cage.CageParams(max_width=80.0)))   # 80 / 120 mm wide: modules tile at the board pitch
         items = [dict(mesh=scene.tess(res["board_solid"]), material="fr4", group="board", name="pcb")]
@@ -114,6 +118,36 @@ def assemble(name):
         res = {"sled": sled, "card": card_shroud, "card_top": card_shroud_top}[kind].build(board)
         items = scene.board_items(board)
     items += scene.printed_items(res["printed"]) + scene.hardware_items(res["hardware"])
+    return dict(board=board, result=res, items=items)
+
+
+def assemble_backplane(name):
+    """Cage around the real backplane board: receptacles and holes are read from the board file."""
+    board = boardio.load(name)
+    rec = sorted(board.footprints("SFF-8639_U3_Vertical"), key=lambda f: f["x"])
+    pos = [board.xy(f["x"], f["y"]) for f in rec]
+    spec = backplane_cage.BackplaneSpec(
+        width=board.L, height=board.Hh, thickness=board.t, drive_x=tuple(round(float(x), 3) for x, _ in pos),
+        drive_y=round(float(pos[0][1]), 3), holes=tuple((round(float(h[0]), 3), round(float(h[1]), 3)) for h in board.mount_holes()),
+        vents=(), slimsas_x=(), power_x=(), placeholder=False)
+    res = backplane_cage.build(spec, backplane_cage.CageParams(max_width=round(len(rec) * 20.0, 1)))
+    b = res["info"]["board"]
+    M = np.eye(4)
+    M[0, 0] = M[1, 1] = -1.0                              # board turned 180 deg about z
+    M[:3, 3] = (b["origin_corner"][0], b["origin_corner"][1], b["top_z"])
+    res["board_solid"] = board.solid().rotate((0, 0, 0), (0, 0, 1), 180).translate(tuple(M[:3, 3]))
+    res["hardware"] = [h for h in res["hardware"] if not h[1].startswith("J")]
+    res["board_matrix"] = M
+    # nothing printed may touch a part on the board
+    clash = {}
+    for (x0, x1, y0, y1, z0, z1, ref) in board.part_boxes():
+        kb = backplane_cage.box(x0, x1, y0, y1, z0, z1).rotate((0, 0, 0), (0, 0, 1), 180).translate(tuple(M[:3, 3]))
+        for k, wp in res["printed"].items():
+            v = _vol(wp, kb)
+            if v > 0.5:
+                clash[f"{k} x {ref}"] = round(v, 1)
+    res["info"]["board_part_clashes_mm3"] = clash
+    items = scene.transform(scene.board_items(board), M) + scene.printed_items(res["printed"]) + scene.hardware_items(res["hardware"])
     return dict(board=board, result=res, items=items)
 
 
@@ -177,9 +211,10 @@ def export(name, a, check=True):
         sfx = f"_card{c + 1}" if len(offsets) > 1 else ""
         asm.add(res["board_solid"], name="pcb" + sfx, loc=cq.Location(cq.Vector(0, 0, dz)), color=color("fr4"))
         if board is not None:
+            base_loc = loc_of(raw["board_matrix"]) if "board_matrix" in raw else cq.Location(cq.Vector(0, 0, dz))
             for ref, mats, L in connector_solids(board):
                 for i, (w, m) in enumerate(mats):
-                    asm.add(w, name=f"{ref}_{i}{sfx}", loc=cq.Location(cq.Vector(0, 0, dz)) * L, color=color(m))
+                    asm.add(w, name=f"{ref}_{i}{sfx}", loc=base_loc * L, color=color(m))
     unique = dict(raw["printed"], **raw.get("shared_printed", {}))      # print files: every different part once
     for k, wp in unique.items():
         cq.exporters.export(wp, os.path.join(od, "print", f"{name}_{k}.step"))
