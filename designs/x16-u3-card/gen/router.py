@@ -5,6 +5,7 @@ clearance + half the new track width, so every route it returns is DRC clean by 
 rounding, covered by a small extra margin).  A* over (layer, x, y) on a 0.05 mm grid with 45-degree moves; layer
 changes place a through via (checked against all routing layers).  Zones are ignored (they refill around tracks).
 """
+import os
 import heapq, math
 import numpy as np
 from PIL import Image, ImageDraw
@@ -227,7 +228,7 @@ class Router:
                 out.add(t)
         return out
 
-    def run_tasks(self, tasks, max_tries=12, log=print):
+    def run_tasks(self, tasks, max_tries=int(os.environ.get('U3_TRIES', '12')), log=print):
         """Route (f, args, kw) tasks in order; a task that cannot route is searched again with the copper of
         earlier tasks as costly-but-passable, the tasks it crosses are ripped up, it is routed, and they are
         queued again.  Returns the failure messages."""

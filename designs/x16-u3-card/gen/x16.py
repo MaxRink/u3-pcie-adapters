@@ -46,8 +46,10 @@ DZ = 5.7                   # drives B-D sit this much higher than A (room for la
 YPD = {d: -24.0 - (0 if d == "A" else DZ) for d in DRV}  # receptacle peg lines
 YVTD = {d: YPD[d] + 3.6 for d in DRV}                   # via row between the top pad row and the fingers
 YVMD = {d: YPD[d] - 2.5 for d in DRV}                   # via row on the mating side of the bottom pad row
-YMD = {d: YPD[d] - 11.75 for d in DRV}                  # mating faces
-YE_A, YE_B = YMD["A"] + 1.0, YMD["B"] + 1.0             # window edges (pulled back 1 mm under the housing front)
+# window edges: 0.65 mm short of the receptacle housing face (10.05 mm from the pegs), as on the x8 card, so a
+# seated drive never touches the board (rev D; rev C had the edge 1.35 mm too far out, under the drive)
+YEDGE = float(os.environ.get("U3_YEDGE", sideband.YEDGE))
+YE_A, YE_B = YPD["A"] + YEDGE, YPD["B"] + YEDGE
 XSTEP = 84.5               # window step between drive A and drive B
 XF = 129.3                 # end of the finger span; the edge rises to -12.75 right of it
 XL = XS[DRV[-1]]
@@ -667,17 +669,21 @@ k.zone("12V_AUX", "L4", [(0, 1), (XR + 1, 1), (XR + 1, YTOP - 1), (0, YTOP - 1)]
 k.zone("GND", "L3", BOARD, clearance=0.25)
 
 # ------------------------------------------------------------------ holes: bracket screws + holder slots
+# bracket screw holes: keep the L4 12 V planes 1.1 mm off the hole wall (a screw must never reach 12 V)
+for hn, (hx, hy) in (("H1", (7.5, -94.75)), ("H2", (7.5, -9.35))):
+    k.keepout(f"{hn}_L4_VOID", [(hx + 2.7 * math.cos(math.radians(a)), hy + 2.7 * math.sin(math.radians(a)))
+                                for a in range(0, 360, 30)], ["L4"])
 k.fp("MountingHole", "MountingHole_3.2mm_M3", "H1", "bracket", 7.5, -94.75, bom=False)
 k.fp("MountingHole", "MountingHole_3.2mm_M3", "H2", "bracket", 7.5, -9.35, bom=False)
 for i, (x, y) in enumerate(((6.0, -30.0), (6.0, -60.0), (XR - 4.0, -50.0), (XR - 4.0, -80.0))):
     k.fp("u3adapter", "MountingSlot_M3_3.2x6.2", f"H{3 + i}", "M3 slot", x, y, bom=False)
 
 # ------------------------------------------------------------------ silkscreen
-k.text(f"U.3 x16 passive {N} drives  rev C", 150.0, -22.4, P.F_SilkS, 1.0)
+k.text(f"U.3 x16 passive {N} drives  rev D", 150.0, -22.4, P.F_SilkS, 1.0)
 k.text("C/D: PCIe Gen3 only" if N == 4 else "C: PCIe Gen3 only", 150.0, -25.6, P.F_SilkS, 1.0)
 k.text("x4x4x4x4 bifurcation" if N == 4 else "x4x4x4 / x8x4x4 bifurcation", 150.0, -24.0, P.F_SilkS, 1.0)
 for d in DRV:
-    k.text(f"DRIVE {d}", XS[d], YPD[d] - 9.0, P.B_SilkS, 1.0, mirror=True)
+    k.text(f"DRIVE {d}", XS[d], YPD[d] - 8.2, P.B_SilkS, 1.0, mirror=True)
 for ref, f in k.fps.items():
     for g in list(f.GraphicalItems()):          # library silk crowds the dense fields; JLC places by CPL
         if g.GetLayer() in (P.F_SilkS, P.B_SilkS) and g.GetClass() != "FP_TEXT":

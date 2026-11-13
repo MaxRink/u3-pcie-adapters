@@ -448,13 +448,17 @@ k.zone("12V_AUX", "L4", [(0, YSPL - 0.3), (XAUX + 0.3, YSPL - 0.3), (XAUX + 0.3,
                          (0, YTOP - 1)], clearance=0.2, thermal=False)
 k.zone("GND", "L3", BOARD, clearance=0.25)
 # ------------------------------------------------------------------ holes: bracket screws + holder slots
+# bracket screw holes: keep the L4 12 V planes 1.1 mm off the hole wall (a screw must never reach 12 V)
+for hn, (hx, hy) in (("H1", (7.5, -94.75)), ("H2", (7.5, -9.35))):
+    k.keepout(f"{hn}_L4_VOID", [(hx + 2.7 * math.cos(math.radians(a)), hy + 2.7 * math.sin(math.radians(a)))
+                                for a in range(0, 360, 30)], ["L4"])
 k.fp("MountingHole", "MountingHole_3.2mm_M3", "H1", "bracket", 7.5, -94.75, bom=False)
 k.fp("MountingHole", "MountingHole_3.2mm_M3", "H2", "bracket", 7.5, -9.35, bom=False)
 for i, (x, y) in enumerate(((6.0, -30.0), (6.0, -60.0), (XR - 4.0, -38.0), (XR - 4.0, -68.0))):
     k.fp("u3adapter", "MountingSlot_M3_3.2x6.2", f"H{3 + i}", "M3 slot", x, y, bom=False)
 
 # ------------------------------------------------------------------ silkscreen
-k.text("U.3 x8  rev C", 146.0, -14.0, P.F_SilkS, 1.0)
+k.text("U.3 x8  rev D", 146.0, -14.0, P.F_SilkS, 1.0)
 k.text("x4x4 bifurcation", 146.0, -15.6, P.F_SilkS, 1.0)
 k.text("DRIVE A", XA, -32.2, P.B_SilkS, 1.0, mirror=True)
 k.text("DRIVE B", XB, -32.2, P.B_SilkS, 1.0, mirror=True)

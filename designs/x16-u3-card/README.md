@@ -10,7 +10,7 @@ with a 3D-printed cooling shroud.
 
 | Board | What it is | Status |
 | --- | --- | --- |
-| **x8 card** (`boards/x8/`) | x8 slot (x4x4 bifurcation), 2 drives standing upright on their connectors, connectors facing the motherboard, passive, 9DBL0442 REFCLK buffer, full sidebands, per-drive 12 V jumper and eFuse, 190 mm | rev C routed, DRC clean (Rev E, all lanes ≤50 mm) |
+| **x8 card** (`boards/x8/`) | x8 slot (x4x4 bifurcation), 2 drives standing upright on their connectors, connectors facing the motherboard, passive, 9DBL0442 REFCLK buffer, full sidebands, per-drive 12 V jumper and eFuse, 190 mm | rev D routed, DRC clean (Rev E, all lanes ≤50 mm) |
 | **x16 card, passive, 4 drives** (`boards/x16p/`) | x16 slot (x4x4x4x4), 4 upright drives in a row on a 312 mm card; drives B–D sit 5.7 mm higher so lanes 8–15 pass under drive B | rev C routed, DRC clean; drive A in budget, B 45–54 mm, C ~110 mm, D ~170 mm: C/D run at PCIe Gen3 (silk says so), Gen4 on all four comes with the retimer card |
 | **x16 card, passive, 3 drives** (`boards/x16p3/`) | same card with drives A–C only, 239 mm; host bifurcation x4x4x4 or x8x4x4, lanes 12–15 unused | rev C routed, DRC clean; drive C at PCIe Gen3 |
 | **x16 card with retimer** | as above, with a retimer on lanes 8–15 so all 4 drives stay compliant | planned (part search) |
