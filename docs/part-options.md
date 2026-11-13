@@ -1,6 +1,7 @@
 # Part options, alternate card versions and purchase plan
 
-Status 2026-11-13. Covers the x8 card (2 drives), the x16 3-drive card and the x16 4-drive card, rev F.
+Status 2026-11-13. Covers the x8 card (2 drives), the x16 3-drive card and the x16 4-drive card, rev F (drives on the solder side, see the
+card README for the open question of moving them to the component side).
 Nothing in this document has been ordered. Prices are single-source snapshots from the day above and move quickly;
 re-check stock before ordering.
 
@@ -11,7 +12,7 @@ re-check stock before ordering.
 | Standard | `boards/x8`, `boards/x16p3`, `boards/x16p` | routed, DRC clean, fab files in `fab/` | default |
 | Standard, clock alternate 9DBL0442C | same boards, `*-BOM-clock-9DBL0442C.csv` | BOM only, no layout change | pin-identical to the PI6CB33401 |
 | Standard, eFuse alternate TPS259827 | same boards, `*-BOM-efuse-TPS259827.csv` | BOM only, no layout change | TPS259824 has thin stock |
-| CDCDB400 clock version | `boards/x8-cdcdb400`, `boards/x16p3-cdcdb400`, `boards/x16p-cdcdb400` | own layout (`U3_CLK=cdcdb400`), see section 2 for run state | second clock buffer family, in stock at Mouser and Digi-Key |
+| CDCDB400 clock version | `boards/x8-cdcdb400`, `boards/x16p3-cdcdb400`, `boards/x16p-cdcdb400` | own layout (`U3_CLK=cdcdb400`), routed, DRC clean, fab files in `fab/*-cdcdb400` | second clock buffer family, in stock at Mouser and Digi-Key |
 | Receptacle PSAS4F2130201TR version | none | planned, blocked on the Amphenol drawing | the 021TR has 16 pieces at LCSC and a 270 piece MOQ elsewhere |
 | Leaded eFuse version (TPS16630 HTSSOP-20) | none | planned, circuit worked out, layout not started | second eFuse family, solderable with an iron |
 | Hand-solder build | standard boards | build plan, section 5 | no new board needed for the practical variant |
