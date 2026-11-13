@@ -36,6 +36,9 @@ def poly(sp, fill):
 for z in b.Zones():
     if not z.GetIsRuleArea() and z.IsOnLayer(plane) and z.HasFilledPolysForLayer(plane):
         poly(z.GetFilledPolysList(plane), (90, 90, 90, 255))
+for t in b.GetTracks():
+    if t.GetClass() == "PCB_TRACK" and t.GetLayer() == P.In2_Cu:
+        dr.line([tp(t.GetStart()), tp(t.GetEnd())], fill=(40, 200, 80, 200), width=max(1, int(P.ToMM(t.GetWidth()) * S)))
 for L, col in ((P.B_Cu, (60, 110, 255, 170)), (P.F_Cu, (230, 60, 40, 170))):
     for z in b.Zones():
         if not z.GetIsRuleArea() and z.IsOnLayer(L) and z.HasFilledPolysForLayer(L):

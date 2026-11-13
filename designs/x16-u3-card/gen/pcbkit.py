@@ -57,6 +57,38 @@ def bump(line, si, fracs, h, L):
     return line[:si + 1] + ins + line[si + 1:]
 
 
+def _dedupe(pts):
+    """Drop repeated and collinear interior vertices."""
+    out = [pts[0]]
+    for q in pts[1:]:
+        if math.dist(q, out[-1]) < 1e-6:
+            continue
+        if len(out) >= 2:
+            a, b = out[-2], out[-1]
+            if abs((b[0] - a[0]) * (q[1] - b[1]) - (b[1] - a[1]) * (q[0] - b[0])) < 1e-9 and \
+                    (b[0] - a[0]) * (q[0] - b[0]) + (b[1] - a[1]) * (q[1] - b[1]) > 0:
+                out[-1] = q
+                continue
+        out.append(q)
+    return out
+
+
+def _split_at(pts, q, t):
+    """Insert the projection of q into the segment of pts that runs along t and has q's foot inside it."""
+    for i in range(len(pts) - 1):
+        a, c = pts[i], pts[i + 1]; sl = math.dist(a, c)
+        if sl < 1e-6:
+            continue
+        u = ((c[0] - a[0]) / sl, (c[1] - a[1]) / sl)
+        if abs(u[0] * t[1] - u[1] * t[0]) > 1e-6:
+            continue
+        pr = (q[0] - a[0]) * u[0] + (q[1] - a[1]) * u[1]
+        off = abs((q[0] - a[0]) * u[1] - (q[1] - a[1]) * u[0])
+        if 1e-3 < pr < sl - 1e-3 and off < 1.0:
+            return pts[:i + 1] + [(a[0] + u[0] * pr, a[1] + u[1] * pr)] + pts[i + 1:]
+    return pts
+
+
 def plen(pts):
     return sum(math.dist(pts[i], pts[i + 1]) for i in range(len(pts) - 1))
 
@@ -152,21 +184,29 @@ class Kit:
             t.SetStart(self.V(*a)); t.SetEnd(self.V(*c)); t.SetWidth(MM(w))
             t.SetLayer(LAYER[layer]); t.SetNet(self.net(net))
             self.b.Add(t)
+            if getattr(self, "made", None) is not None:
+                self.made.append(t)
+            if getattr(self, "tag_router", False):
+                self.router_ids.add(t.m_Uuid.AsString())
         self.lines.setdefault(net, []).append((layer, list(pts), w))
 
     def via(self, net, x, y, d=None, drill=None):
         """Rev D (dual-fab JLC+PCBWay): annular >= 0.15 mm.  HS vias 0.25/0.55, generic 0.2/0.5."""
-        hs = net.startswith(("PET", "PER", "REFCLK")) and "PERST" not in net
+        hs = bool(re.search(r"PE[TR]\d|REFCLK", net))
         d = d or (0.55 if hs else 0.5); drill = drill or (0.25 if hs else 0.2)
         v = P.PCB_VIA(self.b)
         v.SetPosition(self.V(x, y)); v.SetDrill(MM(drill)); v.SetWidth(MM(d))
         v.SetLayerPair(P.F_Cu, P.B_Cu); v.SetViaType(P.VIATYPE_THROUGH)
         v.SetNet(self.net(net))
         self.b.Add(v)
+        if getattr(self, "made", None) is not None:
+            self.made.append(v)
+        if getattr(self, "tag_router", False):
+            self.router_ids.add(v.m_Uuid.AsString())
         self.vias_by_net.setdefault(net, []).append((x, y))
         return v
 
-    def pair(self, layer, center, starts, ends, w=PCIE_W, g=PCIE_G, tune=None):
+    def pair(self, layer, center, starts, ends, w=PCIE_W, g=PCIE_G, tune=None, dry=False):
         """Route a coupled pair.
         center: centerline polyline (coupled part).
         starts/ends: two entries each, (net or None, [points from the terminal toward the coupled part]).
@@ -184,13 +224,26 @@ class Kit:
         s = sorted(starts, key=lambda e: -side(e[1][-1], center[0], n0))   # [+side, -side]
         e = sorted(ends, key=lambda e: -side(e[1][-1], center[-1], n1))
         out = {}
-        for (sn, sp), (en, ep), line, sg in ((s[0], e[0], lp, 1), (s[1], e[1], ln, -1)):
+        legs = ((s[0], e[0], lp, 1, ln), (s[1], e[1], ln, -1, lp))
+        for (sn, sp), (en, ep), line, sg, other in legs:
             net = sn or en
             assert net, "pair needs at least one named end"
             for (si, fracs, h, L) in (tune or {}).get(net, []):
                 line = bump(line, si, fracs, sg * h, L)
-            full = list(sp) + line + list(reversed(ep))
-            self.track(net, layer, full, w)
+            full = _dedupe(list(sp) + line + list(reversed(ep)))
+            # KiCad's DRC couples each P segment with only its nearest parallel N segment (first one on a tie, and
+            # collinear N pieces touching end to end tie).  So the N line never gets split points (redundant
+            # collinear vertices are dropped above), and when N carries the bumps the straight P line is split at
+            # the bump ends, so each straight P piece has exactly one parallel N piece over it
+            onet = [(l_[0][0] or l_[1][0]) for l_ in legs if l_[2] is other][0]
+            if net.endswith("_P") and not (tune or {}).get(net):
+                for (si, fracs, h, L) in (tune or {}).get(onet, []):
+                    ta, tc = other[si], other[si + 1]           # the tuned line's (unbumped) segment
+                    tt = _unit(tc, ta); sl = math.dist(ta, tc)
+                    for sc in (f * sl + dd for f in fracs for dd in (-(L / 2 + h), L / 2 + h)):
+                        full = _split_at(full, (ta[0] + tt[0] * sc, ta[1] + tt[1] * sc), tt)
+            if not dry:
+                self.track(net, layer, full, w)
             out[net] = (full, sn, en)
         return out
 
@@ -234,8 +287,35 @@ class Kit:
         z.SetDoNotAllowPads(False); z.SetDoNotAllowFootprints(False)
         self.b.Add(z)
 
-    def outline(self, poly, layer=P.Edge_Cuts, w=0.1):
-        for a, c in zip(poly, poly[1:] + poly[:1]):
+    def keepout(self, name, poly, layers, pour=True, tracks=False, vias=False):
+        """Keepout rule area on the given layers (default: no copper pour = plane void)."""
+        z = P.ZONE(self.b)
+        ls = P.LSET()
+        for L in layers:
+            ls.AddLayer(LAYER[L])
+        z.SetLayerSet(ls)
+        o = z.Outline(); o.NewOutline()
+        for x, y in poly:
+            o.Append(MM(x + self.O[0]), MM(y + self.O[1]))
+        z.SetIsRuleArea(True); z.SetZoneName(name)
+        z.SetDoNotAllowCopperPour(pour); z.SetDoNotAllowVias(vias); z.SetDoNotAllowTracks(tracks)
+        z.SetDoNotAllowPads(False); z.SetDoNotAllowFootprints(False)
+        self.b.Add(z)
+
+    def void_under(self, ref, layer, margin=0.15):
+        """Plane void (keepout) under the pads of a footprint on the given layer."""
+        for p in self.fps[ref].Pads():
+            bb = p.GetBoundingBox()
+            x0, y0 = P.ToMM(bb.GetX()) - self.O[0] - margin, P.ToMM(bb.GetY()) - self.O[1] - margin
+            x1, y1 = x0 + P.ToMM(bb.GetWidth()) + 2 * margin, y0 + P.ToMM(bb.GetHeight()) + 2 * margin
+            self.keepout(f"VOID_{ref}_{p.GetNumber()}", [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], [layer])
+
+    def arc_pts(self, c, r, a0, a1, n=8):
+        return [(c[0] + r * math.cos(math.radians(a0 + (a1 - a0) * i / n)),
+                 c[1] + r * math.sin(math.radians(a0 + (a1 - a0) * i / n))) for i in range(n + 1)]
+
+    def outline(self, poly, layer=P.Edge_Cuts, w=0.1, closed=True):
+        for a, c in zip(poly, poly[1:] + (poly[:1] if closed else [])):
             s = P.PCB_SHAPE(self.b); s.SetShape(P.SHAPE_T_SEGMENT)
             s.SetStart(self.V(*a)); s.SetEnd(self.V(*c)); s.SetLayer(layer); s.SetWidth(MM(w))
             self.b.Add(s)
@@ -248,7 +328,38 @@ class Kit:
         self.b.Add(t)
 
     # ---------------------------------------------------------------- finish
+    def prune(self):
+        """Remove router leftovers on signal nets (no zone): vias that join fewer than two layers and router tracks
+        with a dangling end, repeated until nothing changes.  Hand-laid tracks are never removed (a dangling one is
+        a real error for DRC to report), so an unused hand via cannot eat its trunk."""
+        rid = getattr(self, "router_ids", set())
+        zn = {z.GetNetname() for z in self.b.Zones()}
+        cu = [P.F_Cu, P.In1_Cu, P.In2_Cu, P.In3_Cu, P.In4_Cu, P.B_Cu]
+        removed = 0
+        while True:
+            self.b.BuildConnectivity()
+            c = self.b.GetConnectivity()
+            dead = []
+            for t in self.b.GetTracks():
+                if t.GetNetname() in zn or not t.GetNetname():
+                    continue
+                if t.GetClass() == "PCB_VIA":
+                    if sum(1 for L in cu if c.IsConnectedOnLayer(t, L)) < 2:
+                        dead.append(t)
+                elif t.m_Uuid.AsString() in rid and c.TestTrackEndpointDangling(t, False):
+                    dead.append(t)
+            if not dead:
+                return removed
+            del c
+            removed += len(dead)
+            for t in dead:
+                self.b.Delete(t)
+            del dead
+
     def save(self):
+        n = self.prune() if os.environ.get("STAGE") != "card" else 0
+        if n:
+            print(f"pruned {n} dangling router vias/tracks")
         self.b.Save(self.pcb)
 
     def fill_and_check(self, extra_dru=""):

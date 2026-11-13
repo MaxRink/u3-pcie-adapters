@@ -64,7 +64,8 @@ def write(name, body):
 # We re-centre so the footprint origin is midway between the pegs (datum B).
 U3_TOP = [f"E{i}" for i in range(7, 17)] + [f"S{i}" for i in range(8, 29)] + [f"E{i}" for i in range(17, 26)]
 assert len(U3_TOP) == 40
-U3_MATING_Y = 2.35 + 9.40  # front (mating) face of the housing, measured from the peg line
+U3_MATING_Y = 13.20 - 3.15   # housing front face from the peg line: 13.20 deep, pegs 3.15 from the tail end (rev C)
+U3_POST_Y = U3_MATING_Y + 1.70  # alignment posts protrude 1.70 past the face (into the drive)
 
 
 def u3_pad_positions():
@@ -103,8 +104,9 @@ def gen_u3():
     my = U3_MATING_Y
     b += rect(-20.215, -3.2, 20.215, my, "F.Fab", 0.1)
     b += line(-23.5, my, 23.5, my, "Dwgs.User", 0.1)
-    b += (f'  (fp_text user "MATING FACE / board edge or window" (at 0 {my + 0.8:.2f}) (layer "Dwgs.User") '
-          f'(tstamp "{u()}")\n    (effects (font (size 0.6 0.6) (thickness 0.08))))\n')
+    b += line(-20.2, U3_POST_Y, 20.2, U3_POST_Y, "Dwgs.User", 0.05)
+    b += (f'  (fp_text user "MATING FACE: board edge/window >= 0.65 mm inside this line" (at 0 {my + 0.8:.2f}) '
+          f'(layer "Dwgs.User") (tstamp "{u()}")\n    (effects (font (size 0.6 0.6) (thickness 0.08))))\n')
     b += rect(-23.6, -3.6, 23.6, my + 0.2, "F.CrtYd", 0.05)
     b += line(-20.4, -3.4, -15.8, -3.4, "F.SilkS")
     b += line(20.4, -3.4, 15.8, -3.4, "F.SilkS")
@@ -169,7 +171,34 @@ def gen_slot(length=6.2):
     return name
 
 
+# ---------------------------------------------------------------- TI TPS25982 eFuse, RGE0024M VQFN 4x4
+def gen_tps25982():
+    """TI drawing RGE0024M (4223975/B): 24 x 0.24 x 0.575 lands, 0.5 pitch; split exposed pad 2.7 wide:
+    IN pad 1.45 tall at -0.625 (IN/OUT half: pins 1-3, 16-24), GND pad 0.85 tall at +0.925 (GND pins 4/5/14 half).
+    VERIFY against the TI land pattern before ordering (pad split orientation inferred from the pin map)."""
+    name = "TI_RGE0024M_VQFN-24_4x4mm_P0.5mm_SplitEP"
+    b = header(name, "TI RGE0024M VQFN-24 4x4 mm, 0.5 mm pitch, split exposed pad (25 = IN, 26 = GND), TPS25982",
+               "TPS25982 eFuse VQFN RGE")
+    b += text("reference", "REF**", 0, -3.0, "F.SilkS")
+    b += text("value", name, 0, 3.0, "F.Fab")
+    c, L, W = 1.8125, 0.575, 0.24
+    for i in range(6):
+        o = -1.25 + 0.5 * i
+        b += pad_smd(str(1 + i), -c, o, L, W, rr=0.25)          # left, top -> bottom
+        b += pad_smd(str(7 + i), o, c, W, L, rr=0.25)           # bottom, left -> right
+        b += pad_smd(str(13 + i), c, -o, L, W, rr=0.25)         # right, bottom -> top
+        b += pad_smd(str(19 + i), -o, -c, W, L, rr=0.25)        # top, right -> left
+    b += pad_smd("25", 0, -0.625, 2.7, 1.45, rr=0.05)
+    b += pad_smd("26", 0, 0.925, 2.7, 0.85, rr=0.05)
+    b += rect(-2.0, -2.0, 2.0, 2.0, "F.Fab", 0.1)
+    b += rect(-2.4, -2.4, 2.4, 2.4, "F.CrtYd", 0.05)
+    b += line(-2.1, -2.1, -1.5, -2.1, "F.SilkS")
+    write(name, b)
+    return name
+
+
 if __name__ == "__main__":
+    print(gen_tps25982())
     print(gen_slot())
     print(gen_u3())
     print(gen_oculink())
