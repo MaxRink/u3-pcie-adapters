@@ -107,6 +107,8 @@ Rev E (from the 2026-11-13 review):
 - x16 cards: the window edge is 9.9 mm from the receptacle peg line (rev D: 9.4). 9.4 and 9.6 do not route on the
   4-drive card. The housing face is at 10.05 mm, so only 0.15 mm is left. **Fit a drive into a bare board before
   assembling anything** and file the edge back if the drive body touches it.
+  When ordering, add the note "window edges +0/-0.2 mm toward the drive": the fab's outline tolerance (about
+  0.2 mm) is larger than the 0.15 mm that is left.
 
 Rev F (all parts on the top side, 0603 or larger, or leaded):
 
@@ -117,7 +119,7 @@ Rev F (all parts on the top side, 0603 or larger, or leaded):
 | Test pads, 1 mm | per drive: 12 V after the eFuse, PG, IMON. Per card: 3V3 aux, 3V3, PERST#, 12 V, 12 V aux, fan tach, fan PWM | last drive's pads are labelled V, P, I |
 | GND loops | bracket column and end column | for a scope ground |
 | LEDs | per drive: 12 V present after the eFuse. Per card: 12 V, 12 V aux, 3V3 | the per-drive LED hangs on the drive's 12 V (2.2 k), not on PG |
-| Fan header J7 (4-pin PWM) | far end of the strip | SJ4 = slot 12 V, SJ5 = aux 12 V, close exactly one. x8: slot is bridged from the fab (one via, about 1 A). x16: aux is bridged (1.0 mm on the top layer from J5, about 3 A). PWM and tach go to test pads only, so a 4-wire fan runs at full speed |
+| Fan header J7 (4-pin PWM) | far end of the strip | SJ4 = slot 12 V, SJ5 = aux 12 V, close exactly one. x8: slot is bridged from the fab (one via, about 1 A). x16: aux is bridged (1.0 mm on the top layer from J5, about 3 A). PWM and tach go to test pads only, so a 4-wire fan runs at full speed. **A fan above about 1 A (any 92x38 server fan) must run from aux: cut SJ4 and close SJ5 on the x8**, it does not fit the 66 W slot budget next to the drives either |
 | TVS SMBJ15A | at J5 | on 12 V aux |
 | M3 holes | H7–H10 in the two columns, H11 up in the strip between drives | the strip holes are searched after routing; a gap without a free spot gets none (x16: the gap between B and C on the 4-drive card) |
 | Silk | bracket column | I2C address table and jumper legend |
