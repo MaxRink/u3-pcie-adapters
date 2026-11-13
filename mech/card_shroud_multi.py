@@ -52,7 +52,7 @@ def _end(board, n, p=None, funnel_len=40.0):
     r_i = s / 2 - 2.0
     cyc, czc = (y_lo + y_hi) / 2, (z_lo + z_hi) / 2
     x1, x2 = x0 + 4.0, x0 + 4.0 + funnel_len
-    plate = box(x0, x1, y_lo, y_hi, z_lo, z_hi)
+    plate = box(x0, x1, y_lo - 0.4, y_hi + 0.4, z_lo - 0.4, z_hi + 0.4)      # a little larger than the funnel: coplanar faces break the union
     pc = [box(x0 - 1, x1 + 1, y_in, y_ti, z_bi + dz, z_ci + dz) for dz in dzs]
     pc += [cyl(p.m3_clear / 2, 6, "x", (x0 - 1, y, z + dz)) for dz in dzs for (y, z) in ad["lugs"]]
     plate = plate.cut(_union(pc))
@@ -63,7 +63,8 @@ def _end(board, n, p=None, funnel_len=40.0):
     flange = flange.cut(cyl(r_i, 6, "x", (x2 - 1, cyc, czc)))
     fan_holes = [(cyc + sy * hs / 2, czc + sz * hs / 2) for sy in (-1, 1) for sz in (-1, 1)]
     flange = flange.cut(_union([cyl(1.9, 6, "x", (x2 - 1, y, z)) for (y, z) in fan_holes]))
-    adapter = plate.union(funnel).union(flange)
+    adapter = funnel.union(flange).union(plate)
+    assert adapter.val().BoundingBox().xmax > x2 + 3.0, "shared adapter lost its funnel"
 
     printed = {k: v for k, v in r["printed"].items() if k != "fan_adapter"}
     hw = [h for h in r["hardware"] if h[1] not in ("fan", "scr_fan")]
