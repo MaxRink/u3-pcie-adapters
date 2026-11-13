@@ -1,0 +1,236 @@
+{
+ "name": "x8",
+ "title": "x8 card, 2 drives, end-fan shroud",
+ "board": {
+  "ref": "origin/main",
+  "path": "designs/x16-u3-card/boards/x8/u3_x8.kicad_pcb",
+  "commit": "ab38bb9"
+ },
+ "info": {
+  "params": {
+   "gap": 5.0,
+   "wall": 2.4,
+   "top_gap": 1.5,
+   "fan": 120,
+   "fan_thick": 25.0,
+   "funnel_len": 50.0,
+   "neck": 7.0,
+   "fan_z_offset": 0.0,
+   "x_start": 1.0,
+   "y_bottom": 14.0,
+   "clear": 0.5,
+   "fit": 0.2,
+   "max_len": 250.0,
+   "insert_d": 4.0,
+   "insert_depth": 6.5,
+   "m3_clear": 3.4
+  },
+  "drives": 2,
+  "card_length": 190.0,
+  "duct": {
+   "x": [
+    1.0,
+    190.0
+   ],
+   "y": [
+    14.0,
+    138.4
+   ],
+   "z": [
+    -23.9784,
+    5.8216
+   ]
+  },
+  "envelope": {
+   "length": 276.0,
+   "height_above_finger_bottom": 138.4,
+   "back_of_card": 22.400000000000002,
+   "front_of_card": 5.8216,
+   "fan_span_z": [
+    -69.0784,
+    50.9216
+   ],
+   "fan_span_y": [
+    24.625,
+    144.625
+   ]
+  },
+  "channel_area_mm2": {
+   "front": 513.75,
+   "back": 513.75
+  },
+  "clamp_points": [
+   [
+    6.0,
+    30.0
+   ],
+   [
+    6.0,
+    60.0
+   ],
+   [
+    6.0,
+    71.6
+   ],
+   [
+    6.0,
+    104.0
+   ],
+   [
+    186.0,
+    38.0
+   ],
+   [
+    186.0,
+    68.0
+   ],
+   [
+    186.0,
+    83.0
+   ],
+   [
+    186.0,
+    104.0
+   ]
+  ],
+  "direct_points": [
+   [
+    79.0,
+    15.5
+   ]
+  ],
+  "corner_points": [
+   [
+    6.5,
+    129.0
+   ],
+   [
+    184.5,
+    129.0
+   ]
+  ],
+  "drive_screw_points": [
+   [
+    17.14,
+    48.05
+   ],
+   [
+    78.86,
+    48.05
+   ],
+   [
+    17.14,
+    124.65
+   ],
+   [
+    78.86,
+    124.65
+   ],
+   [
+    90.14,
+    48.05
+   ],
+   [
+    151.86,
+    48.05
+   ],
+   [
+    90.14,
+    124.65
+   ],
+   [
+    151.86,
+    124.65
+   ]
+  ],
+  "fan_centre": {
+   "x": 251.0,
+   "y": 84.625,
+   "z": -9.078400000000002
+  },
+  "adapter": {
+   "x0": 190.2,
+   "lugs": [
+    [
+     61.25,
+     10.3216
+    ],
+    [
+     102.0,
+     10.3216
+    ],
+    [
+     49.25,
+     -28.4784
+    ],
+    [
+     114.0,
+     -28.4784
+    ]
+   ],
+   "rect_i": [
+    33.25,
+    136.0,
+    -21.578400000000002,
+    3.4215999999999998
+   ],
+   "rect_o": [
+    30.85,
+    138.4,
+    -23.9784,
+    5.8216
+   ]
+  }
+ },
+ "bom": {
+  "drive": 2,
+  "bracket": 1,
+  "M3x5 pan/cap screw (bracket tab)": 2,
+  "M3x10 cap screw (cover to drive)": 8,
+  "M3x12 cap screw (cover-card-body)": 10,
+  "M3 heat-set insert": 15,
+  "M3x6 cap screw (card to body)": 1,
+  "M3x8 cap screw (fan adapter)": 4,
+  "120x120x25 mm fan": 1,
+  "M4x12 self-tapping fan screw": 4
+ },
+ "printed": {
+  "body": {
+   "volume_cm3": 142.5,
+   "size_mm": [
+    189.4,
+    127.3,
+    31.4
+   ],
+   "petg_g": 81.0
+  },
+  "cover": {
+   "volume_cm3": 56.1,
+   "size_mm": [
+    189.7,
+    114.9,
+    17.9
+   ],
+   "petg_g": 32.0
+  },
+  "fan_adapter": {
+   "volume_cm3": 60.8,
+   "size_mm": [
+    60.9,
+    121.1,
+    121.3
+   ],
+   "petg_g": 35.0
+  },
+  "slot_filler_1": {
+   "volume_cm3": 3.8,
+   "size_mm": [
+    12.0,
+    95.8,
+    14.2
+   ],
+   "petg_g": 2.0
+  }
+ },
+ "interference_mm3": {}
+}

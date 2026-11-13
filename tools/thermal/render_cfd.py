@@ -44,7 +44,7 @@ def render(case, out, size=(1800, 1200)):
     seeds = pv.PolyData(np.c_[np.full(170, 2.0), rng.uniform(0.5, W - 0.5, 170), rng.uniform(2, Z - 2, 170)])
     sl = vol.streamlines_from_source(seeds, vectors="U", max_length=400, integration_direction="forward",
                                      initial_step_length=0.5, max_steps=4000)
-    tmax = max(d["T_mean"] for d in meta["drives_T"])
+    tmax = max(d["T_mean"] for d in meta["drives_T"])  # colour scale covers the uniform-flux wall
     clim = (meta["T_in"], max(tmax + 10, meta["T_in"] + 20))
     p = pv.Plotter(off_screen=True, window_size=size)
     p.set_background("#f4f4f2")
@@ -56,11 +56,11 @@ def render(case, out, size=(1800, 1200)):
     p.add_mesh(shroud.extract_feature_edges(), color="#555555", line_width=1.5)
     p.add_mesh(shroud, color="#c8c8c8", opacity=0.08)
     p.add_text(f"{meta['drives']} drives x {meta['power_W']:.0f} W, {meta['gap_mm']:.0f} mm gaps, {meta['cfm']:.0f} CFM, "
-               f"{meta['T_in']:.0f} °C inlet  |  drive case (mean): "
-               + ", ".join(f"{d['T_mean']:.0f} °C" for d in meta["drives_T"]),
+               f"{meta['T_in']:.0f} °C inlet  |  drive case (isothermal est.): "
+               + ", ".join(f"{d['T_iso']:.0f} °C" for d in meta["drives_T"]),
                position="upper_left", font_size=11, color="#222222")
     c = np.array([X / 2, W / 2, Z / 2])
-    p.camera_position = [tuple(c + np.array([-1.0, -1.25, 0.9]) * 230), tuple(c), (0, 0, 1)]
+    p.camera_position = [tuple(c + np.array([-1.0, -1.25, 0.9]) * max(230, 1.05 * X)), tuple(c), (0, 0, 1)]
     p.screenshot(out)
     p.close()
 

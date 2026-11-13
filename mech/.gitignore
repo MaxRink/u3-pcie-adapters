@@ -1,0 +1,4 @@
+.cache/
+__pycache__/
+out/*/preview_*.png
+out/*/*_assembly.step

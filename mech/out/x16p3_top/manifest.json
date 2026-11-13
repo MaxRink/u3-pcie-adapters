@@ -1,0 +1,218 @@
+{
+ "name": "x16p3_top",
+ "title": "x16 card, 3 drives, top-feed shroud",
+ "board": {
+  "ref": "origin/main",
+  "path": "designs/x16-u3-card/boards/x16p3/u3_x16p3.kicad_pcb",
+  "commit": "ab38bb9"
+ },
+ "info": {
+  "style": "top",
+  "params": {
+   "gap": 5.0,
+   "wall": 2.4,
+   "cap": 10.0,
+   "chamber": 16.0,
+   "fan": 120,
+   "fan_thick": 25.0,
+   "x_start": 1.0,
+   "y_bottom": 14.0,
+   "clear": 0.5,
+   "fit": 0.2,
+   "max_len": 250.0,
+   "insert_d": 4.0,
+   "insert_depth": 6.5,
+   "m3_clear": 3.4,
+   "open_top": false,
+   "collar": 8.0
+  },
+  "drives": 3,
+  "fans": 2,
+  "card_length": 239.0,
+  "envelope": {
+   "length": 274.5,
+   "height_above_finger_bottom": 152.6,
+   "back_of_card": 65.8,
+   "front_of_card": 5.8216
+  },
+  "fan_centres": [
+   [
+    84.5,
+    88.2
+   ],
+   [
+    210.5,
+    88.2
+   ]
+  ],
+  "clamp_points": [
+   [
+    6.0,
+    30.0
+   ],
+   [
+    6.0,
+    60.0
+   ],
+   [
+    6.0,
+    71.6
+   ],
+   [
+    6.0,
+    104.0
+   ],
+   [
+    235.0,
+    50.0
+   ],
+   [
+    235.0,
+    65.0
+   ],
+   [
+    235.0,
+    80.0
+   ],
+   [
+    235.0,
+    104.0
+   ]
+  ],
+  "direct_points": [
+   [
+    81.5,
+    15.5
+   ],
+   [
+    157.5,
+    14.0
+   ]
+  ],
+  "corner_points": [
+   [
+    6.5,
+    134.2
+   ],
+   [
+    232.5,
+    145.2
+   ]
+  ],
+  "manifold_points": [
+   [
+    18.5,
+    50.2
+   ],
+   [
+    18.5,
+    118.2
+   ],
+   [
+    144.5,
+    50.2
+   ],
+   [
+    144.5,
+    118.2
+   ],
+   [
+    150.5,
+    50.2
+   ],
+   [
+    150.5,
+    118.2
+   ]
+  ],
+  "duct": {
+   "x": [
+    1.0,
+    239.0
+   ],
+   "z": [
+    -23.9784,
+    5.8216
+   ],
+   "zi": [
+    -21.578400000000002,
+    3.4215999999999998
+   ],
+   "y_edge": 150.2,
+   "hood_y": 144.7,
+   "pair_x": [
+    84.5,
+    210.5
+   ]
+  }
+ },
+ "bom": {
+  "drive": 3,
+  "bracket": 1,
+  "M3x5 pan/cap screw (bracket tab)": 2,
+  "M3x10 cap screw (cover to drive)": 12,
+  "M3x12 cap screw (cover-card-body)": 10,
+  "M3 heat-set insert": 18,
+  "M3x6 cap screw (card to body)": 2,
+  "M3x8 countersunk screw (body to manifold)": 6,
+  "120x120x25 mm fan": 2,
+  "M4x12 self-tapping fan screw": 8
+ },
+ "printed": {
+  "body": {
+   "volume_cm3": 97.2,
+   "size_mm": [
+    238.4,
+    140.4,
+    22.4
+   ],
+   "petg_g": 56.0
+  },
+  "manifold_1": {
+   "volume_cm3": 52.2,
+   "size_mm": [
+    156.5,
+    128.8,
+    40.9
+   ],
+   "petg_g": 30.0
+  },
+  "manifold_2": {
+   "volume_cm3": 42.0,
+   "size_mm": [
+    117.0,
+    128.8,
+    40.9
+   ],
+   "petg_g": 24.0
+  },
+  "cover": {
+   "volume_cm3": 75.4,
+   "size_mm": [
+    238.7,
+    129.1,
+    8.9
+   ],
+   "petg_g": 43.0
+  },
+  "slot_filler_1": {
+   "volume_cm3": 3.9,
+   "size_mm": [
+    12.0,
+    97.5,
+    14.2
+   ],
+   "petg_g": 2.0
+  },
+  "slot_filler_2": {
+   "volume_cm3": 4.1,
+   "size_mm": [
+    12.0,
+    97.5,
+    14.2
+   ],
+   "petg_g": 2.0
+  }
+ },
+ "interference_mm3": {}
+}

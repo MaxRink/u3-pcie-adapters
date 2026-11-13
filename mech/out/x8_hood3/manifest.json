@@ -1,0 +1,213 @@
+{
+ "name": "x8_hood3",
+ "title": "3 x x8 card, 2 drives, shared hood with fans on top",
+ "board": {
+  "ref": "origin/main",
+  "path": "designs/x16-u3-card/boards/x8/u3_x8.kicad_pcb",
+  "commit": "ab38bb9"
+ },
+ "info": {
+  "style": "shared hood",
+  "cards": 3,
+  "pitch": 40.64,
+  "params": {
+   "gap": 5.0,
+   "wall": 2.4,
+   "cap": 10.0,
+   "chamber": 16.0,
+   "fan": 120,
+   "fan_thick": 25.0,
+   "x_start": 1.0,
+   "y_bottom": 14.0,
+   "clear": 0.5,
+   "fit": 0.2,
+   "max_len": 250.0,
+   "insert_d": 4.0,
+   "insert_depth": 6.5,
+   "m3_clear": 3.4,
+   "open_top": true,
+   "collar": 8.0
+  },
+  "plenum": 20.0,
+  "drives": 6,
+  "fans": 1,
+  "drives_per_fan": 6.0,
+  "card_length": 190.0,
+  "envelope": {
+   "length": 193.2,
+   "height_above_finger_bottom": 192.5,
+   "z": [
+    -111.7184,
+    12.281600000000005
+   ]
+  },
+  "fan_centres": [
+   [
+    84.5,
+    -49.72
+   ]
+  ],
+  "per_card": {
+   "style": "top",
+   "params": {
+    "gap": 5.0,
+    "wall": 2.4,
+    "cap": 10.0,
+    "chamber": 16.0,
+    "fan": 120,
+    "fan_thick": 25.0,
+    "x_start": 1.0,
+    "y_bottom": 14.0,
+    "clear": 0.5,
+    "fit": 0.2,
+    "max_len": 250.0,
+    "insert_d": 4.0,
+    "insert_depth": 6.5,
+    "m3_clear": 3.4,
+    "open_top": true,
+    "collar": 8.0
+   },
+   "drives": 2,
+   "fans": 1,
+   "card_length": 190.0,
+   "envelope": {
+    "length": 190.0,
+    "height_above_finger_bottom": 142.5,
+    "back_of_card": 65.8,
+    "front_of_card": 5.8216
+   },
+   "fan_centres": [
+    [
+     84.5,
+     80.5
+    ]
+   ],
+   "clamp_points": [
+    [
+     6.0,
+     30.0
+    ],
+    [
+     6.0,
+     60.0
+    ],
+    [
+     6.0,
+     71.6
+    ],
+    [
+     6.0,
+     104.0
+    ],
+    [
+     186.0,
+     38.0
+    ],
+    [
+     186.0,
+     68.0
+    ],
+    [
+     186.0,
+     83.0
+    ],
+    [
+     186.0,
+     104.0
+    ]
+   ],
+   "direct_points": [
+    [
+     79.0,
+     15.5
+    ]
+   ],
+   "corner_points": [
+    [
+     6.5,
+     128.5
+    ],
+    [
+     184.5,
+     128.5
+    ]
+   ],
+   "manifold_points": [],
+   "duct": {
+    "x": [
+     1.0,
+     190.0
+    ],
+    "z": [
+     -23.9784,
+     5.8216
+    ],
+    "zi": [
+     -21.578400000000002,
+     3.4215999999999998
+    ],
+    "y_edge": 142.5,
+    "hood_y": 137.0,
+    "pair_x": [
+     84.5
+    ]
+   }
+  }
+ },
+ "bom": {
+  "drive": 6,
+  "bracket": 3,
+  "M3x5 pan/cap screw (bracket tab)": 6,
+  "M3x10 cap screw (cover to drive)": 24,
+  "M3x12 cap screw (cover-card-body)": 30,
+  "M3 heat-set insert": 36,
+  "M3x6 cap screw (card to body)": 3,
+  "M3x8 cap screw (hood to card)": 3,
+  "120x120x25 mm fan": 1,
+  "M4x12 self-tapping fan screw": 4
+ },
+ "printed": {
+  "body": {
+   "volume_cm3": 81.3,
+   "size_mm": [
+    189.4,
+    131.4,
+    22.4
+   ],
+   "petg_g": 46.0
+  },
+  "cover": {
+   "volume_cm3": 54.7,
+   "size_mm": [
+    189.7,
+    119.0,
+    7.4
+   ],
+   "petg_g": 31.0
+  },
+  "slot_filler_1": {
+   "volume_cm3": 4.1,
+   "size_mm": [
+    12.0,
+    97.5,
+    14.2
+   ],
+   "petg_g": 2.0
+  },
+  "hood": {
+   "volume_cm3": 98.3,
+   "size_mm": [
+    192.2,
+    35.6,
+    124.0
+   ],
+   "petg_g": 56.0
+  }
+ },
+ "print_each_per_card": [
+  "body",
+  "cover",
+  "slot_filler_1"
+ ],
+ "interference_mm3": {}
+}

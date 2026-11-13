@@ -1,0 +1,95 @@
+{
+ "name": "cage",
+ "title": "OCuLink cage board, 1 drive",
+ "board": {
+  "ref": "origin/claude/project-thread-o4epuj",
+  "path": "designs/x16-u3-card/boards/cage/u3_cage.kicad_pcb",
+  "commit": "31f7a05"
+ },
+ "info": {
+  "params": {
+   "gap": 5.0,
+   "under": 9.0,
+   "wall": 2.4,
+   "fan": 60,
+   "fan_thick": 25.0,
+   "funnel_len": 30.0,
+   "clear": 0.5,
+   "insert_d": 4.0,
+   "insert_depth": 6.5,
+   "m3_clear": 3.4
+  },
+  "envelope": {
+   "x": [
+    -10.824999999999998,
+    73.825
+   ],
+   "y": [
+    -1.0,
+    205.75
+   ],
+   "z": [
+    -12.9784,
+    22.4
+   ]
+  },
+  "board_pillars": [
+   [
+    3.7,
+    4.2
+   ],
+   [
+    3.7,
+    19.0
+   ],
+   [
+    53.0,
+    4.2
+   ],
+   [
+    53.0,
+    20.0
+   ]
+  ]
+ },
+ "bom": {
+  "drive": 1,
+  "M3x6 cap screw (board to tray)": 4,
+  "M3 heat-set insert": 10,
+  "M3x12 cap screw (tray to drive)": 4,
+  "M3x8 cap screw (lid)": 6,
+  "60x60x25 mm fan": 1,
+  "M4x12 self-tapping fan screw": 4,
+  "M3x6 self-tapping screw (fan adapter)": 2
+ },
+ "printed": {
+  "tray": {
+   "volume_cm3": 56.0,
+   "size_mm": [
+    90.3,
+    141.8,
+    33.0
+   ],
+   "petg_g": 32.0
+  },
+  "lid": {
+   "volume_cm3": 30.9,
+   "size_mm": [
+    91.7,
+    141.8,
+    2.4
+   ],
+   "petg_g": 18.0
+  },
+  "fan_adapter": {
+   "volume_cm3": 32.3,
+   "size_mm": [
+    90.1,
+    50.0,
+    61.4
+   ],
+   "petg_g": 18.0
+  }
+ },
+ "interference_mm3": {}
+}

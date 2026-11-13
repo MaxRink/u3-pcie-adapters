@@ -28,7 +28,7 @@ def centres(meta):
             e += list(e[-1] + np.arange(1, n + 1) * Ls / n)
         return np.array(e)
 
-    ex = edges([fc.UP, fc.L, fc.DOWN], nx)
+    ex = edges(meta.get("x_sections", [fc.UP, fc.L, fc.DOWN]), nx)
     ey = np.linspace(0, W, ny + 1)
     ez = edges([fc.H, fc.TOP], nz)
     cx, cy, cz = (ex[1:] + ex[:-1]) / 2, (ey[1:] + ey[:-1]) / 2, (ez[1:] + ez[:-1]) / 2
@@ -67,12 +67,14 @@ def slice_plot(case, out_png, z_mm=50.0):
     k = int(np.argmin(abs(cz - z_mm)))
     Ts = T.reshape(shape)[k]
     Us = np.linalg.norm(U.reshape(shape + (3,))[k], axis=-1)
-    fig, axes = plt.subplots(2, 1, figsize=(10, 1.4 + 0.085 * meta["dims_mm"][1] * 2), dpi=150, sharex=True)
+    fig, axes = plt.subplots(2, 1, figsize=(10, 1.5 + 2 * 8.3 * meta["dims_mm"][1] / meta["dims_mm"][0]), dpi=150, sharex=True)
     for ax, data, lab, cmap in ((axes[0], Ts, "air temperature (°C)", "inferno"), (axes[1], Us, "air speed (m/s)", "viridis")):
-        im = ax.pcolormesh(cx, cy, data, cmap=cmap, shading="auto")
+        # the stagnant air between in-line drives gets very hot; cap the scale so the channels stay readable
+        vmax = min(np.nanmax(data), 110.0) if data is Ts else None
+        im = ax.pcolormesh(cx, cy, data, cmap=cmap, shading="auto", vmax=vmax)
         for i, (b, d) in enumerate(zip(meta["boxes"], meta["drives_T"])):
             ax.add_patch(Rectangle((b[0], b[1]), b[3] - b[0], b[4] - b[1], fc="#9aa0a6", ec="k", lw=0.6))
-            ax.text((b[0] + b[3]) / 2, (b[1] + b[4]) / 2, f"drive {i+1}: {d['T_mean']:.0f} °C (max {d['T_max']:.0f})",
+            ax.text((b[0] + b[3]) / 2, (b[1] + b[4]) / 2, f"drive {i+1}: {d['T_iso']:.0f} °C",
                     ha="center", va="center", fontsize=7)
         ax.set_aspect("equal")
         ax.set_ylabel("y (mm)")
@@ -85,30 +87,47 @@ def slice_plot(case, out_png, z_mm=50.0):
     plt.close(fig)
 
 
+def _layout(r):
+    return r.get("layout") or "stack"
+
+
+def _coarse(r):
+    return bool(r.get("coarse")) or r.get("name", "").endswith("_coarse")
+
+
 def summary(results, out_png):
+    """CFD points (filled = fine mesh, open = coarse) over the calibrated analytic curves."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    fig, ax = plt.subplots(figsize=(8, 4.6), dpi=150)
+    analytic.load_cal()
+    fig, axes = plt.subplots(1, 2, figsize=(13, 4.8), dpi=150, sharey=True)
     cfm = np.linspace(8, 60, 120)
     styles = {(2, 5): "#d1495b", (2, 3): "#1f6fb2", (4, 5): "#2a9d5c"}
-    for (n, g), col in styles.items():
-        ax.plot(cfm, [analytic.stack(n, g, c * analytic.CFM)["Tmax"] for c in cfm], color=col, lw=1.5, ls="--",
-                label=f"analytic, {n} drives, {g} mm")
-        pts = sorted((r["cfm"], max(d["T_mean"] for d in r["drives_T"]), max(d["T_max"] for d in r["drives_T"]))
-                     for r in results if r["drives"] == n and r["gap_mm"] == g)
-        if pts:
-            x, ym, yx = zip(*pts)
-            ax.plot(x, ym, "o-", color=col, lw=2, label=f"CFD mean, {n} drives, {g} mm")
-            ax.vlines(x, ym, yx, color=col, lw=1, alpha=0.6)
-    ax.axhline(70, color="#444", ls="--", lw=1)
-    ax.text(59, 71, "70 °C", ha="right", fontsize=8)
-    ax.set_xlabel("airflow through the shroud (CFM)")
-    ax.set_ylabel("hottest drive case temperature (°C)")
-    ax.set_title("25 W per drive, 35 °C inlet. Bars: CFD hot spot (uniform-flux upper bound)")
-    ax.grid(alpha=0.3)
-    ax.legend(frameon=False, fontsize=7)
+    titles = {"inline": "In line along the card (x8 / x16 layout)", "stack": "Facing stack (reference)"}
+    for ax, layout in zip(axes, ("inline", "stack")):
+        model = analytic.LAYOUTS[layout]
+        for (n, g), col in styles.items():
+            ax.plot(cfm, [model(n, g, c * analytic.CFM)["Tmax"] for c in cfm], color=col, lw=1.5, ls="--",
+                    label=f"model, {n} drives, {g} mm")
+            for coarse in (False, True):
+                pts = sorted((r["cfm"], max(d["T_iso"] for d in r["drives_T"]), max(d["T_mean"] for d in r["drives_T"]))
+                             for r in results if r["drives"] == n and r["gap_mm"] == g
+                             and _layout(r) == layout and _coarse(r) == coarse)
+                if pts:
+                    x, ym, yx = zip(*pts)
+                    ax.plot(x, ym, "o", color=col, ms=7, mfc="white" if coarse else col,
+                            label=f"CFD {'coarse' if coarse else 'fine'}, {n} drives, {g} mm")
+        ax.axhline(70, color="#444", ls="--", lw=1)
+        ax.text(59, 71, "70 °C", ha="right", fontsize=8)
+        ax.set_xlabel("airflow through the shroud (CFM)")
+        ax.set_title(titles[layout], fontsize=10)
+        ax.grid(alpha=0.3)
+        ax.legend(frameon=False, fontsize=6.5)
+    axes[0].set_ylabel("hottest drive case temperature (°C)")
+    fig.suptitle("25 W per drive, 35 °C inlet. CFD: isothermal-case estimate of the hottest drive; "
+                 "coarse meshes read ~4 °C high. Model: calibrated to these points.", fontsize=9)
     fig.tight_layout()
     fig.savefig(out_png)
     plt.close(fig)
@@ -121,15 +140,16 @@ def main(sweep, out):
         rp = os.path.join(sweep, d, "results.json")
         if os.path.exists(rp):
             r = json.load(open(rp))
+            r["name"] = d
             results.append(r)
             slice_plot(os.path.join(sweep, d), os.path.join(out, f"cfd_slice_{d}.png"))
     summary(results, os.path.join(out, "cfd_vs_analytic.png"))
-    rows = ["| drives | gap | airflow | inlet speed | drive mean (°C) | drive hot spot (°C) | Δp (Pa) | air out (°C) |",
-            "| --- | --- | --- | --- | --- | --- | --- | --- |"]
-    for r in sorted(results, key=lambda r: (r["drives"], r["gap_mm"], r["cfm"])):
-        rows.append(f"| {r['drives']} | {r['gap_mm']:.0f} mm | {r['cfm']:.0f} CFM | {r['U_in']:.2f} m/s | "
-                    + ", ".join(f"{d['T_mean']:.0f}" for d in r["drives_T"]) + " | "
-                    + ", ".join(f"{d['T_max']:.0f}" for d in r["drives_T"])
+    rows = ["| layout | mesh | drives | gap | airflow | inlet speed | drive case, isothermal (°C) | area mean, uniform flux (°C) | Δp (Pa) | air out (°C) |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
+    for r in sorted(results, key=lambda r: (_layout(r) != "inline", _coarse(r), r["drives"], r["gap_mm"], r["cfm"])):
+        rows.append(f"| {_layout(r)} | {'coarse' if _coarse(r) else 'fine'} | {r['drives']} | {r['gap_mm']:.0f} mm | {r['cfm']:.0f} CFM | {r['U_in']:.2f} m/s | "
+                    + ", ".join(f"{d['T_iso']:.0f}" for d in r["drives_T"]) + " | "
+                    + ", ".join(f"{d['T_mean']:.0f}" for d in r["drives_T"])
                     + f" | {r['dp_Pa']:.1f} | {r['T_out_mean']:.1f} |")
     open(os.path.join(out, "cfd_table.md"), "w").write("\n".join(rows) + "\n")
     json.dump(results, open(os.path.join(out, "cfd_results.json"), "w"), indent=1)

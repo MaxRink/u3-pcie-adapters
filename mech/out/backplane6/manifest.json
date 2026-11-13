@@ -1,0 +1,196 @@
+{
+ "name": "backplane6",
+ "title": "6-drive top-loading hot-plug cage, 120 mm wide",
+ "board": {
+  "ref": "origin/claude/project-thread-5y5t4p",
+  "path": "designs/u3-backplane/boards/backplane6/u3_backplane6.kicad_pcb",
+  "commit": "8f72bab"
+ },
+ "info": {
+  "spec": {
+   "width": 119.6,
+   "height": 90.5,
+   "thickness": 1.5784,
+   "drive_x": [
+    9.8,
+    29.8,
+    49.8,
+    69.8,
+    89.8,
+    109.8
+   ],
+   "drive_y": 42.0,
+   "seat_z": 6.5,
+   "holes": [
+    [
+     3.2,
+     75.0
+    ],
+    [
+     36.0,
+     4.2
+    ],
+    [
+     76.0,
+     4.2
+    ],
+    [
+     116.0,
+     4.2
+    ],
+    [
+     116.4,
+     75.0
+    ]
+   ],
+   "vents": [],
+   "slimsas_x": [],
+   "power_x": [],
+   "placeholder": false
+  },
+  "params": {
+   "gap_side": 2.5,
+   "max_width": 120.0,
+   "side": 1.6,
+   "floor": 2.4,
+   "under": 15.0,
+   "fan": 120,
+   "fan_thick": 25.0,
+   "duct": 34.0,
+   "duct_wall": 2.0,
+   "post": 8.0,
+   "bar": 3.0,
+   "shelf": 2.0,
+   "grip": 6.0,
+   "fit": 0.3,
+   "insert_d": 4.0,
+   "insert_depth": 6.5,
+   "m3_clear": 3.4
+  },
+  "drives": 6,
+  "width": 120.0,
+  "gap_side": 0.9,
+  "envelope": {
+   "x": [
+    0,
+    120.0
+   ],
+   "y": [
+    -25.0,
+    148.0
+   ],
+   "z": [
+    0,
+    128.3284
+   ]
+  },
+  "board": {
+   "top_z": 18.978399999999997,
+   "origin_corner": [
+    119.8,
+    133.0
+   ],
+   "turned_deg": 180,
+   "clear_under": 15.0,
+   "plug_room_fan_side": 39.5
+  },
+  "fan_centre": {
+   "x": 60.0,
+   "z": 60.0
+  },
+  "drive_x": [
+   110.0,
+   90.0,
+   70.0,
+   50.0,
+   30.0,
+   10.0
+  ],
+  "drive_z": [
+   25.48,
+   125.93
+  ],
+  "guide_shelves_z": [
+   53.5,
+   118.0
+  ],
+  "comb_top_z": 120.0,
+  "board_part_clashes_mm3": {}
+ },
+ "bom": {
+  "drive": 6,
+  "M3x6 cap screw (backplane to base)": 5,
+  "M3 heat-set insert": 19,
+  "M3x8 countersunk screw (base to comb)": 4,
+  "M3x6 countersunk screw (side plate)": 8,
+  "M3x8 countersunk screw (duct to cage)": 2,
+  "120x120x25 mm fan (the case's front fan)": 1,
+  "M4x12 self-tapping fan screw": 4
+ },
+ "printed": {
+  "fan_duct": {
+   "volume_cm3": 41.0,
+   "size_mm": [
+    120.0,
+    42.1,
+    122.4
+   ],
+   "petg_g": 23.0
+  },
+  "base": {
+   "volume_cm3": 36.0,
+   "size_mm": [
+    120.0,
+    114.0,
+    17.4
+   ],
+   "petg_g": 21.0
+  },
+  "comb_front": {
+   "volume_cm3": 41.7,
+   "size_mm": [
+    116.8,
+    26.1,
+    117.6
+   ],
+   "petg_g": 24.0
+  },
+  "comb_rear": {
+   "volume_cm3": 41.8,
+   "size_mm": [
+    116.8,
+    26.1,
+    117.6
+   ],
+   "petg_g": 24.0
+  },
+  "side_left": {
+   "volume_cm3": 18.2,
+   "size_mm": [
+    1.6,
+    114.0,
+    100.0
+   ],
+   "petg_g": 10.0
+  },
+  "side_right": {
+   "volume_cm3": 18.2,
+   "size_mm": [
+    1.6,
+    114.0,
+    100.0
+   ],
+   "petg_g": 10.0
+  },
+  "lid": {
+   "volume_cm3": 29.4,
+   "size_mm": [
+    120.0,
+    114.0,
+    12.6
+   ],
+   "petg_g": 17.0
+  }
+ },
+ "interference_mm3": {}
+}

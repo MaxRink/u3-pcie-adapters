@@ -159,7 +159,7 @@ class Board:
             return res
         gen = procedural.lookup(fp["fpid"])
         if gen is None:
-            if fp["fpid"].startswith("MountingHole") or not fp["fab"]:
+            if fp["fpid"].startswith(("MountingHole", "Connector_PCBEdge")) or not fp["fab"]:
                 return []
             fab = fp["fab"]
             if fp["back"]:

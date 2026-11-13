@@ -165,10 +165,30 @@ caps; its power-good holds that drive's PERST#.
 
 ## Cooling
 
-Two or four 25 W drives standing on the card need a ducted fan. Summary from
-[`docs/thermal`](../../docs/thermal/): 2 drives need ~25 CFM through 5 mm gaps (35 °C air in,
-70 °C case), 4 drives ~43 CFM; 3 mm gaps cut that to 15 and 26 CFM but need a high-pressure fan.
-A quiet 92 mm fan is not enough; a 92x38 mm server-class fan holds the drives around 60–66 °C.
+The drives sit in a row along the card, so the shroud's air passes them one after the other and
+the last one runs hottest. Summary from [`docs/thermal`](../../docs/thermal/) (25 W per drive, 35 °C
+air in, 70 °C case limit, 5 mm between drive and shroud wall):
+
+- **x8, 2 drives:** ~20 CFM. A 92x38 mm server-class fan (~150 Pa) gives ~29 CFM and ~66 °C.
+- **x16, 4 drives:** ~30 CFM at ~150 Pa. A 92x38 server fan only reaches ~28 CFM, so ~71 °C:
+  marginal. 3 mm gaps (~68 °C) or a 20 W drive power state (~64 °C) give margin.
+- 92x25 mm fans don't have the pressure for either card. Close the 3 mm slots between the drives
+  in the shroud; they only hold stagnant air.
+
+| CFD, 2 drives in line | CFD, 4 drives in line |
+| --- | --- |
+| ![2 drives](../../docs/thermal/cfd_3d_inline_n2_g5_q22.png) | ![4 drives](../../docs/thermal/cfd_3d_inline_n4_g5_q30_coarse.png) |
+
+## Renders: x8 and x16 cards
+
+Rendered from the routed boards in `boards/x8/` and `boards/x16p/` (PR #8), with 15 mm drives plugged in.
+
+| x8 card | x16 card (passive) |
+| --- | --- |
+| ![x8 with drives](../../docs/img/x16-u3-card/x8_drive_iso_top.png) | ![x16 with drives](../../docs/img/x16-u3-card/x16p_drive_iso_top.png) |
+| ![x8 top](../../docs/img/x16-u3-card/x8_top.png) | ![x16 top](../../docs/img/x16-u3-card/x16p_top.png) |
+| ![x8 bottom](../../docs/img/x16-u3-card/x8_bottom.png) | ![x16 bottom](../../docs/img/x16-u3-card/x16p_bottom.png) |
+| ![x8 iso bottom](../../docs/img/x16-u3-card/x8_iso_bottom.png) | ![x16 iso bottom](../../docs/img/x16-u3-card/x16p_iso_bottom.png) |
 
 ## Generator
 
