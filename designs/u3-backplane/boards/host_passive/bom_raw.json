@@ -1,0 +1,178 @@
+[
+ {
+  "ref": "J2",
+  "value": "U10A474240T",
+  "fp": "u3adapter:Amphenol_U10A474_SlimSAS_8i_SFF-8654_RA_SMD",
+  "lcsc": "",
+  "side": "bottom",
+  "x": 77.6,
+  "y": -33.7,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "J3",
+  "value": "U10A474240T",
+  "fp": "u3adapter:Amphenol_U10A474_SlimSAS_8i_SFF-8654_RA_SMD",
+  "lcsc": "",
+  "side": "bottom",
+  "x": 112.2,
+  "y": -33.7,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "U1",
+  "value": "9DBL0442BKILF",
+  "fp": "Package_DFN_QFN:VQFN-32-1EP_5x5mm_P0.5mm_EP3.15x3.15mm",
+  "lcsc": "C1540554",
+  "side": "top",
+  "x": 50.0,
+  "y": -28.0,
+  "rot": 90,
+  "dnp": false
+ },
+ {
+  "ref": "U2",
+  "value": "TCA9546APWR",
+  "fp": "Package_SO:TSSOP-16_4.4x5mm_P0.65mm",
+  "lcsc": "",
+  "side": "top",
+  "x": 27.0,
+  "y": -21.0,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "U3",
+  "value": "TCA9554PWR",
+  "fp": "Package_SO:TSSOP-16_4.4x5mm_P0.65mm",
+  "lcsc": "",
+  "side": "top",
+  "x": 27.0,
+  "y": -35.0,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "RN1",
+  "value": "4.7k x4",
+  "fp": "Resistor_SMD:R_Array_Convex_4x0603",
+  "lcsc": "C1980",
+  "side": "top",
+  "x": 35.0,
+  "y": -18.5,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "RN2",
+  "value": "4.7k x4",
+  "fp": "Resistor_SMD:R_Array_Convex_4x0603",
+  "lcsc": "C1980",
+  "side": "top",
+  "x": 35.0,
+  "y": -23.5,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "RN3",
+  "value": "33R x4",
+  "fp": "Resistor_SMD:R_Array_Convex_4x0603",
+  "lcsc": "",
+  "side": "top",
+  "x": 40.0,
+  "y": -21.0,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "C1",
+  "value": "100nF",
+  "fp": "Capacitor_SMD:C_0402_1005Metric",
+  "lcsc": "C1525",
+  "side": "top",
+  "x": 21.5,
+  "y": -21.0,
+  "rot": 90,
+  "dnp": false
+ },
+ {
+  "ref": "C2",
+  "value": "100nF",
+  "fp": "Capacitor_SMD:C_0402_1005Metric",
+  "lcsc": "C1525",
+  "side": "top",
+  "x": 21.5,
+  "y": -35.0,
+  "rot": 90,
+  "dnp": false
+ },
+ {
+  "ref": "C3",
+  "value": "10uF 25V X5R",
+  "fp": "Capacitor_SMD:C_0805_2012Metric",
+  "lcsc": "C15850",
+  "side": "top",
+  "x": 40.0,
+  "y": -37.0,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "C4",
+  "value": "100nF",
+  "fp": "Capacitor_SMD:C_0402_1005Metric",
+  "lcsc": "C1525",
+  "side": "top",
+  "x": 53.3,
+  "y": -23.1,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "C5",
+  "value": "100nF",
+  "fp": "Capacitor_SMD:C_0402_1005Metric",
+  "lcsc": "C1525",
+  "side": "top",
+  "x": 43.6,
+  "y": -30.6,
+  "rot": 90,
+  "dnp": false
+ },
+ {
+  "ref": "C6",
+  "value": "100nF",
+  "fp": "Capacitor_SMD:C_0402_1005Metric",
+  "lcsc": "C1525",
+  "side": "top",
+  "x": 47.4,
+  "y": -22.8,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "C7",
+  "value": "10uF 25V X5R",
+  "fp": "Capacitor_SMD:C_0805_2012Metric",
+  "lcsc": "C15850",
+  "side": "top",
+  "x": 44.0,
+  "y": -22.6,
+  "rot": 0,
+  "dnp": false
+ },
+ {
+  "ref": "FB1",
+  "value": "ferrite 600R@100MHz",
+  "fp": "Inductor_SMD:L_0603_1608Metric",
+  "lcsc": "C19330",
+  "side": "top",
+  "x": 44.0,
+  "y": -20.4,
+  "rot": 0,
+  "dnp": false
+ }
+]
