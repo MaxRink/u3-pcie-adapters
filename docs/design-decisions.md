@@ -16,23 +16,26 @@ quotes in `docs/fab-quotes.md` (PR #11), both read on 2026-11-13. Pin and electr
 "from memory" was not checked against a datasheet and must be checked before it is relied on.
 Section 12 collects those.
 
-Board state this was written against: cage rev B (PR #12), x8 rev D and x16 rev C (PR #11), with
-the rev E changes that the layout thread has accepted but not yet pushed.
+Board state: cage rev B, x8 and x16 rev F, all merged to main on 2026-11-13. The records below were
+written against rev D/C plus the planned rev E changes. Section 14 lists how rev E and F were actually
+built and what a re-check of the merged cards found.
 
-## Summary: choices the review changes or leaves open
+## Summary: where each changed or open choice stands
 
-| # | Choice today | Verdict | What to do |
+| # | Choice before the review | Now (rev F on main) | Still to do |
 | --- | --- | --- | --- |
-| D2 | REFCLK buffer 9DBL0442**B**KILF | **Change**, part is obsolete | Diodes PI6CB33401 as the main part on the same footprint (the layout thread compared both pin tables: all 32 pins match), 9DBL0442C as alternate; recheck against the current Diodes datasheet before ordering |
-| D3 | Buffer pin 1 tied to GND (PLL mode) | **Change** (accepted for rev E) | Pin 1 open = fan-out mode on the first two stages |
-| E1 | eFuse TPS259824ONRGER | **Open**, out of stock at Mouser and Digi-Key until Feb 2027 | Buy from LCSC "other suppliers" now, or take TPS259827ONRGER (no overvoltage cut-off, same footprint) |
-| E2 | eFuse RILIM 470R, no ITIMER cap | **Change** (accepted for rev E) | 390R and 4.7 nF |
-| E3 | TPS2116 priority on slot 3.3Vaux | **Change** (accepted for rev E) | Priority on slot 3.3 V main, 3.3Vaux as fallback |
-| C1 | U.3 receptacle PSAS4F2130021TR | **Open**, 16 pieces at LCSC, none at Mouser or Digi-Key | Buy the LCSC stock now for the first build, or re-footprint for PSAS4F2130201TR |
-| I3 | Cage LDO AMS1117 | **Changed** in cage rev B to HT7533-1 / MCP1703A in SOT-89 | Fit the MCP1703AT-3302E/MB: its SOT-89 pinout is confirmed against the footprint. The HT7533-1 pinout is still unchecked |
-| F7 | Yellow locate LED C72038 | **Change**, 0 stock | XL-1608UYC-06 (C965802) |
-| B4 | 0.2 mm generic vias | **Open** | 0.3 mm saves about $19 to $25 per order if the layout allows it |
-| G5 | 0402 passives on both sides | **Open** | 0603 and one-sided where there is room, if Max solders by hand |
+| D2 | REFCLK buffer 9DBL0442BKILF, obsolete | **Done.** Diodes PI6CB33401ZHIEX on the same footprint; 9DBL0442C as BOM alternate; a TI CDCDB400 version of every card exists | Recheck the current Diodes datasheet (the one read is from 2020). Use the CDCDB400 version only for the x8 and 3-drive cards (section 14) |
+| D3 | Buffer pin 1 tied to GND (PLL mode) | **Done.** Pin 1 open = fan-out mode | |
+| D4 | Three fan-out stages on the 4-drive card | **Done.** Last stage (U41) is a zero-delay buffer with a filtered PLL supply | Valid while drives C and D run at Gen3 |
+| E1 | eFuse TPS259824ONRGER, out of stock until Feb 2027 | **Decided in the BOM.** TPS259827ONRGER as BOM alternate (same footprint, no overvoltage cut-off), in stock at Mouser | Max chooses which to buy; the 827 is the practical one |
+| E2 | eFuse RILIM 470R, no ITIMER cap | **Done.** 390R, 4.7 nF, IMON 1k | |
+| E3 | TPS2116 priority on slot 3.3Vaux | **Done.** Priority on slot 3.3 V | |
+| C1 | U.3 receptacle PSAS4F2130021TR, 16 at LCSC | **Open.** A version for the PSAS4F2130201TR is planned and blocked on the Amphenol drawing | Buy the 16 now; someone has to download the 201TR drawing by hand |
+| I3 | Cage LDO AMS1117 | **Done.** MCP1703AT-3302E/MB in SOT-89, pinout confirmed | Needs an LCSC number if JLC assembles; do not fit the HT7533-1 unchecked |
+| F7 | Yellow locate LED C72038, 0 stock | **Done.** XL-1608UYC-06 (C965802) | |
+| B4 | 0.2 mm generic vias | **Open,** not changed | Saves $19 to $25 per order; needs a re-route |
+| G5 | 0402 passives on both sides | **Decided.** Blocks stay 0402; everything added in rev F is 0603 or leaded on the top side | Recommended build: JLC assembles, specials fitted by hand (docs/part-options.md, section 5) |
+| H1 | Drives on the solder side | **Open with Max,** who wants them on the front | See A2 for what that costs in lane crossings |
 
 ---
 
@@ -629,6 +632,42 @@ Owned by the backplane thread; recorded here so the reasons are in one place.
 | 4-pin fan header | fan power where the drives are | fan controller IC (feature 12, not chosen) |
 | Extra M3 holes | fix the printed shroud | clips on the board edge |
 | Supply LEDs, TVS on the 6-pin, silkscreen address table, ID EEPROM (24C02 at 0x50) | cents each; the TVS protects against cable hot-plug | INA3221 current monitor and temperature sensors (features 11 and 13, not chosen: the drives report both themselves) |
+
+## 14. Rev E and F as built, and re-check of the merged cards (2026-11-13)
+
+How the build differs from the records above:
+
+| Record | As built | Reason |
+| --- | --- | --- |
+| D2 | PI6CB33401ZHIEX is the main buffer, 9DBL0442CKILF a BOM alternate, and `boards/*-cdcdb400` are separate layouts for the TI CDCDB400RHBR | two buffer families in stock at franchised distributors |
+| E1 | TPS259827ONRGER BOM alternate; a leaded version is planned around the TPS16630 (HTSSOP-20), not the TPS2421-1 named in E1 | the TPS16630 keeps an active-high power-good, so the reset gate stays as it is; it is at brokers only today |
+| H2 | x16 window edge at 9.9 mm from the peg line (x8: 9.4 mm) | 9.4 and 9.6 mm did not route on the 4-drive card |
+| 13, power-good LED | the per-drive LED hangs on the drive's 12 V through 2.2k, not on power-good through a FET | no load on the open-drain power-good line that feeds the reset gate; one part less. It shows the same thing: lit means the eFuse output is up |
+| 13, fan header | 12 V through one of two solder jumpers (x8: slot by default, x16: aux by default); tach and PWM go to test pads only | no free expander pin to drive PWM |
+| 13, EEPROM | AT24C02C at 0x50 on the card-local bus, write protect tied low (writable) | behind the card switch, so it cannot clash with DIMM SPD at 0x50 on the host bus |
+
+Re-check findings. The rev E fixes (buffer pin 1, PLL supply on U41, TPS2116 priority, eFuse values) are
+wired as the datasheets require. Four points deserve attention before ordering, none of them a wiring error:
+
+1. **x16 window edge, 0.15 mm margin.** The housing face is 10.05 mm from the pegs and the edge is at
+   9.9 mm. JLC's routed outline tolerance is about 0.2 mm, so a board at the wrong end of the tolerance
+   stops the drive before it is fully seated. The README's fit test catches it. Better: write "window
+   edges: tolerance +0 / -0.2 mm toward the drive" in the order notes, and expect to file the edge.
+2. **Fan power on the x8 card.** The fan defaults to slot 12 V there, through one via good for about
+   1 A, and with PWM open a 4-wire fan runs at full speed. Two 25 W drives already take 50 of the slot's
+   66 W, so a 92x38 mm fan above about 1 A (12 W) must be moved to aux (close SJ5, open SJ4) and the
+   6-pin plugged in. A quieter way to run it: take 12 V from the card and PWM and tach from a
+   motherboard fan header. A 2-pin header on the PWM and tach pads would make that a plug-in job in a
+   later revision.
+3. **CDCDB400 version of the 4-drive card.** Three fan-out stages at up to 3 ns each plus about 2.5 ns of
+   trace is 11.5 ns against the 12 ns limit, with nothing left for the host's own clock tree. Use the
+   CDCDB400 boards for the x8 and 3-drive cards only, and the standard (PI6CB33401) board for 4 drives.
+   Its 85 ohm outputs into 100 ohm lines are a small mismatch and acceptable at 100 MHz.
+4. **TPS259827 has no overvoltage cut-off.** The TVS added in rev F sits on the aux input only. On a
+   regulated ATX rail this is acceptable; it is the price of the part being in stock.
+
+Not re-checked: the routed geometry itself beyond the DRC reports (clean on all boards), and the
+ITIMER blanking time of "about 2 ms", which was not read from the datasheet curve.
 
 ## Sources
 
