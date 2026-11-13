@@ -117,3 +117,14 @@ and the TPS25982 eFuse ($3.08-3.50).
 - The clock buffer, the eFuse and the LED need a pre-order, another distributor (Mouser / DigiKey), or an
   in-stock alternative before an assembly order can go through. Every other BOM line is in stock.
 - The BOM names the eFuse TPS259824ONRGER; LCSC stocks the same part as ...RGET (small reel).
+
+## Rev F delta (not re-quoted)
+
+Rev F keeps board size, layer count, via sizes and finish, so the bare-board quotes above still apply. It adds per
+card one fan header (Molex 47053-1000, LCSC C240840), one 1x4 pin header (C124378), one AT24C02 (C6203), one SMBJ15A
+(C113988), five to seven 0603 LEDs with resistors and, on the 4-drive card, one ferrite. That is an estimated
+USD 1 of parts per card plus JLCPCB's per-type fee for the four new extended parts (about USD 12 per order). The two
+through-hole headers are hand-solder items unless through-hole assembly is added to the order.
+
+Stock and prices of the parts with sourcing risk (receptacle, eFuse, clock buffer) and the alternates are in
+[`part-options.md`](part-options.md), which supersedes the parts lines above where they differ.
