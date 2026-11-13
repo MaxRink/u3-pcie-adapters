@@ -641,10 +641,11 @@ def route(k, info):
         for p in k.fps[ref].Pads():
             net = p.GetNetname()
             if net and net not in PW:
-                add(R.to_net, net, T(ref, p.GetNumber()), w=LSW, maxpad=48.0, **L3)
+                # the mux reaches every drive's SMBus trunk: up to 75 mm away on the 6-drive board
+                add(R.to_net, net, T(ref, p.GetNumber()), w=LSW, maxpad=90.0 if ref == "U1" else 48.0, **L3)
     for ref, p, net in G["arr"]:
         if net not in PW:
-            add(R.to_net, net, T(ref, p), w=LSW, maxpad=24.0)
+            add(R.to_net, net, T(ref, p), w=LSW, maxpad=40.0)
     for d in range(ND):
         I = info[d]
         for p in ("1", "2"):

@@ -10,7 +10,8 @@ b = P.LoadBoard(pcb)
 P.ZONE_FILLER(b).Fill(b.Zones())
 rpt = pcb[:-len(".kicad_pcb")] + "-drc.rpt"
 P.WriteDRCReport(b, rpt, P.EDA_UNITS_MILLIMETRES, True)
-s = open(rpt).read()
+s = open(rpt).read().replace(os.path.dirname(pcb) + os.sep, "")      # no local paths in the report
+open(rpt, "w").write(s)
 c = Counter(re.findall(r"\n\[(\w+)\]", s))
 un = int(re.search(r"Found (\d+) unconnected", s).group(1))
 print(os.path.basename(pcb), dict(c), "unconnected:", un)

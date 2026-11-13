@@ -47,14 +47,14 @@ LC = {"10k": "C25744", "100nF": "C1525", "10uF": "C15850", "4.7k x4": "C1980", "
 # ---------------------------------------------------------------- CEM x16 edge (side B = F.Cu, side A = B.Cu)
 GND_B = sorted(set([4, 7, 13, 16, 18, 21, 22, 25, 26, 29, 32, 35, 36, 39, 40, 43, 44, 47, 49] +
                    [n for i in range(8) for n in (52 + 4 * i, 53 + 4 * i)][:-1] + [80]) - {81})
-WAKE_V = []
+FV = {}                        # router start points of the low-speed fingers
 GND_A = [4, 12, 15, 18, 20, 23, 24, 27, 28, 31, 34, 37, 38, 41, 42, 45, 46, 49, 51] + \
         [n for i in range(7) for n in (54 + 4 * i, 55 + 4 * i)] + [82]
 fing = {f"B{n}": "GND" for n in GND_B}
 fing.update({f"A{n}": "GND" for n in GND_A})
 fing.update({"B8": "3V3", "A9": "3V3", "A10": "3V3", "A11": "PCIE_RST_N", "A1": "PRSNT_N", "B81": "PRSNT_N",
              "A13": "REFCLK_IN_P", "A14": "REFCLK_IN_N", "B5": "SMCLK", "B6": "SMDAT", "B11": "PCIE_WAKE_N",
-             "B12": "CLKREQ_N"})
+             "B12": "GND"})                     # CLKREQ# tied low: the clock is always requested
 PET_PINS = {0: (14, 15), 1: (19, 20), 2: (23, 24), 3: (27, 28), 4: (33, 34), 5: (37, 38), 6: (41, 42), 7: (45, 46)}
 PER_PINS = {0: (16, 17), 1: (21, 22), 2: (25, 26), 3: (29, 30), 4: (35, 36), 5: (39, 40), 6: (43, 44), 7: (47, 48)}
 for ln in range(8, 16):
@@ -195,10 +195,22 @@ def build():
     finger_gnd(81.5, x=fx(82), y=-7.6)           # A82, clear of PRSNT2# (B81)
     finger_gnd(12.5, x=fx(12) + 0.4)             # keep off REFCLK_IN
     finger_gnd(49, y=-6.85)
-    # WAKE# (B11): stub out of the finger zone to a via, the router continues from there
-    xw = fx(11)
+    # low-speed fingers: hand stubs out of the finger zone (no vias are allowed in it), the router starts there
+    xw = fx(11)                                                      # B11 WAKE# (L1) / A11 PERST# (L6)
     k.track("PCIE_WAKE_N", "L1", [(xw, -5.3), (xw, -7.9)], 0.2); k.via("PCIE_WAKE_N", xw, -7.9)
-    WAKE_V.append((xw, -7.9))
+    k.track("PCIE_RST_N", "L6", [(xw, -5.3), (xw, -6.3), (xw - 0.7, -7.0), (xw - 0.7, -9.0)], 0.2)
+    k.via("PCIE_RST_N", xw - 0.7, -9.0)
+    x3 = fx(9)                                                       # 3.3 V: B8 (L1), A9 and A10 (L6)
+    k.track("3V3", "L1", [(fx(8), -5.3), (fx(8), -6.0), (x3, -7.0), (x3, -8.0)], 0.4)
+    k.track("3V3", "L6", [(x3, -5.3), (x3, -8.0)], 0.4)
+    k.track("3V3", "L6", [(fx(10), -5.3), (fx(10), -6.0), (x3, -7.0)], 0.4)
+    k.via("3V3", x3, -7.0); k.via("3V3", x3, -8.0)
+    for n, net in ((5, "SMCLK"), (6, "SMDAT")):
+        k.track(net, "L1", [(fx(n), -5.3), (fx(n), -6.3)], 0.2)
+    k.track("PRSNT_N", "L6", [(fx(1), -5.0), (fx(1), -6.6)], 0.2); k.via("PRSNT_N", fx(1), -6.6)
+    k.track("PRSNT_N", "L1", [(fx(81), -5.0), (fx(81), -6.6)], 0.2); k.via("PRSNT_N", fx(81), -6.6)
+    FV.update(wake=(xw, -7.9), perst=(xw - 0.7, -9.0), smclk=(fx(5), -6.3), smdat=(fx(6), -6.3),
+              prsnt=((fx(1), -6.6), (fx(81), -6.6)))
     # ---------------- REFCLK buffer (top side, rotated so CLK_IN faces the fingers)
     UX, UY = 50.0, -28.0
     pads = {"8": "GND", "33": "GND", "4": "3V3_A", "21": "3V3_A", "11": "3V3", "15": "3V3", "25": "3V3", "9": "3V3",
@@ -271,7 +283,7 @@ def build():
             row, o = pin[0], int(pin[1:]); name = f"{row}{base + o}"
             x, y = k.padxy(jc, name); k.setpad(jc, name, net)
             far = o in (9, 12)
-            vy = (YB + (2.1 if far else 1.4)) if row == "B" else (YA - (1.75 if far else 1.0))
+            vy = (YB + (2.1 if far else 1.4)) if row == "B" else (YA - (1.75 if far else 2.6))
             k.track(net, "L6", [(x, y), (x, vy)], LSW); k.via(net, x, vy)
             port[pt][pin] = (x, vy)
     # ---------------- card logic (top side, left of the lanes)
@@ -294,6 +306,7 @@ def build():
     array("RN1", "4.7k x4", 35.0, -18.5, 0, [("P0_SDA", "3V3"), ("P0_SCL", "3V3"), ("P1_SDA", "3V3"), ("P1_SCL", "3V3")])
     array("RN2", "4.7k x4", 35.0, -23.5, 0, [("P2_SDA", "3V3"), ("P2_SCL", "3V3"), ("P3_SDA", "3V3"), ("P3_SCL", "3V3")])
     array("RN3", "33R x4", 40.0, -21.0, 0, [(f"P{pt}_PERST_N", "PCIE_RST_N") for pt in range(4)])
+    k.track("PCIE_RST_N", "L1", [k.padxy("RN3", "8"), k.padxy("RN3", "5")], 0.2)     # common side of the array
     caps = [two(k, "C1", C0402, "100nF", 21.5, -21.0, 90, "3V3", "GND", (21.5, -24), LC["100nF"]),
             two(k, "C2", C0402, "100nF", 21.5, -35.0, 90, "3V3", "GND", (21.5, -38), LC["100nF"]),
             two(k, "C3", C0805, "10uF 25V X5R", 40.0, -37.0, 0, "3V3", "GND", (38, -37), LC["10uF"]),
@@ -303,14 +316,15 @@ def build():
             two(k, "C7", C0805, "10uF 25V X5R", UX - 6.0, UY + 5.4, 0, "3V3_A", "GND", (UX, UY + 5.4), LC["10uF"])]
     fb = two(k, "FB1", ("Inductor_SMD", "L_0603_1608Metric"), "ferrite 600R@100MHz", UX - 6.0, UY + 7.6, 0, "3V3_A", "3V3",
              (UX, UY + 7.6), LC["FB"])
-    rq = two(k, "R1", R0402, "0R", 44.5, -14.5, 0, "CLKREQ_N", "GND", (47, -14.5), LC["0R"])
     k.fp("MountingHole", "MountingHole_3.2mm_M3", "H1", "bracket", 7.5, -9.35, bom=False)
-    info.update(sv=info_sv, port=port, arr=arr, caps=caps, acap=acap, fb=fb, rq=rq, board=board, fpad=fpad)
+    info.update(sv=info_sv, port=port, arr=arr, caps=caps, acap=acap, fb=fb, board=board, fpad=fpad)
     return k, info
 
 
 def route(k, info):
     R = Router(k)
+    for L in ("L1", "L3", "L6"):                       # no router copper or vias in the finger zone
+        R.keepouts.append((L, [(44.9, 0.6), (XF + 0.1, 0.6), (XF + 0.1, -5.75), (44.9, -5.75)]))
     T = lambda ref, p: ("L6" if k.fps[ref].IsFlipped() else "L1", *k.padxy(ref, p))
     L3 = dict(layer_cost={"L1": 1.5, "L6": 1.5}, via_cost=1.0)
     PW = ("GND", "3V3")
@@ -334,24 +348,19 @@ def route(k, info):
     for ref, p, net in info["arr"]:
         if net in PW:
             add(R.to_via, net, T(ref, p))
-    add(R.to_via, "GND", ("L1", *info["rq"][1]))
-    for n in ("B8",):
-        add(R.to_via, "3V3", ("L1", fpad(n)[0], -5.3), w=0.4)
-    for n in ("A9", "A10"):
-        add(R.to_via, "3V3", ("L6", fpad(n)[0], -5.3), w=0.4)
     fails = R.run_tasks(tasks)
     print("stage 1 fails:", fails)
     tasks.clear()
     # signals
-    add(R.route, "CLKREQ_N", ("L1", fpad("B12")[0], -5.3), ("L1", *info["rq"][0]), w=LSW)
-    add(R.route, "SMCLK", ("L1", fpad("B5")[0], -5.3), T("U2", "14"), w=LSW)
-    add(R.route, "SMDAT", ("L1", fpad("B6")[0], -5.3), T("U2", "15"), w=LSW)
+    add(R.route, "SMCLK", ("L1", *FV["smclk"]), T("U2", "14"), w=LSW)
+    add(R.route, "SMDAT", ("L1", *FV["smdat"]), T("U2", "15"), w=LSW)
     add(R.to_net, "SMCLK", T("U3", "14"), w=LSW, maxpad=32.0, **L3)
     add(R.to_net, "SMDAT", T("U3", "15"), w=LSW, maxpad=32.0, **L3)
-    add(R.route, "PCIE_RST_N", ("L6", fpad("A11")[0], -5.3), T("U2", "3"), w=LSW, **L3)
-    add(R.route, "PRSNT_N", ("L6", fpad("A1")[0], -5.0), ("L1", fpad("B81")[0], -5.0), w=LSW, **L3)
+    add(R.route, "PCIE_RST_N", ("all", *FV["perst"]), T("U2", "3"), w=LSW, **L3)
+    add(R.route, "PCIE_RST_N", T("RN3", "5"), T("U2", "3"), w=LSW, **L3)
+    add(R.route, "PRSNT_N", ("all", *FV["prsnt"][0]), ("all", *FV["prsnt"][1]), w=LSW, **L3)
     for ref, p, net in info["arr"]:
-        if net not in PW:
+        if net not in PW and net != "PCIE_RST_N":
             add(R.to_net, net, T(ref, p), w=LSW, maxpad=48.0, **L3)
     for ref in ("U2", "U3"):
         for p in k.fps[ref].Pads():
@@ -365,7 +374,7 @@ def route(k, info):
                 continue
             add(R.to_net, net, ("all", x, y), w=LSW, maxpad=110.0, **L3)
     wk = [info["port"][pt]["A9"] for pt in range(4)]
-    add(R.route, "PCIE_WAKE_N", ("all", *WAKE_V[0]), ("all", *wk[0]), w=LSW, **L3)
+    add(R.route, "PCIE_WAKE_N", ("all", *FV["wake"]), ("all", *wk[0]), w=LSW, **L3)
     for a in wk[1:]:
         add(R.to_net, "PCIE_WAKE_N", ("all", *a), w=LSW, maxpad=110.0, **L3)
     fails += R.run_tasks(tasks)
