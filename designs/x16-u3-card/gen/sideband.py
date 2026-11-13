@@ -28,7 +28,7 @@ R0402 = ("Resistor_SMD", "R_0402_1005Metric")
 C0402 = ("Capacitor_SMD", "C_0402_1005Metric")
 C1206 = ("Capacitor_SMD", "C_1206_3216Metric")
 LCSC = {"10k": "C25744", "4.7k": "C25900", "1k": "C11702", "100nF": "C1525", "10uF": "C13585", "22uF": "C12891",
-        "470R": "C25117", "100k": "C25741", "15k": "C25756", "1nF": "C1523"}
+        "390R": "C25109", "4.7nF": "C1538", "100k": "C25741", "15k": "C25756", "1nF": "C1523"}
 
 # ---------------------------------------------------------------- channel geometry (relative to the peg line)
 YEDGE = -9.4                                   # window edge: housing face at -10.05, 0.65 mm margin
@@ -79,8 +79,8 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
         "1": S(a0), "2": S(a1), "3": n("MUXCTL"), "4": n("MUXCTL"), "5": n("SMBDAT"), "6": n("SMBCLK"),
         "7": "GND", "8": n("MUXCTL"), "9": n("SD1"), "10": n("SC1"), "12": "SMCLK", "13": "SMDAT",
         "14": "3V3_AUX"}, lcsc="C2653307")
-    k.fp("LED_SMD", "LED_0603_1608Metric", dl, "yellow (locate)", *XY(9.6, -8.4), 180,
-         pads={"1": n("LOC"), "2": n("LOCA")}, lcsc="C72038")
+    k.fp("LED_SMD", "LED_0603_1608Metric", dl, "XL-1608UYC-06 yellow (locate)", *XY(9.6, -8.4), 180,
+         pads={"1": n("LOC"), "2": n("LOCA")}, lcsc="C965802")
 
     def array(ref, val, lc, x, y, sigs, toward):
         """4x0603 array (top); the pad column nearer x=toward carries sigs (top = more negative y first)."""
@@ -141,7 +141,7 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
     k.fp("u3adapter", "TI_RGE0024M_VQFN-24_4x4mm_P0.5mm_SplitEP", uf, "TPS259824ONRGER", *XY(EX, EY), 0, pads={
         **{str(p): sel for p in (1, 2, 3, 16, 25)}, **{str(p): "GND" for p in (4, 5, 10, 11, 12, 14, 26)},
         **{str(p): drv for p in (17, 18, 19, 20, 21, 22, 23, 24)},
-        "6": n("EN"), "8": n("ILIM"), "9": n("IMON"), "13": n("PG"), "15": n("DVDT")}, lcsc="C2155759")
+        "6": n("EN"), "7": n("ITIMER"), "8": n("ILIM"), "9": n("IMON"), "13": n("PG"), "15": n("DVDT")}, lcsc="C2155759")
     P_ = lambda q: k.padxy(uf, str(q))
     k.rule_area(f"EFUSE_{d}", [XY(EX - 2.6, EY - 2.6), XY(EX + 2.6, EY - 2.6), XY(EX + 2.6, EY + 2.6), XY(EX - 2.6, EY + 2.6)])
     ein = (X(EX), Y(EY - 0.625)); egn = (X(EX), Y(EY + 0.925))
@@ -182,8 +182,8 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
         # GND via just outside the pad: east of the first cap, toward the fingers under the eFuse parts (top side)
         gv = (gp[0] + 0.9, gp[1]) if gp[0] < X(29.0) else (gp[0], gp[1] + 1.3)
         k.track("GND", "L6", [gp, gv], 0.5); k.via("GND", *gv)
-    # eFuse support parts (top), hand-wired at the pins (0.5 mm pitch): EN divider (UVLO ~9.2 V), ILIM (470R ~ 3.2 A
-    # breaker), IMON load, dVdT (1 nF).  The router never touches these.
+    # eFuse support parts (top), hand-wired at the pins (0.5 mm pitch): EN divider (UVLO ~9.2 V), ILIM, ITIMER,
+    # IMON load, dVdT (1 nF).  The router never touches these.
     def r2(ref, val, x, y, rot, nets, lc, fp=R0402):
         k.fp(*fp, ref, val, *XY(x, y), rot, lcsc=lc)
         ps = sorted("12", key=lambda q: (k.padxy(ref, q)[1], k.padxy(ref, q)[0]) if rot % 180 else k.padxy(ref, q))
@@ -197,12 +197,17 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
     k.track(en, "L1", [lo_, e_], W); k.track(en, "L1", [(lo_[0], P_(6)[1]), P_(6)], W)
     k.track(sel, "L1", [hi_, (hi_[0], hi_[1] - 0.4)], 0.5)
     k.via("GND", g_[0], g_[1] + 0.8); k.track("GND", "L1", [g_, (g_[0], g_[1] + 0.8)], 0.25)
-    il, ilg = r2(f"R{rbase + 7}", "470R", 35.35, 1.35, 90, (ilim, "GND"), LCSC["470R"])
-    k.track(ilim, "L1", [P_(8), (P_(8)[0], Y(0.15)), (il[0], Y(0.45)), il], W)
+    # ILIM 390R = 3.85 A breaker; ITIMER 4.7 nF = about 2 ms of overcurrent blanking (open, the breaker variant
+    # latches off on any peak); IMON 1k = 0.25 V/A, readable at the resistor
+    il, ilg = r2(f"R{rbase + 7}", "390R", 35.65, 1.35, 90, (ilim, "GND"), LCSC["390R"])
+    k.track(ilim, "L1", [P_(8), il], W)
     k.via("GND", ilg[0], ilg[1] + 0.85); k.track("GND", "L1", [ilg, (ilg[0], ilg[1] + 0.85)], 0.25)
-    im, img = r2(f"R{rbase + 8}", "10k", 36.35, 1.35, 90, (imon, "GND"), LCSC["10k"])
-    k.track(imon, "L1", [P_(9), (P_(9)[0], Y(0.75)), im], W)
+    im, img = r2(f"R{rbase + 8}", "1k", 36.65, 1.35, 90, (imon, "GND"), LCSC["1k"])
+    k.track(imon, "L1", [P_(9), (P_(9)[0], Y(0.45)), (im[0], Y(0.75)), im], W)
     k.via("GND", img[0], img[1] + 0.85); k.track("GND", "L1", [img, (img[0], img[1] + 0.85)], 0.25)
+    it, itg = r2(f"C{cbase + 9}", "4.7nF", 34.65, 1.35, 90, (n("ITIMER"), "GND"), LCSC["4.7nF"], fp=C0402)
+    k.track(n("ITIMER"), "L1", [P_(7), (P_(7)[0], Y(0.3)), (it[0], Y(0.75)), it], W)
+    k.via("GND", itg[0], itg[1] + 0.85); k.track("GND", "L1", [itg, (itg[0], itg[1] + 0.85)], 0.25)
     dv, dvg = r2(f"C{cbase + 7}", "1nF", 39.75, EY + 0.25, 0, (dvdt, "GND"), LCSC["1nF"], fp=C0402)
     k.track(dvdt, "L1", [P_(15), dv], W)
     k.via("GND", dvg[0] + 0.7, dvg[1]); k.track("GND", "L1", [dvg, (dvg[0] + 0.7, dvg[1])], 0.25)
@@ -227,7 +232,7 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
     # silk: jumper legend next to the pins (pin 1 = AUX, pin 3 = SLOT), drive letter
     k.text("AUX", X(JX - 4.6), Y(JY - 4.0), size=1.0)
     k.text("SLOT", X(JX - 4.9), Y(JY + 4.2), size=1.0)
-    k.text(f"12V {d}", X(JX + 3.0), Y(JY + 4.5), size=1.0)
+    k.text(f"12V {d}", X(JX + 0.2), Y(JY - 5.6), size=1.0)
     # keep the router off the power pours and the jumper/eFuse field
     R.keepouts.append(("L1", [XY(JX - 2.4, JY - 3.8), XY(EX + 2.3, JY - 3.8), XY(EX + 2.3, JY + 2.0), XY(JX - 2.4, JY + 2.0)]))
     R.keepouts.append(("L6", [XY(12.2, 1.2), XY(EX + 2.5, 1.2), XY(EX + 2.5, EY - 3.0), XY(32.9, EY - 3.0), XY(32.9, -2.7),

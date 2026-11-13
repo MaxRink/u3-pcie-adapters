@@ -6,6 +6,7 @@ host, the TPS2116 3.3 V OR, CLKREQ# and WAKE#.  The management trunks (L3) and t
 and run along the window edge to every drive's block (geometry in sideband.py).
 """
 import math
+import os
 import pcbnew as P
 from pcbkit import plen
 import sideband as sb
@@ -15,6 +16,12 @@ UX, UY = 21.0, -20.5                          # 9DBL0442, bottom side, rot 90 (o
                                               # DIF0 west; inputs on the south face)
 DIF = {0: (13, 14), 1: (17, 18), 2: (22, 23), 3: (27, 28)}
 OE = {0: 12, 1: 19, 2: 24, 3: 29}
+# U3_CLK=cdcdb400: alternate card version with TI CDCDB400 (fan-out only, other pinout on the same 5x5 VQFN-32
+# land).  Outputs 2/3 sit on the same pins as DIF2/DIF3; the input moves from pins 5/6 to 3/4.
+CLK = os.environ.get("U3_CLK", "pi6cb")
+CDC = CLK == "cdcdb400"
+CLKIN = (3, 4) if CDC else (5, 6)
+CLK_VALUE = "CDCDB400RHBR" if CDC else "PI6CB33401ZHIEX"
 R0402 = ("Resistor_SMD", "R_0402_1005Metric")
 C0402 = ("Capacitor_SMD", "C_0402_1005Metric")
 C0603 = ("Capacitor_SMD", "C_0603_1608Metric")
@@ -98,16 +105,19 @@ class Card:
 
     # ------------------------------------------------------------------ REFCLK buffer
     def buffer(self, used):
+        if CDC:
+            return self.buffer_cdc(used)
         """used: {drive: DIF index}.  Places the buffer, routes REFCLK_IN and the support parts."""
         k = self.k
-        pads = {"1": "GND", "8": "GND", "33": "GND", "4": "3V3_A", "21": "3V3_A", "11": "3V3", "15": "3V3",
+        # pin 1 (HIBW_BYPM_LOBW#, tri-level) stays open = bypass (fan-out) mode; GND would select the low-BW PLL
+        pads = {"8": "GND", "33": "GND", "4": "3V3_A", "21": "3V3_A", "11": "3V3", "15": "3V3",
                 "25": "3V3", "9": "3V3", "10": "3V3", "31": "3V3", "5": "REFCLK_IN_P", "6": "REFCLK_IN_N"}
         for d, i in used.items():
             pads[str(DIF[i][0])], pads[str(DIF[i][1])] = f"REFCLK_{d}_P", f"REFCLK_{d}_N"
         for i, p in OE.items():
             pads[str(p)] = "GND" if i in used.values() else "3V3"        # OE# low = output on; unused outputs off
-        k.fp("Package_DFN_QFN", "VQFN-32-1EP_5x5mm_P0.5mm_EP3.15x3.15mm", "U1", "9DBL0442BKILF", UX, UY, 90,
-             bottom=True, pads=pads, lcsc="C1540554")
+        k.fp("Package_DFN_QFN", "VQFN-32-1EP_5x5mm_P0.5mm_EP3.15x3.15mm", "U1", CLK_VALUE, UX, UY, 90,
+             bottom=True, pads=pads, lcsc="")
         U = lambda n: k.padxy("U1", str(n))
         self.U = U
         k.rule_area("NECKDOWN_U1", [(UX - 4.0, UY - 4.0), (UX + 4.0, UY - 4.0), (UX + 4.0, UY + 4.0), (UX - 4.0, UY + 4.0)])
@@ -115,7 +125,7 @@ class Card:
         for i in (-1, 0, 1):
             for j in (-1, 0, 1):
                 k.via("GND", UX + 1.0 * i, UY + 1.0 * j)
-        for p in [1, 8] + [OE[i] for i in used.values()]:
+        for p in [8] + [OE[i] for i in used.values()]:
             x, y = U(p)
             if abs(y - UY) > 2:                          # north/south face: inward along y
                 sy = -math.copysign(1, y - UY)
@@ -179,6 +189,65 @@ class Card:
             k.via("GND", *gv); k.track("GND", "L1", [gp, gv], 0.25)
         return out
 
+    def buffer_cdc(self, used):
+        """CDCDB400 on the U1 land.  1 CKPWRGD_PD# high, 2 VDDR (filtered), 3/4 CLKIN, 5 SADR0 open, 6/7 SMBus tied
+        high (bus unused), 8-11/17/30 NC (must stay open), 12/16/21/25/29/31 VDD, 15/18 OE0#/OE1# high (off),
+        24 OE2# low, 26 OE3# open (internal pull-down = on), 13/14 and 19/20 unused outputs open."""
+        k = self.k
+        assert set(used.values()) <= {2, 3}
+        pads = {"33": "GND", "1": "3V3", "2": "3V3_A", "3": "REFCLK_IN_P", "4": "REFCLK_IN_N", "6": "3V3", "7": "3V3",
+                "12": "3V3", "15": "3V3", "16": "3V3", "18": "3V3", "21": "3V3", "25": "3V3", "29": "3V3",
+                "31": "3V3", "32": "3V3", "24": "GND"}
+        for d, i in used.items():
+            pads[str(DIF[i][0])], pads[str(DIF[i][1])] = f"REFCLK_{d}_P", f"REFCLK_{d}_N"
+        k.fp("Package_DFN_QFN", "VQFN-32-1EP_5x5mm_P0.5mm_EP3.15x3.15mm", "U1", CLK_VALUE, UX, UY, 90,
+             bottom=True, pads=pads, lcsc="")
+        U = lambda n: k.padxy("U1", str(n))
+        self.U = U
+        k.rule_area("NECKDOWN_U1", [(UX - 4.0, UY - 4.0), (UX + 4.0, UY - 4.0), (UX + 4.0, UY + 4.0), (UX - 4.0, UY + 4.0)])
+        for i in (-1, 0, 1):
+            for j in (-1, 0, 1):
+                k.via("GND", UX + 1.0 * i, UY + 1.0 * j)
+        x, y = U(24)                                         # OE2# into the pad
+        sy = -math.copysign(1, y - UY)
+        k.track("GND", "L6", [(x, y), (x, y + sy * 0.55), (x - math.copysign(0.4, x - UX), y + sy * 0.95)], 0.2)
+        out = {}
+        # south face: VDDR (2) own via; SMBus 6/7 joined, one via; CKPWRGD (1) round the corner to 32 (NC) and 31
+        out[2] = (U(2)[0], U(2)[1] + 1.0)
+        k.track("3V3", "L6", [U(6), U(7)], 0.2)
+        out[7] = (U(7)[0], U(7)[1] + 1.0)
+        k.track("3V3", "L6", [U(1), U(32), U(31)], 0.2)
+        # west face: 15/16 joined, one via; 12 runs past the tips of 13/14 (unused output, open) to that stub
+        k.track("3V3", "L6", [U(15), U(16)], 0.2)
+        out[15] = (U(15)[0] - 1.0, U(15)[1])
+        k.track("3V3", "L6", [U(12), (U(12)[0] - 0.75, U(12)[1]), (U(15)[0] - 0.75, U(15)[1])], 0.15)
+        # north face: 18 (OE1# high) and 21 (VDD), one via each
+        out[18] = (U(18)[0], U(18)[1] - 1.0)
+        out[21] = (U(21)[0], U(21)[1] - 1.0)
+        # east face: 25 own via; 31 own via, tied on L1 to 25's via; 29 doglegs round pin 30 (NC) to 31's via
+        out[25] = (U(25)[0] + 1.0, U(25)[1])
+        v31 = (U(31)[0] + 1.0, U(31)[1])
+        k.track("3V3", "L6", [U(31), v31], 0.2); k.via("3V3", *v31)
+        k.track("3V3", "L1", [v31, out[25]], 0.2)
+        x29, y29 = U(29)
+        sy = math.copysign(1, v31[1] - y29)
+        k.track("3V3", "L6", [(x29, y29), (x29 + 0.75, y29), (x29 + 1.0, y29 + sy * 0.25), v31], 0.15)
+        for p, v in out.items():
+            net = k.padnet("U1", str(p))
+            k.track(net, "L6", [U(p), v], 0.2); k.via(net, *v)
+        self.supply_vias = out
+        caps = [(out[2], "3V3_A", "C1", "100nF", C0402), (out[21], "3V3", "C2", "100nF", C0402),
+                (out[15], "3V3", "C4", "100nF", C0402), (out[25], "3V3", "C5", "100nF", C0402)]
+        for v, net, ref, val, fp in caps:
+            cx = v[0] + (0.9 if v[0] >= UX else -0.9)
+            vp, gp = two(k, ref, fp, val, cx, v[1], 0, False, v, net, "GND", LC[val])
+            k.track(net, "L1", [v, vp], 0.25)
+            gv = (gp[0] + (0.75 if gp[0] > vp[0] else -0.75), gp[1])
+            if ref == "C5":
+                gv = (gp[0], gp[1] - 0.75)
+            k.via("GND", *gv); k.track("GND", "L1", [gp, gv], 0.25)
+        return out
+
     # ------------------------------------------------------------------ REFCLK input (fingers A13/A14 -> pins 5/6)
     def refclk_in(self, yrun=-14.2, ykneeA=-7.7, xt1=47.5, ycross=None):
         """A13/A14 -> buffer pins 5/6.  The fingers give P west of N heading north, the bottom-mounted buffer wants P
@@ -188,7 +257,7 @@ class Card:
         k, U = self.k, self.U
         x13, x14 = self.xpin(13), self.xpin(14)
         xin = (x13 + x14) / 2
-        p5, p6 = U(5), U(6)
+        p5, p6 = U(CLKIN[0]), U(CLKIN[1])
         xc = (p5[0] + p6[0]) / 2
         d = (RW + RG) / 2
         o = 0.6                                          # via offset from the pair centre (vias 1.2 mm apart)
@@ -204,7 +273,7 @@ class Card:
         k.via("REFCLK_IN_P", xt1, yrun + o); k.via("REFCLK_IN_N", xt1, yrun - o)
         # crossing at X0 (on L1 heading west, P south / N north): N via at (X0, -o); P runs diagonally north over it
         # to its via at (X0 - 1.6, -o); N runs on L6 diagonally south under P to the south line
-        X0 = xc + 6.0
+        X0 = xc + (5.0 if CDC else 6.0)             # same via sites for both pinouts
         XP = X0 - 1.6
         Nx = [(X0 + o - d, yc - d), (X0, yc - o)]                               # L1 tail of N
         Px = [(X0 + 0.4, yc + d), (XP + 0.3, yc - o + 0.0), (XP, yc - o)]       # L1 tail of P
@@ -237,7 +306,8 @@ class Card:
     def parts(self):
         """TCA9548A (slot SMBus -> card-local bus on ch0, address 0x77 with A0-A2 pulled up; close SJ1-SJ3 to move it
         to 0x70-0x76 if the host already uses 0x77, never onto 0x70-0x73 where the drives' TCA9543As sit on the
-        local side), TPS2116 3.3 V OR (VIN1 = slot 3.3Vaux has priority, VIN2 = slot 3.3 V), buffer ferrite."""
+        local side), TPS2116 3.3 V OR (VIN1 = slot 3.3 V has priority, so in S0 the card never loads slot 3.3Vaux;
+        VIN2 = slot 3.3Vaux takes over when the main rail is off), buffer ferrite."""
         k = self.k
         # TCA9548A, rot 180: pins 1-12 on the east side (A0, A1, RESET#, SD0, SC0 bottom-up), 13-24 west (SCL/SDA/VCC)
         k.fp("Package_SO", "TSSOP-24_4.4x7.8mm_P0.65mm", "U2", "TCA9548APWR", 6.4, -21.5, 180, pads={
@@ -245,18 +315,18 @@ class Card:
             "22": "SMCLK_SLOT", "23": "SMDAT_SLOT", "24": "3V3_AUX"}, lcsc="C130026")
         # TPS2116 (SOT-583): 1 GND, 2/7 VOUT, 3 VIN1, 4 PR1, 5 MODE (= VIN1), 6 VIN2, 8 ST (open)
         k.fp("Package_TO_SOT_SMD", "SOT-583-8", "U3", "TPS2116DRLR", 10.2, -14.2, 0, pads={
-            "1": "GND", "2": "3V3_AUX", "3": "3V3_AUX_SLOT", "4": "PR1", "5": "3V3_AUX_SLOT", "6": "3V3",
+            "1": "GND", "2": "3V3_AUX", "3": "3V3", "4": "PR1", "5": "3V3", "6": "3V3_AUX_SLOT",
             "7": "3V3_AUX"}, lcsc="C3235557")
         # 0.5 mm pitch: hand escapes.  VOUT 2-7 and VIN1 3-5 (MODE) tie under the body; stub ends are router terminals
         u = lambda q: k.padxy("U3", q)
         k.track("3V3_AUX", "L1", [u("2"), u("7")], 0.2)
-        k.track("3V3_AUX_SLOT", "L1", [u("3"), (u("3")[0] + 0.5, u("3")[1]), (u("5")[0] - 0.5, u("5")[1]), u("5")], 0.15)
+        k.track("3V3", "L1", [u("3"), (u("3")[0] + 0.5, u("3")[1]), (u("5")[0] - 0.5, u("5")[1]), u("5")], 0.15)
         g = (u("1")[0] - 0.75, u("1")[1] - 0.35)
         k.track("GND", "L1", [u("1"), (u("1")[0] - 0.4, u("1")[1]), g], 0.2); k.via("GND", *g)
-        self.u3t = {"PR1": (u("4")[0] - 0.75, u("4")[1] + 0.35), "3V3_AUX_SLOT": (u("3")[0] - 0.8, u("3")[1]),
-                    "3V3": (u("6")[0] + 0.8, u("6")[1]), "3V3_AUX": (u("7")[0] + 0.8, u("7")[1])}
+        self.u3t = {"PR1": (u("4")[0] - 0.75, u("4")[1] + 0.35), "3V3": (u("3")[0] - 0.8, u("3")[1]),
+                    "3V3_AUX_SLOT": (u("6")[0] + 0.8, u("6")[1]), "3V3_AUX": (u("7")[0] + 0.8, u("7")[1])}
         k.track("PR1", "L1", [u("4"), (u("4")[0] - 0.4, u("4")[1]), self.u3t["PR1"]], 0.15)
-        for net, q in (("3V3_AUX_SLOT", "3"), ("3V3", "6"), ("3V3_AUX", "7")):
+        for net, q in (("3V3", "3"), ("3V3_AUX_SLOT", "6"), ("3V3_AUX", "7")):
             k.track(net, "L1", [u(q), self.u3t[net]], 0.15)
         # 10k x4: A0, A1, A2, RESET# pull-ups
         k.fp("Resistor_SMD", "R_Array_Convex_4x0603", "RN10", "10k x4", 13.4, -18.9, 0, lcsc="C29718")
@@ -276,7 +346,7 @@ class Card:
         L = [("R1", R0402, "4.7k", 12.0, -30.2, 90, (12.0, -31.2), "SMCLK", "3V3_AUX"),
              ("R2", R0402, "4.7k", 13.0, -30.2, 90, (13.0, -31.2), "SMDAT", "3V3_AUX"),
              ("C6", C0402, "100nF", 3.0, -16.4, 0, (3.5, -17.4), "3V3_AUX", "GND"),
-             ("R3", R0402, "15k", 8.0, -14.2, 90, (8.0, -13.2), "PR1", "3V3_AUX_SLOT"),
+             ("R3", R0402, "15k", 8.0, -14.2, 90, (8.0, -13.2), "PR1", "3V3"),
              ("R4", R0402, "10k", 7.0, -14.2, 90, (7.0, -13.2), "PR1", "GND"),
              ("C7", C0402, "100nF", 12.5, -14.9, 90, (12.5, -14.0), "3V3_AUX_SLOT", "GND"),
              ("C8", C0402, "100nF", 13.5, -14.9, 90, (13.5, -14.0), "3V3", "GND"),

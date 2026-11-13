@@ -17,10 +17,12 @@ from pcbkit import *
 from symlib import U3_PINS
 import sideband
 import cardkit
+import extras
 from router import Router
 
-OUT = os.path.join(ROOT, "boards", "x8")
-k = Kit(OUT, "u3_x8")
+VAR = "-cdcdb400" if os.environ.get("U3_CLK") == "cdcdb400" else ""     # alternate card versions get their own folder
+OUT = os.path.join(ROOT, "boards", "x8" + VAR)
+k = Kit(OUT, "u3_x8" + VAR.replace("-", "_"))
 U3FP = "Amphenol_PSAS4F213002_SFF-8639_U3_RA_SMD"
 
 # ------------------------------------------------------------------ geometry
@@ -429,13 +431,26 @@ for j, d in enumerate("AB" if os.environ.get("STAGE") != "card" else ""):
 # ------------------------------------------------------------------ aux 12 V: PCIe 6-pin at the card end (opt-in per drive)
 # Molex 45558 / Mini-Fit Jr 2x3 R/A, 1-3 +12V, 4-6 GND.  Feeds only the L4 12V_AUX plane, which reaches each
 # drive's jumper; never connected to slot 12 V.  Fit it only when a drive's jumper is set to aux.
+J5BOT = os.environ.get('U3_J5_BOTTOM') == '1'      # experimental: J5 on the bottom, the drives' side
+J5ROT = int(os.environ.get('U3_J5ROT', '270'))
 k.fp("Connector_Molex", "Molex_Mini-Fit_Jr_5569-06A2_2x03_P4.20mm_Horizontal", "J5", "PCIe 6-pin 45558-0003",
-     XR - 14.4, -24.6, 270, pads={"1": "12V_AUX", "2": "12V_AUX", "3": "12V_AUX", "4": "GND", "5": "GND", "6": "GND"},
+     XR - 14.4, -24.6, J5ROT, bottom=J5BOT, pads={"1": "12V_AUX", "2": "12V_AUX", "3": "12V_AUX", "4": "GND", "5": "GND", "6": "GND"},
      lcsc="C7545781")
 cva, cga = two("C19", *C1206, "22uF 25V X5R", XR - 24.0, -20.0, 90, False, (XR - 24.0, -18.0), "12V_AUX", "GND", "C12891")
 k.track("12V_AUX", "L1", [cva, (cva[0], cva[1] + 1.3)], 0.6); k.via("12V_AUX", cva[0], cva[1] + 1.3, 0.6, 0.3)
 k.track("GND", "L1", [cga, (cga[0], cga[1] - 1.3)], 0.6); k.via("GND", cga[0], cga[1] - 1.3, 0.6, 0.3)
 k.text("AUX 12V", XR - 10.0, -30.0, P.F_SilkS, 1.0)
+
+# ------------------------------------------------------------------ rev F: bring-up and service features (gen/extras.py)
+EX = extras.Extras(k, R, P)
+EX.column()
+EX.foot()
+for i, (d, xc) in enumerate((("A", XA), ("B", XB))):
+    EX.drive(d, i, xc, YP, last=d == "B")
+EX.fan(158.0, -15.4, "via", "via", (143.4, -16.2), tvs_rot=0, flip=True, jx=-10.0)
+EX.holes(XR, (-83.0, -104.0), -53.0)
+GAPH = EX.gap_holes([84.5], 11)
+print("t extras", round(time.time() - T0), "fails", len(EX.fails))
 
 # ------------------------------------------------------------------ planes
 # L4: slot 12 V toward the fingers (to each jumper's SLOT via), 12V_AUX toward the window and at the card end (J5)
@@ -458,8 +473,8 @@ for i, (x, y) in enumerate(((6.0, -30.0), (6.0, -60.0), (XR - 4.0, -38.0), (XR -
     k.fp("u3adapter", "MountingSlot_M3_3.2x6.2", f"H{3 + i}", "M3 slot", x, y, bom=False)
 
 # ------------------------------------------------------------------ silkscreen
-k.text("U.3 x8  rev D", 146.0, -14.0, P.F_SilkS, 1.0)
-k.text("x4x4 bifurcation", 146.0, -15.6, P.F_SilkS, 1.0)
+k.text("U.3 x8  rev F", 118.0, -14.0, P.F_SilkS, 1.0)
+k.text("x4x4 bifurcation", 118.0, -15.6, P.F_SilkS, 1.0)
 k.text("DRIVE A", XA, -32.2, P.B_SilkS, 1.0, mirror=True)
 k.text("DRIVE B", XB, -32.2, P.B_SilkS, 1.0, mirror=True)
 for ref, f in k.fps.items():
