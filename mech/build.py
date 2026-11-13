@@ -22,6 +22,7 @@ sys.path.insert(0, HERE)
 import backplane_cage  # noqa: E402
 import boardio  # noqa: E402
 import card_shroud  # noqa: E402
+import card_shroud_top  # noqa: E402
 import parts  # noqa: E402
 import procedural  # noqa: E402
 import scene  # noqa: E402
@@ -29,7 +30,27 @@ import sled  # noqa: E402
 
 OUT = os.path.join(HERE, "out")
 BOARDS = json.load(open(os.path.join(HERE, "boards.json")))
-ALL = list(BOARDS) + ["backplane"]      # plus "parts" for the bought-part STEP library
+CARDS = [n for n, c in BOARDS.items() if c["kind"] == "card"]
+# every card gets both shroud styles: "<card>" = end fan, air along the card; "<card>_top" = top-feed, fans behind the drives
+ALL = list(BOARDS) + [n + "_top" for n in CARDS] + ["backplane", "backplane6"]      # plus "parts" for the bought-part STEP library
+
+
+def kind_of(name):
+    if name.startswith("backplane"):
+        return "backplane"
+    if name.endswith("_top"):
+        return "card_top"
+    return BOARDS[name]["kind"]
+
+
+def title_of(name):
+    if name == "backplane":
+        return "4-drive backplane cage (stand-in board)"
+    if name == "backplane6":
+        return "6-drive backplane cage (stand-in board, concept)"
+    if name.endswith("_top"):
+        return BOARDS[name[:-4]]["title"] + ", top-feed shroud"
+    return BOARDS[name]["title"] + (", end-fan shroud" if BOARDS[name]["kind"] == "card" else "")
 
 
 def color(mat):
@@ -60,13 +81,14 @@ def connector_solids(board):
 
 def assemble(name):
     """Return dict(board, result, items) for one assembly."""
-    if name == "backplane":
-        res = backplane_cage.build()
+    kind = kind_of(name)
+    if kind == "backplane":
+        res = backplane_cage.build(backplane_cage.spec6() if name == "backplane6" else None)
         items = [dict(mesh=scene.tess(res["board_solid"]), material="fr4", group="board", name="pcb")]
         board = None
     else:
-        board = boardio.load(name)
-        res = (sled if BOARDS[name]["kind"] == "sled" else card_shroud).build(board)
+        board = boardio.load(name[:-4] if kind == "card_top" else name)
+        res = {"sled": sled, "card": card_shroud, "card_top": card_shroud_top}[kind].build(board)
         items = scene.board_items(board)
     items += scene.printed_items(res["printed"]) + scene.hardware_items(res["hardware"])
     return dict(board=board, result=res, items=items)
@@ -123,8 +145,8 @@ def export(name, a, check=True):
     with zipfile.ZipFile(step + ".zip", "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         z.write(step, os.path.basename(step))
     os.unlink(step)
-    man = dict(name=name, title=BOARDS.get(name, {}).get("title", "4-drive backplane cage (placeholder board)"),
-               board=board.src if board is not None else "placeholder (designs/u3-backplane/README.md)",
+    man = dict(name=name, title=title_of(name),
+               board=board.src if board is not None else "stand-in from the backplane layout's reported geometry",
                info=res["info"], bom=dict(cnt),
                printed={k: dict(volume_cm3=round(wp.val().Volume() / 1000, 1),
                                 size_mm=[round(v, 1) for v in (wp.val().BoundingBox().xlen, wp.val().BoundingBox().ylen, wp.val().BoundingBox().zlen)],

@@ -1,0 +1,140 @@
+{
+ "name": "x8_top",
+ "title": "x8 card, 2 drives, top-feed shroud",
+ "board": {
+  "ref": "origin/claude/project-thread-tt8pfu",
+  "path": "designs/x16-u3-card/boards/x8/u3_x8.kicad_pcb",
+  "commit": "9700ca7"
+ },
+ "info": {
+  "style": "top",
+  "params": {
+   "gap": 5.0,
+   "wall": 2.4,
+   "cap": 10.0,
+   "chamber": 16.0,
+   "fan": 120,
+   "fan_thick": 25.0,
+   "x_start": 1.0,
+   "y_bottom": 14.0,
+   "clear": 0.5,
+   "fit": 0.2,
+   "max_len": 250.0,
+   "insert_d": 4.0,
+   "insert_depth": 6.5,
+   "m3_clear": 3.4
+  },
+  "drives": 2,
+  "fans": 1,
+  "card_length": 190.0,
+  "envelope": {
+   "length": 190.0,
+   "height_above_finger_bottom": 146.9,
+   "back_of_card": 65.8,
+   "front_of_card": 5.8216
+  },
+  "fan_centres": [
+   [
+    84.5,
+    82.5
+   ]
+  ],
+  "clamp_points": [
+   [
+    6.0,
+    30.0
+   ],
+   [
+    6.0,
+    60.0
+   ],
+   [
+    186.0,
+    38.0
+   ],
+   [
+    186.0,
+    68.0
+   ]
+  ],
+  "direct_points": [],
+  "corner_points": [
+   [
+    6.5,
+    128.5
+   ],
+   [
+    184.5,
+    128.5
+   ]
+  ],
+  "manifold_points": [
+   [
+    18.5,
+    44.5
+   ],
+   [
+    18.5,
+    112.5
+   ],
+   [
+    150.5,
+    44.5
+   ],
+   [
+    150.5,
+    112.5
+   ]
+  ]
+ },
+ "bom": {
+  "drive": 2,
+  "bracket": 1,
+  "M3x5 pan/cap screw (bracket tab)": 2,
+  "M3x10 cap screw (cover to drive)": 8,
+  "M3x12 cap screw (cover-card-body)": 6,
+  "M3 heat-set insert": 10,
+  "M3x8 countersunk screw (body to manifold)": 4,
+  "120x120x25 mm fan": 1,
+  "M4x12 self-tapping fan screw": 4
+ },
+ "printed": {
+  "body": {
+   "volume_cm3": 73.2,
+   "size_mm": [
+    189.4,
+    130.3,
+    22.4
+   ],
+   "petg_g": 42.0
+  },
+  "manifold": {
+   "volume_cm3": 70.2,
+   "size_mm": [
+    189.0,
+    128.8,
+    40.9
+   ],
+   "petg_g": 40.0
+  },
+  "cover": {
+   "volume_cm3": 58.9,
+   "size_mm": [
+    189.7,
+    123.4,
+    8.9
+   ],
+   "petg_g": 34.0
+  },
+  "slot_filler_1": {
+   "volume_cm3": 4.1,
+   "size_mm": [
+    12.0,
+    97.5,
+    14.2
+   ],
+   "petg_g": 2.0
+  }
+ },
+ "interference_mm3": {}
+}

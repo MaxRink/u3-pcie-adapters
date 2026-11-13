@@ -30,9 +30,9 @@ class ShroudParams:
     gap: float = 5.0            # air channel on each drive face (CFD: 5 mm; 3 mm needs a stiffer print)
     wall: float = 2.4           # 6 perimeters at 0.4 mm
     top_gap: float = 1.5        # clearance over the drive ends
-    fan: int = 92               # fan frame size, mm
-    fan_thick: float = 38.0
-    funnel_len: float = 38.0    # duct-to-fan transition length
+    fan: int = 120              # fan frame size, mm (Max, 2026-11-13: design around 120 mm fans)
+    fan_thick: float = 25.0     # 25 or 38: this duct needs a high-static fan, see README
+    funnel_len: float = 50.0    # duct-to-fan transition length
     neck: float = 7.0           # straight section before the funnel (room for the flange screws)
     fan_z_offset: float = 0.0   # shift the fan axis off the duct centre (towards +z = component side)
     x_start: float = 1.0        # duct start at the bracket end

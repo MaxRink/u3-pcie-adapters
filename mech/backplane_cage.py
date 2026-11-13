@@ -16,7 +16,7 @@ from dataclasses import dataclass, asdict, field
 import cadquery as cq
 
 import parts
-from card_shroud import _union
+from card_shroud import _loft, _union
 from parts import box, cyl
 
 
@@ -31,21 +31,31 @@ class BackplaneSpec:
     drive_y: float = 42.0                         # receptacle centre (drive width direction)
     seat_z: float = 6.5                           # drive end face above the board: UNVERIFIED. 8.15 mm receptacle body,
     #                                               1.7 mm engagement assumed as on the right-angle sibling; the layout assumes 8.2
-    holes: tuple = ((3.5, 80.5), (76.1, 80.5), (35.8, 4.5), (74.6, 4.5))   # M3 slots 3.2 x 6.2, long in y
+    holes: tuple = ((3.5, 80.5), (76.1, 80.5), (35.8, 4.0), (74.6, 4.0))   # round 3.2 mm NPTH
     vents: tuple = ((14.6, 20.1, 34.4, 52.5), (34.6, 40.1, 34.4, 52.5), (54.6, 60.1, 34.4, 52.5), (74.6, 78.1, 34.4, 52.5),
                     (17.4, 20.1, 26.0, 34.5), (37.4, 40.1, 26.0, 34.5), (57.4, 60.1, 26.0, 34.5))   # milled air slots (x0, x1, y0, y1)
     slimsas_x: tuple = (15.8, 55.8)               # back side, mating face flush with the bottom edge
-    power_xy: tuple = (39.8, 79.5)                # Mini-Fit Jr 2x4 vertical, back side
+    power_x: tuple = (28.0, 52.0)                 # two Mini-Fit Jr 2x4 vertical (12 V in, pass-through), back side, y 79.5
     placeholder: bool = True
+
+
+def spec6():
+    """Concept for the 6-drive board Max asked for on 2026-11-13 (12 drives across two 120 mm fans):
+    the 4-drive geometry stretched to six receptacles at 20 mm pitch. Not a real board yet."""
+    return BackplaneSpec(width=119.6, drive_x=tuple(9.8 + 20.0 * i for i in range(6)),
+                         holes=((3.5, 80.5), (116.1, 80.5), (35.8, 4.0), (114.6, 4.0)),
+                         vents=tuple((x0 + 20.0 * k, x1 + 20.0 * k, y0, y1) for k in (0, 1, 2, 3, 4) for (x0, x1, y0, y1) in ((14.6, 20.1, 34.4, 52.5), (17.4, 20.1, 26.0, 34.5))),
+                         slimsas_x=(15.8, 55.8, 95.8), power_x=(28.0, 72.0))
 
 
 @dataclass
 class CageParams:
     gap_side: float = 2.5       # air gap between the outer drives and the cage walls (drive-to-drive gap is 5 mm by pitch)
     wall: float = 2.4
-    fan: int = 80
-    fan_thick: float = 38.0
-    plenum: float = 14.0        # between the drive ends and the fan
+    fan: int = 120              # 120x25 by default (Max, 2026-11-13); 80 gives a straight plate without funnel
+    fan_thick: float = 25.0
+    plenum: float = 14.0        # straight section between the drive ends and the fan or funnel
+    funnel_len: float = 30.0    # only used when the fan is larger than the tube
     rail: float = 2.2           # guide rib height
     fit: float = 0.3
     insert_d: float = 4.0
@@ -56,7 +66,7 @@ class CageParams:
 def placeholder_board(s):
     """Board solid + connector models from the spec (stand-in until the board file is pushed)."""
     b = box(0, s.width, 0, s.height, -s.thickness, 0)
-    cuts = [cq.Workplane("XY").slot2D(6.2, 3.2, 90).extrude(s.thickness + 2).translate((x, y, -s.thickness - 1)) for (x, y) in s.holes]
+    cuts = [cyl(1.6, s.thickness + 2, "z", (x, y, -s.thickness - 1)) for (x, y) in s.holes]
     for (x0, x1, y0, y1) in s.vents:
         cuts.append(box(x0, x1, y0, y1, -s.thickness - 1, 1).edges("|Z").fillet(1.0))
     b = b.cut(_union(cuts))
@@ -68,7 +78,8 @@ def placeholder_board(s):
         hw.append(("U.3 vertical receptacle PSAS5F3130021TR", f"J{i + 1}", parts.u3_receptacle_vertical, (), T(x, s.drive_y, 0, rz=90)))
     for i, x in enumerate(s.slimsas_x):
         hw.append(("SlimSAS 8i right-angle receptacle U10A474240T", f"J1{i}", parts.slimsas_8i_ra, (), T(x, 7.9, -s.thickness, ry=180)))
-    hw.append(("Mini-Fit Jr 2x4 vertical header (PCIe 8-pin)", "J20", parts.minifit, (4, False), T(s.power_xy[0] + 6.3, s.power_xy[1] + 2.75, -s.thickness, ry=180)))
+    for i, x in enumerate(s.power_x):
+        hw.append(("Mini-Fit Jr 2x4 vertical header (PCIe 8-pin)", f"J2{i}", parts.minifit, (4, False), T(x + 6.3, 79.5 + 2.75, -s.thickness, ry=180)))
     return b, hw
 
 
@@ -146,11 +157,22 @@ def build(spec=None, p=None):
     cx, cy = (xi0 + xi1) / 2, (yi0 + yi1) / 2
     zs0, zs1 = zc1 - 14, zc1 + p.plenum
     o = w + p.fit
-    plate = box(xi0 - o - w, xi1 + o + w, yi0 - o - w, yi1 + o + w, zs0, zs1 + 4)
+    plate = box(xi0 - o - w, xi1 + o + w, yi0 - o - w, yi1 + o + w, zs0, zs1)
     plate = plate.cut(box(xi0 - o, xi1 + o, yi0 - o, yi1 + o, zs0 - 1, zc1 + p.fit))        # socket for the tube
-    plate = plate.cut(box(xi0, xi1, yi0, yi1, zc1, zs1))                                     # plenum
-    flange = cq.Workplane("XY").rect(max(fs, xi1 - xi0 + 2 * (o + w)), max(fs, yi1 - yi0 + 2 * (o + w))).extrude(4).translate((cx, cy, zs1))
-    plate = plate.union(flange).cut(cyl(fs / 2 - 2, 6, "z", (cx, cy, zs1 - 1)))
+    plate = plate.cut(box(xi0, xi1, yi0, yi1, zc1, zs1 + 1))                                 # plenum
+    r_i = fs / 2 - 2.0
+    if fs > min(xi1 - xi0, yi1 - yi0) + 12:            # fan larger than the tube: funnel out to it
+        def loft_z(z_a, rect, z_b, circ):
+            return _loft(z_a, rect, z_b, circ).rotate((0, 0, 0), (1, 1, 1), -120)
+        ro = (xi0 - o - w, xi1 + o + w, yi0 - o - w, yi1 + o + w)
+        ri = (xi0, xi1, yi0, yi1)
+        funnel = loft_z(zs1 - 0.01, ro, zs1 + p.funnel_len, (cx, cy, r_i + w)).cut(loft_z(zs1 - 0.02, ri, zs1 + p.funnel_len + 0.01, (cx, cy, r_i)))
+        zs1 = zs1 + p.funnel_len
+        plate = plate.union(funnel)
+        flange = cq.Workplane("XY").rect(fs, fs).extrude(4).edges("|Z").fillet(fs * 0.055).translate((cx, cy, zs1))
+    else:
+        flange = cq.Workplane("XY").rect(max(fs, xi1 - xi0 + 2 * (o + w)), max(fs, yi1 - yi0 + 2 * (o + w))).extrude(4).translate((cx, cy, zs1))
+    plate = plate.union(flange.cut(cyl(r_i, 6, "z", (cx, cy, zs1 - 1))))
     fan_holes = [(cx + sx * hs / 2, cy + sy * hs / 2) for sx in (-1, 1) for sy in (-1, 1)]
     pc = [cyl(1.9, 6, "z", (x, y, zs1 - 1)) for (x, y) in fan_holes]
     plate = plate.cut(_union(pc))

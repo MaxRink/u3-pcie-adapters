@@ -1,0 +1,205 @@
+{
+ "name": "x16p_top",
+ "title": "x16 card, 4 drives, top-feed shroud",
+ "board": {
+  "ref": "origin/claude/project-thread-tt8pfu",
+  "path": "designs/x16-u3-card/boards/x16p/u3_x16p.kicad_pcb",
+  "commit": "9700ca7"
+ },
+ "info": {
+  "style": "top",
+  "params": {
+   "gap": 5.0,
+   "wall": 2.4,
+   "cap": 10.0,
+   "chamber": 16.0,
+   "fan": 120,
+   "fan_thick": 25.0,
+   "x_start": 1.0,
+   "y_bottom": 14.0,
+   "clear": 0.5,
+   "fit": 0.2,
+   "max_len": 250.0,
+   "insert_d": 4.0,
+   "insert_depth": 6.5,
+   "m3_clear": 3.4
+  },
+  "drives": 4,
+  "fans": 2,
+  "card_length": 312.0,
+  "envelope": {
+   "length": 312.0,
+   "height_above_finger_bottom": 152.6,
+   "back_of_card": 65.8,
+   "front_of_card": 5.8216
+  },
+  "fan_centres": [
+   [
+    84.5,
+    88.2
+   ],
+   [
+    230.5,
+    88.2
+   ]
+  ],
+  "clamp_points": [
+   [
+    6.0,
+    30.0
+   ],
+   [
+    6.0,
+    60.0
+   ],
+   [
+    308.0,
+    50.0
+   ],
+   [
+    308.0,
+    80.0
+   ]
+  ],
+  "direct_points": [],
+  "corner_points": [
+   [
+    6.5,
+    134.2
+   ],
+   [
+    305.5,
+    145.2
+   ]
+  ],
+  "manifold_points": [
+   [
+    18.5,
+    50.2
+   ],
+   [
+    18.5,
+    118.2
+   ],
+   [
+    150.5,
+    50.2
+   ],
+   [
+    150.5,
+    118.2
+   ],
+   [
+    164.5,
+    50.2
+   ],
+   [
+    164.5,
+    118.2
+   ],
+   [
+    296.5,
+    50.2
+   ],
+   [
+    296.5,
+    118.2
+   ]
+  ]
+ },
+ "bom": {
+  "drive": 4,
+  "bracket": 1,
+  "M3x5 pan/cap screw (bracket tab)": 2,
+  "M3x10 cap screw (cover to drive)": 16,
+  "M3x12 cap screw (cover-card-body)": 6,
+  "M3 heat-set insert": 14,
+  "M3x8 countersunk screw (body to manifold)": 8,
+  "120x120x25 mm fan": 2,
+  "M4x12 self-tapping fan screw": 8
+ },
+ "printed": {
+  "body_1": {
+   "volume_cm3": 57.1,
+   "size_mm": [
+    156.4,
+    136.0,
+    22.4
+   ],
+   "petg_g": 33.0
+  },
+  "body_2": {
+   "volume_cm3": 56.4,
+   "size_mm": [
+    154.8,
+    136.0,
+    22.4
+   ],
+   "petg_g": 32.0
+  },
+  "manifold_1": {
+   "volume_cm3": 51.2,
+   "size_mm": [
+    156.4,
+    128.8,
+    40.9
+   ],
+   "petg_g": 29.0
+  },
+  "manifold_2": {
+   "volume_cm3": 50.3,
+   "size_mm": [
+    154.4,
+    128.8,
+    40.9
+   ],
+   "petg_g": 29.0
+  },
+  "cover_1": {
+   "volume_cm3": 49.2,
+   "size_mm": [
+    157.1,
+    129.1,
+    8.9
+   ],
+   "petg_g": 28.0
+  },
+  "cover_2": {
+   "volume_cm3": 47.4,
+   "size_mm": [
+    154.4,
+    115.3,
+    8.9
+   ],
+   "petg_g": 27.0
+  },
+  "slot_filler_1": {
+   "volume_cm3": 3.9,
+   "size_mm": [
+    12.0,
+    97.5,
+    14.2
+   ],
+   "petg_g": 2.0
+  },
+  "slot_filler_2": {
+   "volume_cm3": 4.1,
+   "size_mm": [
+    12.0,
+    97.5,
+    14.2
+   ],
+   "petg_g": 2.0
+  },
+  "slot_filler_3": {
+   "volume_cm3": 4.1,
+   "size_mm": [
+    12.0,
+    97.5,
+    14.2
+   ],
+   "petg_g": 2.0
+  }
+ },
+ "interference_mm3": {}
+}

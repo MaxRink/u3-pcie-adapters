@@ -226,7 +226,7 @@ def render(items, path, up="y", direction=(0.5, -0.8, 0.45), samples=96, size=(1
 
 # view name -> kwargs; directions are in the Blender frame (z up; for cards the component side faces -y)
 CARD_EXPLODE = {"cover": (0, 0, 55), "scr_drv": (0, 0, 80), "scr_clamp": (0, 0, 80), "scr_corner": (0, 0, 80), "scr_brk": (0, 0, 25),
-                "body": (0, 0, -55), "ins": (0, 0, -55), "slot_filler": (0, 45, -20), "fan_adapter": (45, 0, 0), "scr_adp": (70, 0, 0),
+                "body": (0, 0, -55), "ins": (0, 0, -55), "scr_direct": (0, 0, 25), "slot_filler": (0, 45, -20), "fan_adapter": (45, 0, 0), "scr_adp": (70, 0, 0),
                 "fan": (95, 0, 0), "scr_fan": (125, 0, 0), "drive": (0, 0, -18)}
 VIEWS = {
     "card": {
@@ -236,6 +236,14 @@ VIEWS = {
         "exploded": dict(direction=(0.5, -0.7, 0.5), explode=CARD_EXPLODE),
         "board_front": dict(direction=(0.35, -0.85, 0.35), hide=("printed", "hardware")),
         "board_back": dict(direction=(-0.35, 0.85, 0.35), hide=("printed", "hardware")),
+    },
+    "card_top": {
+        "hero": dict(direction=(-0.55, 0.75, 0.38)),
+        "front": dict(direction=(0.5, -0.8, 0.4)),
+        "xray": dict(direction=(-0.45, 0.8, 0.42), alpha={"printed": 0.28}),
+        "exploded": dict(direction=(-0.6, 0.6, 0.5), explode={"cover": (0, 0, 50), "scr_drv": (0, 0, 75), "scr_clamp": (0, 0, 75), "scr_corner": (0, 0, 75),
+                                                              "scr_brk": (0, 0, 25), "body": (0, 0, -40), "ins_man": (0, 0, -95), "ins": (0, 0, -40), "scr_man": (0, 0, -25),
+                                                              "slot_filler": (0, 45, -15), "manifold": (0, 0, -95), "fan": (0, 0, -140), "scr_fan": (0, 0, -175), "drive": (0, 0, -12)}),
     },
     "sled": {
         "hero": dict(direction=(0.6, -0.65, 0.5)),
@@ -258,21 +266,22 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("names", nargs="*", default=build.ALL)
     ap.add_argument("--views", nargs="*")
-    ap.add_argument("--samples", type=int, default=96)
-    ap.add_argument("--size", type=int, nargs=2, default=(1920, 1280))
+    ap.add_argument("--samples", type=int, default=64)
+    ap.add_argument("--size", type=int, nargs=2, default=(1600, 1067))
     ap.add_argument("--out", default=IMG)
     a = ap.parse_args()
     for name in a.names:
-        kind = "backplane" if name == "backplane" else build.BOARDS[name]["kind"]
+        kind = build.kind_of(name)
         asm = build.assemble(name)
         up = UP.get(name, "y")
-        if name == "backplane":
-            up = "y"
         for v, kw in VIEWS[kind].items():
             if a.views and v not in a.views:
                 continue
             p = render(asm["items"], os.path.join(a.out, f"{name}_{v}.png"), up=up, samples=a.samples, size=tuple(a.size), **kw)
-            print(p, flush=True)
+            from PIL import Image                    # JPEG for the docs: 10x smaller than the PNG
+            Image.open(p).convert("RGB").save(p[:-4] + ".jpg", quality=90)
+            os.unlink(p)
+            print(p[:-4] + ".jpg", flush=True)
 
 
 if __name__ == "__main__":
