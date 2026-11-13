@@ -20,10 +20,30 @@ Renders are regenerated from the KiCad files whenever a board changes (see
 
 ## OCuLink cage board
 
-56.5 x 40 mm, 6 layers (JLC06161H-3313), PCIe lanes on L1/L6 only. The OCuLink receptacle sits on
-the bottom in the edge notch, the U.3 receptacle on top mates the drive at the upper edge, and a
-PCIe 6-pin (Molex Mini-Fit Jr) brings 12 V through a PTC fuse; an AMS1117 makes 3.3 V aux.
-Four M3 slots (3.2 x 6.2 mm, along the insertion axis) hold it in the printed cage.
+Rev B. 56.5 x 37.65 mm, 6 layers (JLC06161H-3313), PCIe lanes on L1/L6 only. The OCuLink receptacle sits on the
+bottom in the edge notch, the U.3 receptacle on top mates the drive at the upper edge, and a PCIe 6-pin
+(Molex Mini-Fit Jr) brings 12 V through a 3 A PTC fuse; a SOT-89 LDO (HT7533-1, or MCP1703AT-3302E/MB from
+Mouser/Digi-Key, same pinout) makes 3.3 V aux. Four M3 slots (3.2 x 6.2 mm, along the insertion axis) hold it in
+the printed cage.
+
+Rev B changes (from the rev A review, `docs/reviews/cage-board-review.md`, and `docs/reviews/full-review-2026-11-13.md`):
+
+- 220 nF AC caps on PER0/PER1 (bottom side, L5 voided under the pads). A U.3 drive has no TX caps on lanes 0/1
+  (SFF-TA-1001 Rev 1.1 section 4.5), so rev A left those two lanes DC-coupled.
+- The drive-side board edge now ends 9.4 mm from the peg line, 0.65 mm short of the housing face, so the board can
+  no longer stop the drive before it is fully seated. The receptacle overhangs the edge by design.
+- 100 k pull-down on PERST#: a missing or sideband-less cable holds the drive in reset.
+- The four low-speed OCuLink vias moved off the PET via row into two rows in front of it, and a return via was
+  added between the PET3 and PET2 transitions. The 11 mm slot in the L2/L5 planes is now two short ones with a
+  2.7 mm bridge.
+- Parts: F1 mSMD300-16V (3 A hold, C6851473), LED KT-0603YG (C2289), C3 50 V (C307331), LDO as above (the AMS1117
+  was at its 15 V limit, needs a minimum load and is not stable with ceramic output caps).
+
+The renders below still show rev A.
+
+Still open on this board: the cabled path needs a retimer on the host card for full PCIe 4.0 compliance
+(design-rules Rev E), PERST#/REFCLK/SMBus are not isolated when the cage is unpowered, and the PET0 lane is 30.4 mm
+(0.4 mm over the per-board target).
 
 | Top | Bottom (seen from below) |
 | --- | --- |
