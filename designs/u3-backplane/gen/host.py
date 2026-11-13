@@ -208,7 +208,7 @@ def build():
     for n, net in ((5, "SMCLK"), (6, "SMDAT")):
         k.track(net, "L1", [(fx(n), -5.3), (fx(n), -6.3)], 0.2)
     k.track("PRSNT_N", "L6", [(fx(1), -5.0), (fx(1), -6.6)], 0.2); k.via("PRSNT_N", fx(1), -6.6)
-    k.track("PRSNT_N", "L1", [(fx(81), -5.0), (fx(81), -6.6)], 0.2); k.via("PRSNT_N", fx(81), -6.6)
+    k.track("PRSNT_N", "L1", [(fx(81), -5.0), (fx(81), -6.6)], 0.2)   # no via here: PER15 runs below on L6
     FV.update(wake=(xw, -7.9), perst=(xw - 0.7, -9.0), smclk=(fx(5), -6.3), smdat=(fx(6), -6.3),
               prsnt=((fx(1), -6.6), (fx(81), -6.6)))
     # ---------------- REFCLK buffer (top side, rotated so CLK_IN faces the fingers)
@@ -358,7 +358,7 @@ def route(k, info):
     add(R.to_net, "SMDAT", T("U3", "15"), w=LSW, maxpad=32.0, **L3)
     add(R.route, "PCIE_RST_N", ("all", *FV["perst"]), T("U2", "3"), w=LSW, **L3)
     add(R.route, "PCIE_RST_N", T("RN3", "5"), T("U2", "3"), w=LSW, **L3)
-    add(R.route, "PRSNT_N", ("all", *FV["prsnt"][0]), ("all", *FV["prsnt"][1]), w=LSW, **L3)
+    add(R.route, "PRSNT_N", ("all", *FV["prsnt"][0]), ("L1", *FV["prsnt"][1]), w=LSW, **L3)
     for ref, p, net in info["arr"]:
         if net not in PW and net != "PCIE_RST_N":
             add(R.to_net, net, T(ref, p), w=LSW, maxpad=48.0, **L3)
@@ -382,8 +382,9 @@ def route(k, info):
 
 
 EXTRA_DRU = """
-(rule "silk may sit on masked copper (only pads/holes need clearance)"
-    (condition "A.Type != 'Pad' && B.Type != 'Pad' && A.Type != 'Via' && B.Type != 'Via'")
+(rule "silk may sit on masked copper and tented vias (only pads/holes need clearance)"
+    (condition "A.Type != 'Pad' && B.Type != 'Pad'")
+    (severity ignore)
     (constraint silk_clearance (min 0mm)))
 (rule "REFCLK100: uncoupled length incl. via and QFN pin fan-outs <= 8 mm (100 MHz HCSL)"
     (condition "A.NetClass == 'REFCLK_100'")

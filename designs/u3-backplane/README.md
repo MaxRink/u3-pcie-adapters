@@ -88,9 +88,10 @@ A passive card plus a 0.5 m cable plus the backplane (19 to 43 mm) is past what 
 re-equalisation. Expect Gen3 to work and Gen4 to depend on the board and the cable. For Gen4, use a redriver or
 retimer card.
 
-**Redriver and retimer versions: not done.** The redriver card (4 x DS160PR810) is planned but not laid out. The
-retimer card cannot be laid out from public data: TI's public DS160PT801 datasheet has no ball map, the full one
-is released on request.
+**Redriver and retimer versions: not built (decided 2026-11-13).** For PCIe 4.0 a retimer card is bought instead
+(see below). A redriver card (4 x DS160PR810) was analysed but not laid out: it does not re-time, so Gen4 over
+0.5 m would stay uncertain. A retimer card cannot be laid out from public data, TI's public DS160PT801 datasheet
+has no ball map.
 
 ## What to buy
 
