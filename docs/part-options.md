@@ -54,6 +54,7 @@ Things to know before choosing it:
   case is 9 ns of buffer delay plus about 2.5 ns of trace against the 12 ns transport budget of a common-clock link.
   Typical parts are far inside that, the worst case leaves no margin for the host's own clock tree. The x8 and the
   3-drive card have at most two stages and are unaffected.
+  The review therefore recommends the CDCDB400 version for the x8 and the 3-drive card only.
 * Each repeater loses the dedicated 100 nF at VDDR (no room next to the shifted input vias). VDDR shares the 100 nF
   3.7 mm away on the 3.3 V ring.
 
