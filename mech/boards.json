@@ -1,0 +1,6 @@
+{
+  "x8": {"ref": "origin/claude/project-thread-tt8pfu", "path": "designs/x16-u3-card/boards/x8/u3_x8.kicad_pcb", "kind": "card", "title": "x8 card, 2 drives"},
+  "x16p3": {"ref": "origin/claude/project-thread-tt8pfu", "path": "designs/x16-u3-card/boards/x16p3/u3_x16p3.kicad_pcb", "kind": "card", "title": "x16 card, 3 drives"},
+  "x16p": {"ref": "origin/claude/project-thread-tt8pfu", "path": "designs/x16-u3-card/boards/x16p/u3_x16p.kicad_pcb", "kind": "card", "title": "x16 card, 4 drives"},
+  "cage": {"ref": "origin/claude/project-thread-o4epuj", "path": "designs/x16-u3-card/boards/cage/u3_cage.kicad_pcb", "kind": "sled", "title": "OCuLink cage board, 1 drive"}
+}

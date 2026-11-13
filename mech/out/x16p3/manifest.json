@@ -1,0 +1,206 @@
+{
+ "name": "x16p3",
+ "title": "x16 card, 3 drives",
+ "board": {
+  "ref": "origin/claude/project-thread-tt8pfu",
+  "path": "designs/x16-u3-card/boards/x16p3/u3_x16p3.kicad_pcb",
+  "commit": "9700ca7"
+ },
+ "info": {
+  "params": {
+   "gap": 5.0,
+   "wall": 2.4,
+   "top_gap": 1.5,
+   "fan": 92,
+   "fan_thick": 38.0,
+   "funnel_len": 38.0,
+   "neck": 7.0,
+   "fan_z_offset": 0.0,
+   "x_start": 1.0,
+   "y_bottom": 14.0,
+   "clear": 0.5,
+   "fit": 0.2,
+   "max_len": 250.0,
+   "insert_d": 4.0,
+   "insert_depth": 6.5,
+   "m3_clear": 3.4
+  },
+  "drives": 3,
+  "card_length": 239.0,
+  "duct": {
+   "x": [
+    1.0,
+    239.0
+   ],
+   "y": [
+    14.0,
+    144.1
+   ],
+   "z": [
+    -23.9784,
+    5.8216
+   ]
+  },
+  "envelope": {
+   "length": 326.0,
+   "height_above_finger_bottom": 144.1,
+   "back_of_card": 22.400000000000002,
+   "front_of_card": 5.8216,
+   "fan_span_z": [
+    -55.0784,
+    36.9216
+   ],
+   "fan_span_y": [
+    44.32499999999999,
+    136.325
+   ]
+  },
+  "channel_area_mm2": {
+   "front": 513.7499999999999,
+   "back": 513.7499999999999
+  },
+  "clamp_points": [
+   [
+    6.0,
+    30.0
+   ],
+   [
+    6.0,
+    60.0
+   ],
+   [
+    235.0,
+    50.0
+   ],
+   [
+    235.0,
+    80.0
+   ]
+  ],
+  "direct_points": [],
+  "corner_points": [
+   [
+    6.5,
+    134.7
+   ],
+   [
+    234.92,
+    134.7
+   ]
+  ],
+  "drive_screw_points": [
+   [
+    17.14,
+    48.05
+   ],
+   [
+    78.86,
+    48.05
+   ],
+   [
+    17.14,
+    124.65
+   ],
+   [
+    78.86,
+    124.65
+   ],
+   [
+    90.14,
+    53.75
+   ],
+   [
+    151.86,
+    53.75
+   ],
+   [
+    90.14,
+    130.35
+   ],
+   [
+    151.86,
+    130.35
+   ],
+   [
+    163.14,
+    53.75
+   ],
+   [
+    224.86,
+    53.75
+   ],
+   [
+    163.14,
+    130.35
+   ],
+   [
+    224.86,
+    130.35
+   ]
+  ],
+  "fan_centre": {
+   "x": 288.0,
+   "y": 90.32499999999999,
+   "z": -9.078400000000002
+  }
+ },
+ "bom": {
+  "drive": 3,
+  "bracket": 1,
+  "M3x5 pan/cap screw (bracket tab)": 2,
+  "M3x10 cap screw (cover to drive)": 12,
+  "M3x12 cap screw (cover-card-body)": 6,
+  "M3 heat-set insert": 10,
+  "M3x8 cap screw (fan adapter)": 4,
+  "92x92x38 mm fan": 1,
+  "M4x12 self-tapping fan screw": 4
+ },
+ "printed": {
+  "body": {
+   "volume_cm3": 190.3,
+   "size_mm": [
+    238.4,
+    130.1,
+    31.4
+   ],
+   "petg_g": 109.0
+  },
+  "cover": {
+   "volume_cm3": 70.0,
+   "size_mm": [
+    238.7,
+    120.6,
+    17.9
+   ],
+   "petg_g": 40.0
+  },
+  "fan_adapter": {
+   "volume_cm3": 40.7,
+   "size_mm": [
+    48.9,
+    108.7,
+    93.2
+   ],
+   "petg_g": 23.0
+  },
+  "slot_filler_1": {
+   "volume_cm3": 3.8,
+   "size_mm": [
+    12.0,
+    95.8,
+    14.2
+   ],
+   "petg_g": 2.0
+  },
+  "slot_filler_2": {
+   "volume_cm3": 3.8,
+   "size_mm": [
+    12.0,
+    95.8,
+    14.2
+   ],
+   "petg_g": 2.0
+  }
+ },
+ "interference_mm3": {}
+}

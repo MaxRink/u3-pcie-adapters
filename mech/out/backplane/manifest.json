@@ -1,0 +1,202 @@
+{
+ "name": "backplane",
+ "title": "4-drive backplane cage (placeholder board)",
+ "board": "placeholder (designs/u3-backplane/README.md)",
+ "info": {
+  "spec": {
+   "width": 79.6,
+   "height": 84.5,
+   "thickness": 1.6,
+   "drive_x": [
+    9.8,
+    29.8,
+    49.8,
+    69.8
+   ],
+   "drive_y": 42.0,
+   "seat_z": 6.5,
+   "holes": [
+    [
+     3.5,
+     80.5
+    ],
+    [
+     76.1,
+     80.5
+    ],
+    [
+     35.8,
+     4.5
+    ],
+    [
+     74.6,
+     4.5
+    ]
+   ],
+   "vents": [
+    [
+     14.6,
+     20.1,
+     34.4,
+     52.5
+    ],
+    [
+     34.6,
+     40.1,
+     34.4,
+     52.5
+    ],
+    [
+     54.6,
+     60.1,
+     34.4,
+     52.5
+    ],
+    [
+     74.6,
+     78.1,
+     34.4,
+     52.5
+    ],
+    [
+     17.4,
+     20.1,
+     26.0,
+     34.5
+    ],
+    [
+     37.4,
+     40.1,
+     26.0,
+     34.5
+    ],
+    [
+     57.4,
+     60.1,
+     26.0,
+     34.5
+    ]
+   ],
+   "slimsas_x": [
+    15.8,
+    55.8
+   ],
+   "power_xy": [
+    39.8,
+    79.5
+   ],
+   "placeholder": true
+  },
+  "params": {
+   "gap_side": 2.5,
+   "wall": 2.4,
+   "fan": 80,
+   "fan_thick": 38.0,
+   "plenum": 14.0,
+   "rail": 2.2,
+   "fit": 0.3,
+   "insert_d": 4.0,
+   "insert_depth": 6.5,
+   "m3_clear": 3.4
+  },
+  "envelope": {
+   "x": [
+    -8.6,
+    88.2
+   ],
+   "y": [
+    0,
+    84.5
+   ],
+   "z": [
+    -1.6,
+    164.95
+   ]
+  },
+  "board_holes": [
+   [
+    3.5,
+    80.5
+   ],
+   [
+    76.1,
+    80.5
+   ],
+   [
+    35.8,
+    4.5
+   ],
+   [
+    74.6,
+    4.5
+   ]
+  ],
+  "drive_side_screws": [
+   [
+    14.3,
+    20.5
+   ],
+   [
+    14.3,
+    97.1
+   ],
+   [
+    34.3,
+    20.5
+   ],
+   [
+    34.3,
+    97.1
+   ],
+   [
+    54.3,
+    20.5
+   ],
+   [
+    54.3,
+    97.1
+   ],
+   [
+    74.3,
+    20.5
+   ],
+   [
+    74.3,
+    97.1
+   ]
+  ]
+ },
+ "bom": {
+  "U.3 vertical receptacle PSAS5F3130021TR": 4,
+  "SlimSAS 8i right-angle receptacle U10A474240T": 2,
+  "Mini-Fit Jr 2x4 vertical header (PCIe 8-pin)": 1,
+  "drive": 4,
+  "M3x8 cap screw (backplane to cage)": 4,
+  "M3 heat-set insert": 8,
+  "M3x6 cap screw (drive side hole)": 16,
+  "M3x8 cap screw (fan plate)": 4,
+  "80x80x38 mm fan": 1,
+  "M4x12 self-tapping fan screw": 4
+ },
+ "printed": {
+  "cage": {
+   "volume_cm3": 85.5,
+   "size_mm": [
+    92.0,
+    84.5,
+    109.0
+   ],
+   "petg_g": 49.0
+  },
+  "fan_plate": {
+   "volume_cm3": 45.6,
+   "size_mm": [
+    97.4,
+    80.7,
+    32.1
+   ],
+   "petg_g": 26.0
+  }
+ },
+ "interference_mm3": {}
+}

@@ -1,0 +1,181 @@
+{
+ "name": "x8",
+ "title": "x8 card, 2 drives",
+ "board": {
+  "ref": "origin/claude/project-thread-tt8pfu",
+  "path": "designs/x16-u3-card/boards/x8/u3_x8.kicad_pcb",
+  "commit": "9700ca7"
+ },
+ "info": {
+  "params": {
+   "gap": 5.0,
+   "wall": 2.4,
+   "top_gap": 1.5,
+   "fan": 92,
+   "fan_thick": 38.0,
+   "funnel_len": 38.0,
+   "neck": 7.0,
+   "fan_z_offset": 0.0,
+   "x_start": 1.0,
+   "y_bottom": 14.0,
+   "clear": 0.5,
+   "fit": 0.2,
+   "max_len": 250.0,
+   "insert_d": 4.0,
+   "insert_depth": 6.5,
+   "m3_clear": 3.4
+  },
+  "drives": 2,
+  "card_length": 190.0,
+  "duct": {
+   "x": [
+    1.0,
+    190.0
+   ],
+   "y": [
+    14.0,
+    138.4
+   ],
+   "z": [
+    -23.9784,
+    5.8216
+   ]
+  },
+  "envelope": {
+   "length": 277.0,
+   "height_above_finger_bottom": 138.4,
+   "back_of_card": 22.400000000000002,
+   "front_of_card": 5.8216,
+   "fan_span_z": [
+    -55.0784,
+    36.9216
+   ],
+   "fan_span_y": [
+    38.625,
+    130.625
+   ]
+  },
+  "channel_area_mm2": {
+   "front": 513.75,
+   "back": 513.75
+  },
+  "clamp_points": [
+   [
+    6.0,
+    30.0
+   ],
+   [
+    6.0,
+    60.0
+   ],
+   [
+    186.0,
+    38.0
+   ],
+   [
+    186.0,
+    68.0
+   ]
+  ],
+  "direct_points": [],
+  "corner_points": [
+   [
+    6.5,
+    129.0
+   ],
+   [
+    184.5,
+    129.0
+   ]
+  ],
+  "drive_screw_points": [
+   [
+    17.14,
+    48.05
+   ],
+   [
+    78.86,
+    48.05
+   ],
+   [
+    17.14,
+    124.65
+   ],
+   [
+    78.86,
+    124.65
+   ],
+   [
+    90.14,
+    48.05
+   ],
+   [
+    151.86,
+    48.05
+   ],
+   [
+    90.14,
+    124.65
+   ],
+   [
+    151.86,
+    124.65
+   ]
+  ],
+  "fan_centre": {
+   "x": 239.0,
+   "y": 84.625,
+   "z": -9.078400000000002
+  }
+ },
+ "bom": {
+  "drive": 2,
+  "bracket": 1,
+  "M3x5 pan/cap screw (bracket tab)": 2,
+  "M3x10 cap screw (cover to drive)": 8,
+  "M3x12 cap screw (cover-card-body)": 6,
+  "M3 heat-set insert": 10,
+  "M3x8 cap screw (fan adapter)": 4,
+  "92x92x38 mm fan": 1,
+  "M4x12 self-tapping fan screw": 4
+ },
+ "printed": {
+  "body": {
+   "volume_cm3": 137.7,
+   "size_mm": [
+    189.4,
+    124.4,
+    31.4
+   ],
+   "petg_g": 79.0
+  },
+  "cover": {
+   "volume_cm3": 54.9,
+   "size_mm": [
+    189.7,
+    114.9,
+    17.9
+   ],
+   "petg_g": 31.0
+  },
+  "fan_adapter": {
+   "volume_cm3": 40.7,
+   "size_mm": [
+    48.9,
+    108.7,
+    93.2
+   ],
+   "petg_g": 23.0
+  },
+  "slot_filler_1": {
+   "volume_cm3": 3.8,
+   "size_mm": [
+    12.0,
+    95.8,
+    14.2
+   ],
+   "petg_g": 2.0
+  }
+ },
+ "interference_mm3": {}
+}
