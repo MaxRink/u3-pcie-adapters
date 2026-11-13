@@ -418,9 +418,10 @@ k.fp("Connector_Molex", "Molex_Mini-Fit_Jr_5569-06A2_2x03_P4.20mm_Horizontal", "
      lcsc="C7545781")
 # bulk cap on the bottom just east of J5's +12V column: +12V straight to pin 2 on L6, GND by a via to the planes
 j2 = k.padxy("J5", "2")
-cva, cga = two("C19", *C1206, "22uF 25V X5R", j2[0] + 3.8, j2[1], 90, False, (j2[0], j2[1] + 5), "12V_AUX", "GND", "C12891")
-k.track("12V_AUX", "L1", [cva, (j2[0] + 2.3, cva[1]), j2], 0.6)
-k.track("GND", "L1", [cga, (cga[0], cga[1] - 1.4)], 0.6); k.via("GND", cga[0], cga[1] - 1.4, 0.6, 0.3)
+cva, cga = two("C19", *C1206, "22uF 25V X5R", j2[0] + 3.8, j2[1], 90, not J5BOT, (j2[0], j2[1] + 5), "12V_AUX", "GND", "C12891")
+CL = "L1" if J5BOT else "L6"
+k.track("12V_AUX", CL, [cva, (j2[0] + 2.3, cva[1]), j2], 0.6)
+k.track("GND", CL, [cga, (cga[0], cga[1] - 1.4)], 0.6); k.via("GND", cga[0], cga[1] - 1.4, 0.6, 0.3)
 k.text("AUX 12V", XR - 28.0, -14.2, P.F_SilkS, 1.0)
 
 print("J5 pads", [(q.GetNumber(), round(k.padxy("J5", q.GetNumber())[0], 2), round(k.padxy("J5", q.GetNumber())[1], 2)) for q in k.fps["J5"].Pads()])
