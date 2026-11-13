@@ -2,9 +2,9 @@
  "name": "x16p",
  "title": "x16 card, 4 drives, end-fan shroud",
  "board": {
-  "ref": "origin/claude/project-thread-tt8pfu",
+  "ref": "origin/main",
   "path": "designs/x16-u3-card/boards/x16p/u3_x16p.kicad_pcb",
-  "commit": "9700ca7"
+  "commit": "ab38bb9"
  },
  "info": {
   "params": {
@@ -69,15 +69,40 @@
     60.0
    ],
    [
+    6.0,
+    71.6
+   ],
+   [
+    6.0,
+    104.0
+   ],
+   [
     308.0,
     50.0
    ],
    [
     308.0,
+    65.0
+   ],
+   [
+    308.0,
     80.0
+   ],
+   [
+    308.0,
+    104.0
    ]
   ],
-  "direct_points": [],
+  "direct_points": [
+   [
+    81.5,
+    15.5
+   ],
+   [
+    230.5,
+    20.5
+   ]
+  ],
   "corner_points": [
    [
     6.5,
@@ -198,33 +223,34 @@
   "bracket": 1,
   "M3x5 pan/cap screw (bracket tab)": 2,
   "M3x10 cap screw (cover to drive)": 16,
-  "M3x12 cap screw (cover-card-body)": 6,
-  "M3 heat-set insert": 10,
+  "M3x12 cap screw (cover-card-body)": 10,
+  "M3 heat-set insert": 16,
+  "M3x6 cap screw (card to body)": 2,
   "M3x8 cap screw (fan adapter)": 4,
   "120x120x25 mm fan": 1,
   "M4x12 self-tapping fan screw": 4
  },
  "printed": {
   "body_1": {
-   "volume_cm3": 119.1,
+   "volume_cm3": 121.6,
    "size_mm": [
     156.4,
-    130.1,
+    133.0,
     22.4
    ],
-   "petg_g": 68.0
+   "petg_g": 70.0
   },
   "body_2": {
-   "volume_cm3": 129.8,
+   "volume_cm3": 132.0,
    "size_mm": [
     154.8,
     130.1,
     31.4
    ],
-   "petg_g": 74.0
+   "petg_g": 75.0
   },
   "cover_1": {
-   "volume_cm3": 44.8,
+   "volume_cm3": 45.9,
    "size_mm": [
     157.1,
     120.6,
@@ -233,7 +259,7 @@
    "petg_g": 26.0
   },
   "cover_2": {
-   "volume_cm3": 45.8,
+   "volume_cm3": 46.0,
    "size_mm": [
     154.4,
     106.8,

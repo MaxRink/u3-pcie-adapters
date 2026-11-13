@@ -2,9 +2,9 @@
  "name": "x16p_hood3",
  "title": "3 x x16 card, 4 drives, shared hood with fans on top",
  "board": {
-  "ref": "origin/claude/project-thread-tt8pfu",
+  "ref": "origin/main",
   "path": "designs/x16-u3-card/boards/x16p/u3_x16p.kicad_pcb",
-  "commit": "9700ca7"
+  "commit": "ab38bb9"
  },
  "info": {
   "style": "shared hood",
@@ -100,15 +100,40 @@
      60.0
     ],
     [
+     6.0,
+     71.6
+    ],
+    [
+     6.0,
+     104.0
+    ],
+    [
      308.0,
      50.0
     ],
     [
      308.0,
+     65.0
+    ],
+    [
+     308.0,
      80.0
+    ],
+    [
+     308.0,
+     104.0
     ]
    ],
-   "direct_points": [],
+   "direct_points": [
+    [
+     81.5,
+     15.5
+    ],
+    [
+     230.5,
+     20.5
+    ]
+   ],
    "corner_points": [
     [
      6.5,
@@ -147,8 +172,9 @@
   "bracket": 3,
   "M3x5 pan/cap screw (bracket tab)": 6,
   "M3x10 cap screw (cover to drive)": 48,
-  "M3x12 cap screw (cover-card-body)": 18,
-  "M3 heat-set insert": 21,
+  "M3x12 cap screw (cover-card-body)": 30,
+  "M3 heat-set insert": 39,
+  "M3x6 cap screw (card to body)": 6,
   "M3x8 cap screw (hood to card)": 3,
   "120x120x25 mm fan": 2,
   "M4x12 self-tapping fan screw": 8,
@@ -156,25 +182,25 @@
  },
  "printed": {
   "body_1": {
-   "volume_cm3": 59.7,
+   "volume_cm3": 62.8,
    "size_mm": [
     156.4,
-    134.2,
+    137.1,
     22.4
    ],
-   "petg_g": 34.0
+   "petg_g": 36.0
   },
   "body_2": {
-   "volume_cm3": 59.0,
+   "volume_cm3": 61.7,
    "size_mm": [
     154.8,
     134.2,
     22.4
    ],
-   "petg_g": 34.0
+   "petg_g": 35.0
   },
   "cover_1": {
-   "volume_cm3": 45.4,
+   "volume_cm3": 45.7,
    "size_mm": [
     157.1,
     124.7,
@@ -183,7 +209,7 @@
    "petg_g": 26.0
   },
   "cover_2": {
-   "volume_cm3": 43.6,
+   "volume_cm3": 43.8,
    "size_mm": [
     154.4,
     110.9,

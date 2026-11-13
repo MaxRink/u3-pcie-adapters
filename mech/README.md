@@ -197,7 +197,8 @@ python3 mech/render.py x8 --views hero xray --samples 64
 ```
 
 `boards.json` lists each board with the git ref it is read from. The boards are owned by other
-branches, so `mech/` reads them with `git show` and never edits a board. After those branches
+branches, so `mech/` reads them with `git show` and never edits a board. The cards are read from
+`main` (rev F), the backplanes and the cage board from their PR branches. After those branches
 merge, point the refs at `WORKTREE`.
 
 | File | What |

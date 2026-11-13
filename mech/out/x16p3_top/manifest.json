@@ -2,9 +2,9 @@
  "name": "x16p3_top",
  "title": "x16 card, 3 drives, top-feed shroud",
  "board": {
-  "ref": "origin/claude/project-thread-tt8pfu",
+  "ref": "origin/main",
   "path": "designs/x16-u3-card/boards/x16p3/u3_x16p3.kicad_pcb",
-  "commit": "9700ca7"
+  "commit": "ab38bb9"
  },
  "info": {
   "style": "top",
@@ -55,15 +55,40 @@
     60.0
    ],
    [
+    6.0,
+    71.6
+   ],
+   [
+    6.0,
+    104.0
+   ],
+   [
     235.0,
     50.0
    ],
    [
     235.0,
+    65.0
+   ],
+   [
+    235.0,
     80.0
+   ],
+   [
+    235.0,
+    104.0
    ]
   ],
-  "direct_points": [],
+  "direct_points": [
+   [
+    81.5,
+    15.5
+   ],
+   [
+    157.5,
+    14.0
+   ]
+  ],
   "corner_points": [
    [
     6.5,
@@ -126,21 +151,22 @@
   "bracket": 1,
   "M3x5 pan/cap screw (bracket tab)": 2,
   "M3x10 cap screw (cover to drive)": 12,
-  "M3x12 cap screw (cover-card-body)": 6,
-  "M3 heat-set insert": 12,
+  "M3x12 cap screw (cover-card-body)": 10,
+  "M3 heat-set insert": 18,
+  "M3x6 cap screw (card to body)": 2,
   "M3x8 countersunk screw (body to manifold)": 6,
   "120x120x25 mm fan": 2,
   "M4x12 self-tapping fan screw": 8
  },
  "printed": {
   "body": {
-   "volume_cm3": 91.4,
+   "volume_cm3": 97.2,
    "size_mm": [
     238.4,
-    136.0,
+    140.4,
     22.4
    ],
-   "petg_g": 52.0
+   "petg_g": 56.0
   },
   "manifold_1": {
    "volume_cm3": 52.2,
@@ -161,7 +187,7 @@
    "petg_g": 24.0
   },
   "cover": {
-   "volume_cm3": 74.9,
+   "volume_cm3": 75.4,
    "size_mm": [
     238.7,
     129.1,

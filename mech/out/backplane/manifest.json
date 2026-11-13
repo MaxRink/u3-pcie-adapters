@@ -4,7 +4,7 @@
  "board": {
   "ref": "origin/claude/project-thread-5y5t4p",
   "path": "designs/u3-backplane/boards/backplane/u3_backplane.kicad_pcb",
-  "commit": "9bbe40e"
+  "commit": "8f72bab"
  },
  "info": {
   "spec": {

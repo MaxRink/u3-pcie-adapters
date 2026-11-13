@@ -2,9 +2,9 @@
  "name": "x8_end3",
  "title": "3 x x8 card, 2 drives, one shared end fan",
  "board": {
-  "ref": "origin/claude/project-thread-tt8pfu",
+  "ref": "origin/main",
   "path": "designs/x16-u3-card/boards/x8/u3_x8.kicad_pcb",
-  "commit": "9700ca7"
+  "commit": "ab38bb9"
  },
  "info": {
   "style": "shared end fan",
@@ -101,15 +101,36 @@
      60.0
     ],
     [
+     6.0,
+     71.6
+    ],
+    [
+     6.0,
+     104.0
+    ],
+    [
      186.0,
      38.0
     ],
     [
      186.0,
      68.0
+    ],
+    [
+     186.0,
+     83.0
+    ],
+    [
+     186.0,
+     104.0
     ]
    ],
-   "direct_points": [],
+   "direct_points": [
+    [
+     79.0,
+     15.5
+    ]
+   ],
    "corner_points": [
     [
      6.5,
@@ -199,30 +220,31 @@
   "bracket": 3,
   "M3x5 pan/cap screw (bracket tab)": 6,
   "M3x10 cap screw (cover to drive)": 24,
-  "M3x12 cap screw (cover-card-body)": 18,
-  "M3 heat-set insert": 30,
+  "M3x12 cap screw (cover-card-body)": 30,
+  "M3 heat-set insert": 45,
+  "M3x6 cap screw (card to body)": 3,
   "M3x8 cap screw (fan adapter)": 12,
   "120x120x25 mm fan": 1,
   "M4x12 self-tapping fan screw": 4
  },
  "printed": {
   "body": {
-   "volume_cm3": 137.7,
+   "volume_cm3": 142.5,
    "size_mm": [
     189.4,
-    124.4,
+    127.3,
     31.4
    ],
-   "petg_g": 79.0
+   "petg_g": 81.0
   },
   "cover": {
-   "volume_cm3": 54.9,
+   "volume_cm3": 56.1,
    "size_mm": [
     189.7,
     114.9,
     17.9
    ],
-   "petg_g": 31.0
+   "petg_g": 32.0
   },
   "slot_filler_1": {
    "volume_cm3": 3.8,
