@@ -29,7 +29,7 @@ the rev E changes that the layout thread has accepted but not yet pushed.
 | E2 | eFuse RILIM 470R, no ITIMER cap | **Change** (accepted for rev E) | 390R and 4.7 nF |
 | E3 | TPS2116 priority on slot 3.3Vaux | **Change** (accepted for rev E) | Priority on slot 3.3 V main, 3.3Vaux as fallback |
 | C1 | U.3 receptacle PSAS4F2130021TR | **Open**, 16 pieces at LCSC, none at Mouser or Digi-Key | Buy the LCSC stock now for the first build, or re-footprint for PSAS4F2130201TR |
-| I3 | Cage LDO AMS1117 | **Changed** in cage rev B to HT7533-1 / MCP1703A in SOT-89 | Check the SOT-89 pinout before ordering (section 12) |
+| I3 | Cage LDO AMS1117 | **Changed** in cage rev B to HT7533-1 / MCP1703A in SOT-89 | Fit the MCP1703AT-3302E/MB: its SOT-89 pinout is confirmed against the footprint. The HT7533-1 pinout is still unchecked |
 | F7 | Yellow locate LED C72038 | **Change**, 0 stock | XL-1608UYC-06 (C965802) |
 | B4 | 0.2 mm generic vias | **Open** | 0.3 mm saves about $19 to $25 per order if the layout allows it |
 | G5 | 0402 passives on both sides | **Open** | 0603 and one-sided where there is room, if Max solders by hand |
@@ -563,7 +563,7 @@ the rev E changes that the layout thread has accepted but not yet pushed.
 | --- | --- | --- | --- | --- |
 | I1 | 12 V in on a PCIe 6-pin | one 25 W drive; OCuLink carries no power | SATA power (smaller, 4.5 A limit); barrel jack (no PSU cable) | Keep |
 | I2 | PTC fuse mSMD300-16V (C6851473), 1812 | cheap short-circuit protection for one drive | eFuse as on the cards (soft start and power-good, QFN); nothing | Keep; no soft start is the price |
-| I3 | 3.3 V aux from HT7533-1 in SOT-89 (alt MCP1703AT-3302E/MB) | the load is a few mA of pull-ups and LEDs; 30 V input rating (MCP1703A: 16 V) against a 12 V rail; SOT-89 solders by hand | AMS1117-3.3 (rev A): 15 V maximum input is close to 12 V plus spikes, needs a minimum load and wastes 5 to 10 mA; a small buck: pointless at this current | Changed in rev B; pinout to be verified (section 12). HT7533 is LCSC only; the MCP1703A is the Mouser/Digi-Key part |
+| I3 | 3.3 V aux from HT7533-1 in SOT-89 (alt MCP1703AT-3302E/MB) | the load is a few mA of pull-ups and LEDs; 30 V input rating (MCP1703A: 16 V) against a 12 V rail; SOT-89 solders by hand | AMS1117-3.3 (rev A): 15 V maximum input is close to 12 V plus spikes, needs a minimum load and wastes 5 to 10 mA; a small buck: pointless at this current | Changed in rev B. The MCP1703A pinout (1 GND, 2 and tab VIN, 3 VOUT, Microchip DS20005122B table 3-1) matches the footprint, so fit that part; it is the Mouser/Digi-Key one. The HT7533-1 (LCSC only) stays unverified and should not be fitted until its pinout is read |
 | I4 | PERST# 100k pull-down | drive stays in reset with no cable | buffer with Ioff (protects against back-feeding, one more part) | Keep |
 | I5 | Activity LED through 2N7002 | the drive's LED pin cannot sink an LED directly on 3.3 V | direct drive | Keep |
 | I6 | Lane 0 length about 30 mm with skew bumps | lane 0 is on the front pin row | | Keep, documented exception |
@@ -610,7 +610,7 @@ Owned by the backplane thread; recorded here so the reasons are in one place.
 
 | Item | Risk if wrong | How to check |
 | --- | --- | --- |
-| SOT-89 pinout of HT7533-1 and MCP1703A (cage rev B uses 1 GND, 2 VIN, 3 VOUT, from memory; the datasheets could not be fetched from here) | regulator dead or shorted | first page of either datasheet |
+| SOT-89 pinout of the HT7533-1 (cage rev B uses 1 GND, 2 VIN, 3 VOUT; confirmed for the MCP1703A, from memory for the Holtek part) | regulator dead or shorted if the Holtek part is fitted | Holtek HT75xx-1 datasheet, or fit the MCP1703A |
 | PI6CB33401: pins, mode pin, delay and termination were read from a 2020 datasheet (Rev 5-2) on a mirror site | a later revision changed something | current Diodes datasheet |
 | 9DBL0442C pin and mode compatibility with B | same | Renesas product change notice |
 | TPS25982 custom footprint against TI's RGE land pattern | poor soldering of the split pad | TI drawing RGE0024 |
