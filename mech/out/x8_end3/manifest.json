@@ -234,13 +234,13 @@
    "petg_g": 2.0
   },
   "shared_fan_adapter": {
-   "volume_cm3": 26.3,
+   "volume_cm3": 82.5,
    "size_mm": [
-    4.0,
-    107.6,
-    133.9
+    48.1,
+    121.1,
+    135.3
    ],
-   "petg_g": 15.0
+   "petg_g": 47.0
   }
  },
  "print_each_per_card": [

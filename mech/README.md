@@ -69,10 +69,18 @@ the CFD in [`docs/thermal`](../docs/thermal/). A 50 mm funnel takes the duct (ab
 the fan. Air leaves at the bracket end: the back channel towards the neighbouring slot (remove
 that slot cover), the front channel through slots in the cover.
 
+| x8 | x16, 4 drives | exploded |
+| --- | --- | --- |
+| ![](../docs/img/mech/x8_hero.jpg) | ![](../docs/img/mech/x16p_hero.jpg) | ![](../docs/img/mech/x8_exploded.jpg) |
+
 ### Top-feed (`*_top`)
 
 One 120 mm fan per two drives lies flat behind the drives. Air goes into a 16 mm chamber, over the
 drive ends, and down both faces of every drive to the connector strip. No added length.
+
+| x8 | x16, 4 drives, see-through | exploded |
+| --- | --- | --- |
+| ![](../docs/img/mech/x8_top_hero.jpg) | ![](../docs/img/mech/x16p_top_xray.jpg) | ![](../docs/img/mech/x8_top_exploded.jpg) |
 
 ### Shared end fan (`*_end<n>`)
 
@@ -80,12 +88,20 @@ A card with its drives is two slots thick, so the cards sit 40.64 mm apart. Each
 end-fan body and cover. One adapter plate bolts to all cards, closes the gaps between them and
 funnels all ducts to one fan. Three cards are 111 mm wide, almost exactly one 120 mm fan.
 
+| three x8 cards | see-through |
+| --- | --- |
+| ![](../docs/img/mech/x8_end3_hero.jpg) | ![](../docs/img/mech/x8_end3_xray.jpg) |
+
 ### Shared hood (`*_hood<n>`)
 
 Each card gets the top-feed body and cover without the fan chamber, open at the top. A hood lies
 across all cards with one fan per two drives of card length blowing down, so one fan feeds 6
 drives with three cards, and two fans feed the 12 drives of three 4-drive cards. The hood hooks
 into each card at the bracket end and takes one M3 screw per card at the far end.
+
+| three x16 cards, 12 drives | three x8 cards, see-through | exploded |
+| --- | --- | --- |
+| ![](../docs/img/mech/x16p_hood3_hero.jpg) | ![](../docs/img/mech/x8_hood3_xray.jpg) | ![](../docs/img/mech/x8_hood3_exploded.jpg) |
 
 ### Envelope
 
@@ -110,6 +126,10 @@ drives go in from the top with the connector down, standing side by side at 20 m
 blows through the 5 mm gaps across the drives' width. Six drives are exactly 120 mm, so the
 6-drive cage is one fan wide and two of them hold 12 drives behind the two fans. The 4-drive cage
 is 80 mm wide, so modules tile at the board pitch.
+
+| 6 drives, lid off | see-through | exploded | 4 drives |
+| --- | --- | --- | --- |
+| ![](../docs/img/mech/backplane6_hero.jpg) | ![](../docs/img/mech/backplane6_xray.jpg) | ![](../docs/img/mech/backplane6_exploded.jpg) | ![](../docs/img/mech/backplane_hero.jpg) |
 
 - **Fan duct**: flange on the fan and a 34 mm duct. The Mini-Fit and fan plugs on the fan-side
   board edge have 39.5 mm of room inside it; the wires leave through openings in both side walls.
@@ -143,6 +163,10 @@ as `backplane6` when it lands and it is picked up the same way.
 Tray with side walls, lid and a funnel to a 60x25 fan for the OCuLink cage board. The board screws
 onto four pillars through its M3 slots, the drive onto four pillars through its bottom holes. The
 model gives about 67 °C for one 25 W drive with a 5000 rpm 60x25 fan.
+
+| | |
+| --- | --- |
+| ![](../docs/img/mech/cage_hero.jpg) | ![](../docs/img/mech/cage_exploded.jpg) |
 
 ## Files
 
