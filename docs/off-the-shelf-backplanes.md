@@ -54,6 +54,94 @@ x16-to-SlimSAS card with SFF-9402 pinout. Set x4x4x4x4 bifurcation. Insert one P
 16 GT/s x4 and that `nvme list` works, then run a short fio run and check AER. If it fails, also try with S15
 grounded on a known-good single adapter, to tell a wiring problem from a firmware one.
 
+## Follow-up (2026-11-15): do tri-mode / U.3 bays work without a tri-mode HBA?
+
+Max asked whether cages and backplanes sold explicitly as tri-mode or U.3 should just work. Short answer: a **real
+x4 U.3 bay** is electrically the same thing as our backplane, so yes in principle. But the parts sold as "tri-mode
+compatible" are mostly not U.3 bays, and the real U.3 bays (server spares) need four things sorted first.
+
+**What a U.3 bay is.** SFF-TA-1001 puts PCIe lanes 0 and 1 on the SAS pin positions and lanes 2 and 3 on the E-pins,
+with S15 (HPT0) grounded so the drive picks that map. A U.3 (tri-mode) backplane is passive copper from the cable
+connector to those pins. Nothing in the bay itself needs an HBA.
+
+**Why vendors still say "tri-mode controller required":**
+
+1. **Lane count.** Many tri-mode bays are x1 or x2 per drive (HPE "x1 Tri-Mode" P27194-B21 / P39781-001, Lenovo
+   "U.3 x1" mode). Only x4 bays are any use to us.
+2. **AC coupling on lanes 0/1.** In U.3 mode the drive has no capacitors on its lane 0/1 transmitters, so the host
+   must put them on its receive side (our [design-decisions.md](design-decisions.md) G1, 220 nF on PER0/PER1).
+   Tri-mode HBAs have them. A motherboard root port or a plain SlimSAS riser does not, because normal PCIe puts the
+   caps at the transmitter. So a U.3 bay cabled straight to the H12SSL would run lanes 0/1 DC-coupled: out of spec,
+   likely no link or a degraded one. **Fix:** add the caps on our host card (it is ours, so that is a BOM change)
+   or on a small inline board. Bought passive SlimSAS cards will not have them.
+3. **Management (UBM, SFF-TA-1005).** HPE Gen10 Plus / Gen11 tri-mode backplanes carry a UBM controller that the
+   tri-mode controller talks to. Whether PERST#, REFCLK and drive power pass straight through from the SlimSAS cable
+   or are gated by the UBM controller is not documented publicly. If they are gated, the backplane needs a small
+   I2C master to set it up. Unknown until we have one on the bench.
+4. **Power and sideband connector.** OEM backplanes take power and sideband through a proprietary connector from
+   the motherboard. Pinouts are not published, so we would have to buzz one out and build an adapter.
+
+**What "tri-mode compatible" means on retail cages.** ICY DOCK's own advisory says certain Intel and Broadcom
+tri-mode cards use "a different pinout" and that the U.2 enabler cable "reverts the pinout back to standard U.2"
+([advisory](https://it.icydock.com/product/faq/icy_dock_nvme_enclosures_tri-mode_compatability_announcement_update_it.pdf)).
+The cages are U.2 bays: they work with a tri-mode card only in NVMe mode, through a cable that converts the card's
+output to U.2. So ICY DOCK's "U.2/U.3" and "tri-mode" labels do not mean U.3 wiring. With a plain root port they are
+U.2 bays, and our drives would have to run in U.2 fallback, which is exactly what the test answers.
+
+### ICY DOCK ToughArmor MB508V5P-B (Max's link)
+
+[de.icydock.com/product_1417.html](https://de.icydock.com/product_1417.html):
+8 x U.2/U.3 at 7 to 15 mm in two 5.25" bays, PCIe **Gen5** x4 per drive, 4 x MCIO 8i (SFF-TA-1016) with SFF-9402
+Rev 1.1 pinout, power one PCIe 8-pin plus one PCIe 6-pin, hot plug, one 80 mm fan, 146 x 84 x 158.2 mm.
+"Compatible with tri-mode HBA/RAID cards (NVMe mode only)", which is the same U.2-bay pattern as above.
+**€989.90** on Amazon.de (sold by ICY DOCK Germany).
+
+- For: 8 drives in one unit, Gen5 means more signal margin at Gen4, one big fan, good fit for 12 drives as 8 + 4.
+- Against: about 2x the price per bay of the MB324V4P-B (€124 vs €66), MCIO instead of SlimSAS, so it needs
+  SlimSAS-to-MCIO cables (about €28-50 each on Amazon.de) or an MCIO host card, and the same U.2-fallback question.
+- Verdict: a good choice **after** the MB324V4P-B test passes, if you want 8 bays per box. Not a way around the test.
+
+### Server spares, re-checked with adapters allowed
+
+If we accept making an adapter for power and sideband, these become real options:
+
+| Part | Lanes | Data connectors | Price (DE) | What we would have to adapt |
+|---|---|---|---|---|
+| **HPE DL380 Gen11 8SFF x4 Tri-Mode U.3 BC cage kit, P48814-B21** | x4 per drive, true U.3 | not confirmed for Gen11 (Gen10 Plus x4 boards have 4 x SlimSAS) | **€203.99 new**, [Tonitrus on eBay.de](https://www.ebay.de/itm/146543196497), 30-day returns; also [Vulpano €226.09](https://www.ebay.de/itm/287526552846) | Power + sideband connector (pinout unknown), UBM behaviour, caps on PER0/1 at the host card |
+| HPE 8SFF U.3 x4 backplane + cage, DL380 Gen10 Plus, P24047-001 | x4, U.3 | 4 x SlimSAS (Gen10 Plus) | €384 used ([eBay.de](https://www.ebay.de/itm/226945721251)) | same |
+| HPE 8SFF U.3 x4 backplane only, P31226-001 | x4, U.3 | 4 x SlimSAS | €67.50 refurb at [GEKKO](https://www.gekko-computer.de/en/p/HPE-NVME-Backplane-8x-SFF-U-3-x4-with-4-slimSAS-Ports-P31226-001-en) (sold out) | same, plus a printed cage and rails |
+| HPE 4SFF U.3 "Premium" backplane Gen10 Plus, P25435-001 | probably x4 (not stated) | not stated | €104 refurb, [GEKKO on eBay.de](https://www.ebay.de/itm/377623511088), 30-day free returns | same |
+| HPE x1 Tri-Mode U.3 (P27194-B21, P39781-001, P26431-B21) | **x1** | | €267-300 | not usable: one lane per drive, HPE says "No NVMe Direct Attach" |
+| Lenovo AnyBay, Supermicro hybrid NVMe (BPN-SAS3-826A-N4, BPN-NVME4-*), HPE x4 U.2 (P26932-B21, 826689-B21 €94) | x4, **U.2** | SlimSAS / OCuLink | €30-100 | Same U.2-fallback question as the ICY DOCK cages. Supermicro uses plain 4-pin Molex power, so it is the easiest spare if the test passes. |
+
+The HPE x4 U.3 cages are the most interesting find. They are true U.3 at x4, they take **HPE basic carriers**,
+which is what Max's HPE P50230-B21 drives already sit in, and the Gen11 kit is new at about €204 with 30-day returns
+from a German seller. The work left is the adapter: buzz out the power/sideband connector, add 220 nF on PER0/PER1
+per drive on our host card, and check whether the UBM controller passes PERST# and REFCLK through on its own.
+That is a much smaller job than our full backplane (no receptacles, eFuses or mux), but it is not zero, and the
+pinouts are not public.
+
+### x2 per drive, and what the H12SSL offers
+
+Max said x2 per drive is enough for speed. The H12SSL manual (Rev 1.0a) offers only **Auto, x16, x8x8, x4x4x8 and
+x4x4x4x4** on the x16 slots and **x4x4** on the x8 slots, with no x2 modes
+([manual](https://janit.iki.fi/useful/MNL-2314.pdf); the option list comes from a summary of the BIOS chapter, so
+confirm in the BIOS). So:
+
+- An **x2 bay still works**: a x4 root port trains down to x2 on a bay that only wires two lanes. But it does not
+  save lanes or slots, because the board cannot split a slot finer than 4 x4. With x2 you would still get 4 drives
+  per x16 slot.
+- Getting more than 4 drives per slot at x2 needs a **PCIe switch card** (Broadcom PEX88xxx / Microchip Switchtec
+  class), not bifurcation. That is a different and more expensive part.
+- x2 U.3 bays (for example HPE "x4/x2 Tri-Mode" cages) put both lanes on the SAS-pin positions, so the PER0/PER1
+  cap problem applies to every lane they use.
+- Conclusion: x2 spares are acceptable but give no saving on this board. Prefer x4 parts at the same price.
+
+**Onboard SlimSAS on the H12SSL-i:** JNVMe0 is one SlimSAS x8 that carries 2 NVMe drives at x4 when jumper JCFG1 is
+set to NVMe (pins 2-3). That is a free test port: one cable from JNVMe0 to the cage tests 2 drives without any
+add-in card. The connector's pinout is not printed in the manual, so if the cage does not see a drive there, try
+the add-in card before blaming the drive.
+
 ## Candidates
 
 ### Retail drive cages (5.25" bay)
@@ -131,13 +219,45 @@ Cost is roughly a wash. The real trade is **risk**. The retail parts may not wor
 our board may have first-spin layout errors. A single MB324V4P-B test answers the first question for about €350 and
 keeps the cage as a usable part even if we build our own boards (a 4-bay box for U.2 drives).
 
-## Recommendation
+## Recommendation (updated after Max's follow-up)
 
-1. Order one **MB324V4P-B** and one SlimSAS 8i cable now and run the test above with one PM1735.
-2. If the drive comes up at Gen4 x4: the U.2-compatibility worry is gone. Consider 3 x MB324V4P-B (or the cheaper
-   RAC-BP-304N in a printed cage) instead of fabbing the backplanes. Keep the host card, since it is needed either way.
-3. If the drive does not come up: return the cage. Our own U.3-wired backplane stays the plan, and the result
-   confirms the S15 decision documented in [design-decisions.md](design-decisions.md).
+Two parallel paths, both returnable:
+
+1. **U.2-fallback test, Amazon.de (cart below, €333.04):** MB324V4P-B + passive x16 to 2 x SlimSAS 8i card + two
+   SlimSAS 8i cables. One PM1735 on the H12SSL at x4x4x4x4. If it links at Gen4 x4, every U.2 cage and spare
+   above is usable, including the MB508V5P-B for 8 bays.
+2. **True U.3 path, eBay.de (about €204):** one HPE P48814-B21 x4 U.3 BC cage from Tonitrus. Buzz out the power and
+   sideband connector, check which data connector Gen11 uses, and check the UBM behaviour. Drives go in with their
+   HPE carriers. It needs caps on PER0/PER1 at the host, so test it with our host card (caps added) or a
+   single-port adapter with caps, **not** with the bought passive card.
+
+If (1) passes, buy cages. If (1) fails and (2) can be adapted, the HPE cage replaces most of our backplane design:
+we would only build a host card with caps plus a small power/sideband adapter. If both fail, our own backplane stays
+the plan.
+
+## Shopping cart (Amazon.de, 2026-11-15)
+
+All three items show "Returnable until Jan 15, 2027 or within 14 days from receipt (whichever is later)". The cart
+is already filled in the built-in browser on Max's Mac (not signed in, nothing ordered).
+
+| Item | Link | Seller | Qty | Price |
+|---|---|---|---|---|
+| ICY DOCK ExpressCage MB324V4P-B | [B0FNX34FXT](https://www.amazon.de/dp/B0FNX34FXT) | priz24 (third party) | 1 | €263.07 |
+| HiFiber PCIe 4.0 x16 to 2 x SFF-8654 8i adapter (passive, needs x4x4x4x4) | [B0DPQ4499B](https://www.amazon.de/dp/B0DPQ4499B) | H!Fiber-EU, shipped by Amazon | 1 | €27.99 |
+| HiFiber SFF-8654 8i to 8i cable, PCIe 4.0, 85 ohm, 0.5 m | [B0DPJRKXML](https://www.amazon.de/dp/B0DPJRKXML) | H!Fiber-EU, shipped by Amazon | 2 | €41.98 |
+| **Total** | | | | **€333.04** (shipping may apply on the third-party cage) |
+
+Options:
+
+- Swap the HiFiber card for the **ICY DOCK EXLink MB308A** (x16 to 2 x SlimSAS 8i with redriver, SFF-9402 Rev 1.1,
+  sold by ICY DOCK Germany, [B0FS7NKFRX](https://www.amazon.de/dp/B0FS7NKFRX), €277.90) if you want the vendor-matched
+  pair. Total then €583.
+- Retimer option: KALEA-INFORMATIQUE retimer card, 2 x SlimSAS 8i, sold by Amazon,
+  [B0GTF8RRYD](https://www.amazon.de/dp/B0GTF8RRYD), €175.90.
+- Power: the cage needs one **PCIe 8-pin** lead from the PSU. No adapter is in the cart. Do not feed it from a single
+  SATA-to-PCIe adapter (4 x 25 W is too much for one SATA plug).
+- Not in the cart because it is not on Amazon: HPE P48814-B21 cage at Tonitrus on eBay.de, €203.99, free shipping,
+  30-day returns (buyer pays return shipping).
 
 ## Sources
 
