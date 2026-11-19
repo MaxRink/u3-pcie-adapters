@@ -16,12 +16,12 @@ Fix status refers to the design thread's branch `u3-boards` (cards PR) and the r
 | C2 | **Critical** | No AC caps on PER0/PER1. A compliant U.3 drive must not cap lanes 0/1 TX, so the host has to | Being fixed (220 nF 0402 on PER0/PER1) |
 | M1 | Major | L2/L5 GND planes slotted ~11 mm along the PET via row; PET transitions have no continuous return | Sent to design thread |
 | M2 | Major | REFCLK and PERST# come over the cable with no fallback or isolation; unpowered cage back-powered via PERST#/REFCLK/SMBus | Sent to design thread |
-| M3 | Major | J1 (Amphenol PSAS4F213002) land pattern cites a drawing that isn't in the repo; Amphenol lists the part as "U.2" | Sent to design thread |
+| M3 | Minor (was Major) | J1 land pattern now checked against the Amphenol rev 3 drawing and matches; drawing assumes a 2.0 mm board | Verified 2026-11-09 |
 | M4 | Major | F1 polyfuse has no part, and Ihold 2.6 A derates below the drive's ~2.2 A at cage temperature | Sent to design thread |
 | M5 | Major | D2 LED C72043 is out of stock and has Vf 3.3 V, so it would stay dark on 3V3 through 1 k | Sent to design thread |
 | M6 | Major | Cabled path can't meet the conservative loss budget passively; a retimer on the host card is needed for full compliance | Rules Rev E §9 |
 | M7 | Major | OCuLink cable choice: SAS-pinout or sideband-less cables drop REFCLK/PERST# | Bring-up/BOM note |
-| M8 | Major | Drive height, orientation and X offset vs the receptacle depend on the Amphenol drawing; the holder must locate the drive | Sent to design thread |
+| M8 | Major | Drive bottom sits 0.65 mm below the PCB top, so the board edge flush with the mating face can stop the drive short; the holder must locate the drive | Sent to design thread |
 | m1–m19 | Minor | See below | Mixed |
 
 ## Critical
@@ -68,16 +68,23 @@ Fix status refers to the design thread's branch `u3-boards` (cards PR) and the r
   - Bring-up rule: cage 12 V on before host PERST# deasserts.
 - SMBus A9/A10 → E23/E24 has no pull-ups and no isolation. Add DNP 0 Ω links (minor), so four drives at the NVMe-MI address 0x6A can be separated.
 
-### M3: J1 land pattern can't be traced to a drawing
-- `gen/fplib.py` cites `docs/ref/psas4f213002xxx.pdf` rev 3, but that file is not in the repo.
-- Amphenol's PCIe 4.0 family datasheet (LCSC copy for C22454449) lists PSAS4F213002 as "U.2, R/A SMT, 2.85 mm, Standard". Only vertical parts in that family are listed for "U.2 & U.3". All 68 positions are present, so U.3 works mechanically, but the part is not vendor-qualified for PCIe on S1–S14.
-- The top row has 0.6 mm pads at 0.8 mm pitch, which leaves a 0.2 mm gap (bridging risk).
-- JLC stock is 16 pcs.
-- **Fix:**
-  - Commit the drawing to `docs/ref/`.
-  - Re-check the pads, the ±19 mm Ø1.78 pegs, the ±22 mm retainer slots and handedness.
-  - Test-fit a 1:1 print against a real part.
-  - Candidate U.3-qualified alternative: PSAS5F2130021TR (LCSC availability unconfirmed).
+### M3: J1 land pattern vs the Amphenol drawing (re-checked; now Minor)
+- The drawing `designs/x16-u3-card/docs/ref/psas4f213002xxx.pdf` (rev 3, 2022-10-20) was added after the first review.
+- Sheet 2, "Recommended PCB layout (top view)", matches `Amphenol_PSAS4F213002_SFF-8639_U3_RA_SMD` dimension by dimension:
+  - Top row (E7–E25 and S8–S28): 40 × 0.60 × 2.00 mm at 0.80 pitch, 1.95 mm behind the NPTH axis. E7 sits 3.52 mm from the left NPTH (x = −15.48).
+  - Bottom row (S1–S7, P1–P15): 22 × 0.65 × 2.05 mm at 1.27 pitch, 0.83 mm in front. S1 sits 3.125 mm from the NPTH (x = −15.875).
+  - E1–E6: 6 × 0.50 × 2.0 mm at 0.80 pitch, 1.24 mm in front. E1 sits 11.92 mm from the NPTH (x = −7.08).
+  - NPTH: 2 × Ø1.78 (+0.08/−0) at 38.00 mm apart.
+  - Retainers: 0.80 × 1.90 PTH slots at 44.00 mm apart, 2.35 mm in front.
+  - Keep-out front edge: 9.40 mm beyond the slots, giving a mating face at +11.75.
+  - Handedness: E7 and S1 are on the same (−x) side. That is correct and not mirrored.
+- **Board thickness: the layout is drawn for T = 2.0 mm, but the board is 1.58 mm.**
+  - The retainer tails are 3.50 mm long, so they stick out ~1.9 mm below a 1.58 mm board, next to the bottom-side parts. Note it for the holder.
+  - The SMD pads and the drive height don't change. Both are referenced to the PCB top, which is datum G (the seating plane).
+- Remaining minor issues:
+  - The top-row gap is 0.2 mm, so use solder-mask-defined dams or JLC's 0.1 mm mask web.
+  - Amphenol lists the part as "U.2"; it is not vendor-qualified for PCIe on S1–S14.
+  - JLC stock is low (16 pcs), so order spares.
 
 ### M4: F1 polyfuse
 - The LCSC field is empty, so JLC won't place the part.
@@ -106,17 +113,14 @@ Fix status refers to the design thread's branch `u3-boards` (cards PR) and the r
   - Ring it out: high-speed pins A→B on the same number, and host A12/A13 ↔ device B12/B13.
   - Delock 85211 is rated Gen3 only and is discontinued.
 
-### M8: Drive height, orientation and lateral offset not pinned down (mechanical)
-- J1's mating face sits exactly on the board edge (y = 0), so the drive hangs entirely off the board. It can't hit any component, but its SFF-8201 mounting holes can't line up with H1–H4. The printed holder has to locate the drive on its own.
-- On the drive side the numbers are solid: the connector datum is 3.50 ± 0.38 mm above the drive bottom (SFF-8223 A7), and the side holes are 3.00 mm up (SFF-8201 A23) at 14.00 / 90.60 mm from the connector end.
-- On the receptacle side they are not. Amphenol only says "2.85 mm height, Standard", and the drawing is needed to know what that is measured to. The two readings put the drive bottom at either 0.65 mm below or 2.85 mm above the PCB top, a 3.5 mm difference.
-- With reading (a), any drive travel past the board edge hits the PCB.
-- The connector's X offset relative to the drive side rails (SFF-8223 A2/A3/A5) is also not verified.
-- **Fix:**
-  - Read the PCB-to-datum height, drive orientation (label up), PCB edge line and recommended board thickness from the Amphenol drawing, or measure a sample with calipers.
-  - Locate the drive in the holder by its side holes, with ±0.5 mm lateral float. Tighten the screws only after mating.
-  - Consider pulling the board edge back 0.5–1.0 mm under the receptacle front if the drawing allows.
-  - Test-fit a blank board before PCBA.
+### M8: Drive position relative to the board (resolved from the drawing)
+- **Datum:** Amphenol sheet 1, section A-A puts the mating slot between 1.90 and 3.80 mm above the seating plane (datum G = PCB top). That makes the connector centreline 2.85 mm above the PCB top, which is the catalogue's "2.85 mm height".
+- **Drive height:** SFF-8223 A7 puts that datum 3.50 ± 0.38 mm above the drive bottom. So the drive bottom sits about 0.65 mm below the PCB top. The drive is label-up, with its bottom toward the board side, and its top is about 14.35 mm above the PCB top.
+- **Board edge:** J1's mating face is exactly on the board edge (y = 0), and the drive overlaps the PCB in Z by ~0.65 mm. The drive end face therefore stops against the PCB edge in the same plane as the receptacle. With a ±0.1–0.2 mm routing tolerance, the board edge can stop the drive before it fully seats.
+  - **Correction (cards review, PR #8):** the footprint's 11.75 mm "mating line" is the tip of the chamfered guide posts (sheet 1: 1.70 mm tips, 2×30°). The housing face the drive seats against is ~9.9–10.05 mm from the peg line, and the drive plug stands 0.3 mm proud (SFF-8223). A 0.5 mm pull-back is therefore not enough.
+  - **Fix:** put the board edge at ≤ 9.4 mm from the peg line (y ≥ 2.35 in board coordinates). Confirm on a real receptacle before ordering. The original suggestion read: pull the whole y = 0 board edge back 0.5 mm (the 56.5 mm board is narrower than the 69.85 mm drive, so all of it sits in the drive's path). Keep the receptacle front at its drawn position, so the housing overhangs by 0.5 mm. That is allowed, because the front ~9 mm has no pads.
+- **Mounting:** the drive hangs fully off the board, so its SFF-8201 holes (14.00 / 90.60 mm from the connector end, 3.00 mm up) cannot line up with H1–H4. The printed holder must locate the drive by its side holes, with ±0.5 mm lateral float, at a height of 3.00 − 0.65 = 2.35 mm above the PCB top plane to the hole centreline. Tighten the screws after mating.
+- **Not verified:** the connector's X offset relative to the drive side rails (SFF-8223 A2/A3/A5 need the figure). Test-fit a blank board with a real receptacle and drive before PCBA.
 
 ## Minor
 
@@ -190,7 +194,7 @@ Fix status refers to the design thread's branch `u3-boards` (cards PR) and the r
 - PCI-SIG *PCIe SFF-8639 Module* spec (members only): 3.3Vaux current limit, ACTIVITY# sink/VOL, PWRDIS levels, host loss allocation.
 - PCI-SIG OCuLink spec text. PCIe Base 4.0 §4.2.4.4 was quoted from knowledge, not checked against the document.
 - PM1735a datasheet: inrush and 12 V peak current. 25 W is from Dell's PM1735 sheet; one HPE page says 15 W.
-- Amphenol drawings for PSAS4F213002 and G14A421211112HR (vendor sites blocked; the J2 footprint was checked against Antmicro instead).
+- Amphenol drawing for G14A421211112HR (vendor site blocked; the J2 footprint was checked against Antmicro instead). PSAS4F213002 was checked against the rev 3 drawing.
 - Molex 45558-0003 peg diameter vs the KiCad Ø3.0 hole.
 - amazon.de listings (blocked for automated fetching).
 
