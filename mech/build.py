@@ -36,7 +36,7 @@ CARDS = [n for n, c in BOARDS.items() if c["kind"] == "card"]
 # every card gets both shroud styles: "<card>" = end fan, air along the card; "<card>_top" = top-feed, fans behind the drives
 # shared fan: "<card>_end<n>" = n cards on one end fan, "<card>_hood<n>" = n cards under one hood with fans on top
 MULTI = re.compile(r"^(.+)_(end|hood)(\d)$")
-ALL = [n for n in BOARDS if not n.startswith("backplane")] + [n + "_top" for n in CARDS] + ["x8_end3", "x8_hood3", "x16p_hood3"] + ["backplane", "backplane6"]      # plus "parts" for the bought-part STEP library
+ALL = [n for n in BOARDS if not n.startswith("backplane")] + [n + "_top" for n in CARDS] + ["x8_end3", "x8_hood3", "x16p3_hood3", "x16p_hood3"] + ["backplane", "backplane6"]      # plus "parts" for the bought-part STEP library
 
 
 def kind_of(name):
@@ -104,7 +104,10 @@ def assemble(name):
     elif kind in ("card_end", "card_hood"):
         m = MULTI.match(name)
         board = boardio.load(m.group(1))
-        res = card_shroud_multi.build(board, int(m.group(3)), m.group(2))
+        sb = boardio.for_shroud(board)
+        res = card_shroud_multi.build(sb, int(m.group(3)), m.group(2))
+        if sb.mirrored:
+            res = unmirror(res, sb)
         one = scene.board_items(board) + scene.printed_items(res["printed"]) + scene.hardware_items(res["hardware"])
         items = []
         for dz in res["replicas"]:
@@ -115,7 +118,10 @@ def assemble(name):
         return dict(board=board, result=res, items=items)
     else:
         board = boardio.load(name[:-4] if kind == "card_top" else name)
-        res = {"sled": sled, "card": card_shroud, "card_top": card_shroud_top}[kind].build(board)
+        sb = boardio.for_shroud(board) if kind != "sled" else board
+        res = {"sled": sled, "card": card_shroud, "card_top": card_shroud_top}[kind].build(sb)
+        if kind != "sled" and sb.mirrored:
+            res = unmirror(res, sb)
         items = scene.board_items(board)
     items += scene.printed_items(res["printed"]) + scene.hardware_items(res["hardware"])
     return dict(board=board, result=res, items=items)
@@ -149,6 +155,43 @@ def assemble_backplane(name):
     res["info"]["board_part_clashes_mm3"] = clash
     items = scene.transform(scene.board_items(board), M) + scene.printed_items(res["printed"]) + scene.hardware_items(res["hardware"])
     return dict(board=board, result=res, items=items)
+
+
+def unmirror(res, mb):
+    """Turn a result built on a boardio.MirrorBoard back into the real board frame."""
+    t, Mz = mb.t, mb.Mz
+    flip = np.diag([-1.0, 1.0, 1.0, 1.0])               # every bought part except the bracket is symmetric in its own x
+
+    def mir(d):
+        return {k: wp.mirror("XY", (0, 0, -t / 2)) for k, wp in d.items()}
+
+    def hw(lst):
+        out = []
+        for (desc, nm, fn, args, loc) in lst:
+            if nm in ("bracket", "scr_brk"):
+                continue
+            M = scene.matrix(loc) if not isinstance(loc, np.ndarray) else loc
+            M = Mz @ M if np.linalg.det(M[:3, :3]) < 0 else Mz @ M @ flip
+            out.append((desc, nm, fn, args, M))
+        return out
+
+    out = dict(res)
+    out["printed"] = mir(res["printed"])
+    out["hardware"] = hw(res["hardware"])
+    holes = [h for h in mb.mount_holes() if abs(h[2] - h[3]) < 0.01 and h[0] < 12 and min(abs(h[1] - y) for y in parts.BRACKET_TAB_Y) < 3.0]
+    bracket = parts.pcie_bracket(tab_y=[h[1] for h in holes], tab_x=holes[0][0] if holes else 7.5)
+    out["hardware"].append(("bracket", "bracket", lambda: bracket, (), cq.Location(cq.Vector(0, 0, 0))))
+    for h in holes:
+        out["hardware"].append(("M3x5 pan/cap screw (bracket tab)", "scr_brk", parts.screw_shcs, (3.0, 5.0),
+                                cq.Location(cq.Vector(h[0], h[1], parts.BRACKET["t"]))))
+    if "replicas" in res:
+        out["replicas"] = [-dz for dz in res["replicas"]]
+        out["shared_printed"] = mir(res["shared_printed"])
+        out["shared_hardware"] = hw(res["shared_hardware"])
+    out.pop("keepout", None)
+    out.pop("tail_keep", None)
+    out["info"] = dict(res["info"], drives_on="front", frame="generator values are in the mirrored frame: z' = -t - z")
+    return out
 
 
 def shift(loc, dz):
@@ -247,6 +290,16 @@ def export(name, a, check=True):
         man["print_each_per_card"] = list(raw["printed"])
     if check:
         man["interference_mm3"] = fit_report(res, offsets)
+        if board is not None and "board_matrix" not in raw:      # printed parts against every part on the card(s)
+            for (x0, x1, y0, y1, z0, z1, ref) in board.part_boxes():
+                if z1 - z0 < 0.3:
+                    continue
+                for c, dz in enumerate(offsets):
+                    kb = parts.box(x0 + 0.05, x1 - 0.05, y0 + 0.05, y1 - 0.05, z0 + 0.05 + dz, z1 - 0.05 + dz)
+                    for k, wp in res["printed"].items():
+                        v = _vol(wp, kb)
+                        if v > 0.5:
+                            man["interference_mm3"][f"{k} x {ref}" + (f" (card {c + 1})" if len(offsets) > 1 else "")] = round(v, 1)
     json.dump(man, open(os.path.join(od, "manifest.json"), "w"), indent=1, default=lambda o: float(o) if isinstance(o, np.floating) else str(o))
     return man
 
@@ -270,7 +323,7 @@ def main():
             d1, d2 = ((0.6, -0.6, 0.6), (-0.5, -0.7, -0.5)) if name == "cage" else ((0.5, 0.4, 0.8), (-0.5, 0.5, -0.8))
             preview.shot(asm["items"], os.path.join(OUT, name, "preview_front.png"), d1, up=up)
             preview.shot(asm["items"], os.path.join(OUT, name, "preview_xray.png"), d2, up=up, opacity={"printed": 0.35})
-        print(f"{name}: {time.time() - t0:.0f} s, printed {list(man['printed'])}, interference {man.get('interference_mm3')}")
+        print(f"{name}: {time.time() - t0:.0f} s, printed {list(man['printed'])}, interference {man.get('interference_mm3')}", flush=True)
 
 
 
