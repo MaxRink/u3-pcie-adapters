@@ -23,6 +23,7 @@ The receptacle sits on the bottom side; its housing face is at Y -10.05, the win
 Everything logic runs from 3V3_AUX, the card's local 3.3 V (slot 3.3Vaux, or slot 3.3 V through the ideal-diode OR).
 """
 import math, os
+import pcbnew as P
 
 R0402 = ("Resistor_SMD", "R_0402_1005Metric")
 C0402 = ("Capacitor_SMD", "C_0402_1005Metric")
@@ -123,19 +124,23 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
 
     # ---------------------------------------------------------------- power (gap to the next receptacle)
     sel, drv = n("12V_SEL"), n("12V_DRV")
-    JX, JY = 28.2, -2.2
-    k.fp("Connector_PinHeader_2.54mm", "PinHeader_1x03_P2.54mm_Vertical_SMD_Pin1Left", jh,
-         "12V src: 2-3 SLOT (default), 1-2 AUX", *XY(JX, JY), 0,
-         pads={"3": "12V", "2": sel, "1": "12V_AUX"}, lcsc="C6886650")
+    # 12 V source jumper: a 3-pin through-hole header on the drive side (bottom here), in the gap next to the
+    # receptacle; a header on the other side would break the 2.67 mm CEM limit there.  Pin row along x: pin 1 (west)
+    # 12V_AUX, pin 2 12V_SEL, pin 3 (east) slot 12 V.  Through-hole so that each pin meets its copper directly: pin 1
+    # the L4 aux plane, pin 3 an L4 patch of the slot band, pin 2 the L1 pour to the eFuse.  The row sits south of
+    # the L3 trunks (and of the x8 card's REFCLK row on L6) and north of the 12V_DRV pour.
+    JX, JY = 28.0, -5.0
+    for rot in (90, 270):
+        k.fp("Connector_PinHeader_2.54mm", "PinHeader_1x03_P2.54mm_Vertical", jh,
+             "PinHeader 1x03 2.54 mm THT: 2-3 SLOT (default), 1-2 AUX", *XY(JX - 2.54, JY), rot, bottom=True,
+             pads={"1": "12V_AUX", "2": sel, "3": "12V"}, lcsc="")
+        if k.padxy(jh, "3")[0] > k.padxy(jh, "1")[0]:
+            break
+        k.b.Remove(k.fps.pop(jh)); k.bom.pop()
     pj = {q: k.padxy(jh, q) for q in "123"}
-    assert pj["1"][1] < pj["3"][1] and pj["2"][0] > pj["1"][0], "jumper orientation"
-    # slot 12 V via toward the fingers (L4 slot band), aux 12 V via toward the window (L4 aux area)
-    vs, va = XY(JX - 3.6, JY + 3.4), XY(JX - 3.6, JY - 1.75)   # va: L4 aux side, clear of the PG run (L6)
-    k.via("12V", *vs, 0.8, 0.4); k.track("12V", "L1", [pj["3"], (vs[0] + 0.6, pj["3"][1]), vs], 0.8)
-    k.via("12V_AUX", *va, 0.8, 0.4); k.track("12V_AUX", "L1", [pj["1"], (va[0] + 0.6, pj["1"][1]), va], 0.8)
-    for dx in (-1.1,):
-        k.via("12V", vs[0] + dx, vs[1], 0.8, 0.4); k.track("12V", "L1", [vs, (vs[0] + dx, vs[1])], 0.8)
-        k.via("12V_AUX", va[0] + dx, va[1], 0.8, 0.4); k.track("12V_AUX", "L1", [va, (va[0] + dx, va[1])], 0.8)
+    assert abs(pj["2"][0] - X(JX)) < 0.01 and abs(pj["3"][0] - X(JX + 2.54)) < 0.01 and abs(pj["3"][1] - Y(JY)) < 0.01, "jumper"
+    k.zone("12V", "L4", [(pj["3"][0] - 1.25, Y(JY - 1.3)), (pj["3"][0] + 1.5, Y(JY - 1.3)), (pj["3"][0] + 1.5, Y(YSPLIT + 0.6)),
+                         (pj["3"][0] - 1.25, Y(YSPLIT + 0.6))], prio=2, clearance=0.3, thermal=False)
     # eFuse, unrotated: IN pins 1-3 face the jumper, OUT pins 19-24 face the window, control pins toward the fingers
     EX, EY = 36.4, -2.0
     k.fp("u3adapter", "TI_RGE0024M_VQFN-24_4x4mm_P0.5mm_SplitEP", uf, "TPS259824ONRGER", *XY(EX, EY), 0, pads={
@@ -158,8 +163,8 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
     for q in (17, 18):
         k.track(drv, "L1", [P_(q), (P_(q)[0] + 0.55, P_(q)[1]), (P_(q)[0] + 0.55, P_(19)[1]), P_(19)], 0.24)
     # 12V_SEL: L1 pour from jumper pin 2 to the IN pins (plus the input cap)
-    k.zone(sel, "L1", [XY(JX + 0.7, JY - 1.9), XY(EX - 1.55, JY - 1.9), XY(EX - 1.55, EY - 0.2), XY(JX + 0.7, EY - 0.2)],
-           prio=3, clearance=0.25, minw=0.25, thermal=False)
+    k.zone(sel, "L1", [XY(JX - 1.1, -6.6), XY(33.6, -6.6), XY(33.6, -4.1), XY(EX - 1.55, -4.1), XY(EX - 1.55, EY - 0.2),
+                       XY(JX - 1.1, EY - 0.2)], prio=3, clearance=0.25, minw=0.25, thermal=False)
     # 12V_DRV: OUT pins -> top pour -> via row -> L6 pour (bottom, gap + under the receptacle's 12 V end) -> P13-P15
     k.zone(drv, "L1", [XY(EX - 1.5, EY - 1.7), XY(EX + 1.6, EY - 1.7), XY(EX + 1.6, EY - 4.3),
                        XY(EX - 1.5, EY - 4.3)], prio=3, clearance=0.25, minw=0.25, thermal=False)
@@ -218,7 +223,8 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
     YPG = -5.25
     vpg2 = XY(-15.9, -5.35)
     # (dips to -3.6 under the trunk tap vias, which sit on a diagonal across -5.25 between x -3.3 and 2.5)
-    k.track(pg, "L6", [vpg, (vpg[0], Y(YPG)), XY(4.0, YPG), XY(2.35, -3.6), XY(-4.5, -3.6), XY(-6.15, YPG),
+    # (steps south of the jumper pins between x 22.6 and 34.0)
+    k.track(pg, "L6", [vpg, (vpg[0], Y(YPG)), XY(34.0, YPG), XY(32.2, -3.45), XY(24.4, -3.45), XY(22.6, YPG), XY(4.0, YPG), XY(2.35, -3.6), XY(-4.5, -3.6), XY(-6.15, YPG),
                        (vpg2[0] + 0.1, Y(YPG)), vpg2], 0.2); k.via(pg, *vpg2)
     p6 = k.padxy(ug, "6")
     k.track(pg, "L1", [vpg2, (vpg2[0], Y(-8.1)), p6], 0.15)
@@ -226,15 +232,16 @@ def block(k, R, d, idx, xs, yp, JP, refbase, rbase, cbase):
     k.fp(*C1206, ref, "10uF 50V X5R", *XY(33.95, -6.0), 0, lcsc=LCSC["10uF"])          # above the eFuse
     ps = sorted("12", key=lambda q: k.padxy(ref, q)[0])
     k.setpad(ref, ps[0], sel); k.setpad(ref, ps[1], "GND")
-    k.track(sel, "L1", [k.padxy(ref, ps[0]), (k.padxy(ref, ps[0])[0], Y(JY - 1.6))], 0.6)
+    k.track(sel, "L1", [k.padxy(ref, ps[0]), (k.padxy(ref, ps[0])[0], Y(-3.8))], 0.6)
     gpad = k.padxy(ref, ps[1])
     k.track("GND", "L1", [gpad, (gpad[0] + 1.2, gpad[1])], 0.5); k.via("GND", gpad[0] + 1.2, gpad[1])
     # silk: jumper legend next to the pins (pin 1 = AUX, pin 3 = SLOT), drive letter
-    k.text("AUX", X(JX - 4.6), Y(JY - 4.0), size=1.0)
-    k.text("SLOT", X(JX - 4.9), Y(JY + 4.2), size=1.0)
-    k.text(f"12V {d}", X(JX + 0.2), Y(JY - 5.6), size=1.0)
+    k.text("AUX", X(JX - 3.0), Y(JY - 2.6), P.B_SilkS, 1.0, mirror=True)
+    k.text("SLOT", X(JX + 3.2), Y(JY - 2.6), P.B_SilkS, 1.0, mirror=True)
     # keep the router off the power pours and the jumper/eFuse field
-    R.keepouts.append(("L1", [XY(JX - 2.4, JY - 3.8), XY(EX + 2.3, JY - 3.8), XY(EX + 2.3, JY + 2.0), XY(JX - 2.4, JY + 2.0)]))
+    R.keepouts.append(("L1", [XY(24.1, -6.9), XY(EX + 2.3, -6.9), XY(EX + 2.3, -0.2), XY(24.1, -0.2)]))
+    for L in ("L3", "L6"):
+        R.keepouts.append((L, [XY(JX - 3.9, JY - 1.4), XY(JX + 3.9, JY - 1.4), XY(JX + 3.9, JY + 1.4), XY(JX - 3.9, JY + 1.4)]))
     R.keepouts.append(("L6", [XY(12.2, 1.2), XY(EX + 2.5, 1.2), XY(EX + 2.5, EY - 3.0), XY(32.9, EY - 3.0), XY(32.9, -2.7),
                              XY(16.7, -2.7), XY(16.7, -3.1), XY(12.5, -3.1), XY(12.5, -1.7), XY(12.2, -1.7)]))
     return dict(parts=parts, early_gnd=early_gnd, um=um, ue=ue, ug=ug, uw=uw, uf=uf, jh=jh, dl=dl, bulk=bulk, xs=xs, yp=yp, vpg=vpg)

@@ -624,7 +624,16 @@ EX.column()
 EX.foot(XM)
 for d, xc in DRV:
     EX.drive(d, IDX[d], xc, YPD[d], last=d == "A", dy=-1.0)
-EX.tvs(-14.0, -33.4)
+EX.tvs(-11.5, -28.4)
+# fan header on the tail tab next to the aux plug, drive side.  The fan is fed from the aux 12 V plane only: the slot
+# cannot spare a 92x38 fan's 3 A next to three or four drives, and no slot 12 V copper reaches the tab.  Pin 1 (GND)
+# and pin 2 (12 V) are through-hole pins straight into their planes.
+k.fp("Connector", "FanPinHeader_1x04_P2.54mm_Vertical", "J7", "fan 4-pin PWM (fed from the aux 12 V plug)", -15.5, -33.5,
+     180, bottom=True, pads={"1": "GND", "2": "12V_AUX", "3": "FAN_TACH", "4": "FAN_PWM"}, lcsc="C240840")
+assert k.padxy("J7", "1")[0] < k.padxy("J7", "4")[0]
+k.text("FAN", -17.2, -36.6, P.B_SilkS, 1.0, mirror=True)
+for net, txy, q in (("FAN_TACH", (-19.8, -31.4), "3"), ("FAN_PWM", (-19.8, -35.4), "4")):
+    EX.R_route(net, EX.tp(net, *txy), k.padxy("J7", q))
 EX.holes(XM, (-76.0, -106.0), -53.0)
 GAPH = EX.gap_holes([(a[1] + b[1]) / 2 for a, b in zip(DRV, DRV[1:])], 11)
 print("t extras", round(time.time() - T0), "fails", len(EX.fails))
