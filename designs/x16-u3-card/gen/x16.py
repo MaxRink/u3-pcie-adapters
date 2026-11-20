@@ -72,9 +72,10 @@ UXR, UYR = XM - 15.0, -20.0     # REFCLK buffer U1 (bottom here = drive side), b
 def lvl(ln):
     if ln < 4:
         return {0: -15.2, 1: -16.2, 2: -17.2, 3: -18.2}[ln]
+    last = 4 * N - 1
     if ln < 8:
-        return -14.0 - P8 * 8 - P8 * (7 - ln)          # band B: lane 7 lowest, right above lane 8
-    return -14.0 - P8 * (15 - ln)                       # lanes 8-15: lane 15 lowest, 1 mm off the raised edge
+        return -14.0 - P8 * (last - 7) - P8 * (7 - ln)  # band B: lane 7 lowest, right above lane 8
+    return -14.0 - P8 * (last - ln)                     # lanes 8 up: the last lane lowest, 1 mm off the raised edge
 
 
 # ------------------------------------------------------------------ CEM x16 edge pinout (side B = F.Cu, side A = B.Cu)
@@ -152,7 +153,8 @@ def knee(ln, xc, h, side):
     if ln < 4:
         return YKNEE_A
     if ln < 8:                                          # band B: 45 deg runs end short of lane 8's risers
-        xe = (96.2 if side == "B" else 98.2) - (7 - ln) * 0.5      # physical
+        xe = (96.2 if side == "B" else 98.2) - (7 - ln) * 0.5 - (1.5 if N == 3 else 0)     # physical; the 3-drive
+        # card's band B sits 3.6 mm lower, so its knees start nearer the fingers: keep lane 4's above the GND via row
         return h + (xe - M(xc))
     return h + 0.8
 
@@ -382,7 +384,7 @@ kf.track("GND", "L1", [(xP(12), -5.4), (xP(12), -6.35), (xP(12) + 0.4, -6.75)], 
 # the clock still runs on L1: via north of the row band, stub south into its row, west under the clock, north again
 # west of the clock vias and then west along the channel rows.  West to east pin order = north to south row order,
 # so no stub crosses a row.
-YCV = -12.4                # slot clock via row
+YCV = -12.55               # slot clock via row
 SLOT = [  # net, pin layer, pin, via xy, band row, column x, channel row, width
     ("PCIE_WAKE_N", "L6", 11, (xpin(11) - 0.55, -13.0), -11.55, 252.3 - 312.0 + XM, -16.7, 0.15),
     ("PCIE_RST_N", "L1", 11, (xpin(11), -12.3), -11.25, 251.9 - 312.0 + XM, -16.3, 0.15),
@@ -431,7 +433,7 @@ D1 = (RW + RG) / 2; D3 = (CLK3_W + CLK3_G) / 2
 VIA_H = 1.5784
 
 
-def clock_in(yrow=-14.8, xjog=1.65):
+def clock_in(yrow=-14.8, xjog=2.05):
     """A13/A14 (L1) north, stepping east clear of the PET0 riser, to two vias side by side; L3 north and east along
     yrow to two stacked vias west of U1; L6 east and north into the input pins.  P stays the east / south / east line:
     no crossing, two vias per line."""
@@ -463,8 +465,8 @@ def clock_in(yrow=-14.8, xjog=1.65):
 
 
 XC1, XVW, YIN = clock_in()
-YROW = {d: -17.6 - 1.0 * i for i, (d, _) in enumerate(DRV)}        # L3 channel rows, the far drive's southmost
-XCOL = {i: UXR - 9.0 - 1.0 * i for i in range(4)}                  # where each output's L3 pair turns south to its row
+YROW = {d: -17.6 - 1.4 * i for i, (d, _) in enumerate(DRV)}        # L3 channel rows, the far drive's southmost
+XCOL = {i: UXR - 9.0 - 1.4 * i for i in range(4)}                  # where each output's L3 pair turns south to its row
 
 
 def clock_out(d):
@@ -484,16 +486,21 @@ def clock_out(d):
         cen = [(xv - O, ym), (xcol + 0.6, ym), (xcol, ym + 0.6)]
     else:
         if dif == 3:                           # east face: east, then north (P west)
-            ym = (a[1] + b[1]) / 2; xc = UXR + 6.6; yv = UYR - 4.0; yt = UYR - 7.4
+            ym = (a[1] + b[1]) / 2; xc = UXR + 6.6; yv = UYR - 4.0; yt = UYR - 7.3
             c6 = [(a[0] + 0.45, ym), (xc - 0.6, ym), (xc, ym - 0.6), (xc, yv + O)]
         else:                                  # north face: straight north (P west)
             xc = (a[0] + b[0]) / 2
-            yv, yt = (UYR - 4.3, UYR - 5.6) if dif == 1 else (UYR - 5.2, UYR - 6.5)
+            yv, yt = (UYR - 4.2, UYR - 5.5) if dif == 1 else (UYR - 5.1, UYR - 6.4)
             c6 = [(xc, a[1] - 0.45), (xc, yv + O)]
         l6 = k.pair("L6", c6, [(NP, [a]), (NN, [b])], [(None, [(xc - O, yv)]), (None, [(xc + O, yv)])], RW, RG)
         vP, vN = (xc - O, yv), (xc + O, yv)
         st = [(NP, [vP, (xc - D3, yv - O + D3)]), (NN, [vN, (xc + D3, yv - O + D3)])]
-        cen = [(xc, yv - O), (xc, yt + 0.6), (xc - 0.6, yt), (xcol + 0.6, yt), (xcol, yt + 0.6)]
+        if dif == 3:        # drive A's eFuse parts (GND vias at y -27.0) sit north-east of U1: pass south of them,
+            ya = UYR - 6.0  # then step up to the outermost row once west of them
+            cen = [(xc, yv - O), (xc, ya + 0.6), (xc - 0.6, ya), (UXR + 3.6, ya), (UXR + 3.6 + (yt - ya), yt)]
+        else:
+            cen = [(xc, yv - O), (xc, yt + 0.6), (xc - 0.6, yt)]
+        cen += [(xcol + 0.6, yt), (xcol, yt + 0.6)]
     assert math.dist(l6[NP][0][-1], vP) < 1e-6, f"REFCLK_{d}: P must reach its via at U1"
     k.via(NP, *vP); k.via(NN, *vN)
     # drive end
@@ -528,8 +535,11 @@ ENDS = {}
 for i, net in enumerate(("3V3_AUX_SLOT", "3V3", "SMDAT_SLOT", "SMCLK_SLOT")):
     w_, pts = ROWS[net]
     yrow = pts[-1][1]
-    xv = 29.4 + 1.2 * i
-    pts += [(xv, yrow)]
+    xv = 28.8 + 1.2 * i
+    if net == "SMCLK_SLOT":                    # southmost row: its via steps south, clear of the SMDAT row passing it
+        pts += [(xv + 0.7, yrow), (xv, yrow + 0.7)]; yrow += 0.7
+    else:
+        pts += [(xv, yrow)]
     k.via(net, xv, yrow)
     ENDS[net] = ("all", xv, yrow)
 w_, pts = ROWS["PCIE_RST_N"]
@@ -576,6 +586,9 @@ for net, a, b in risers:
         if net in ("3V3", "3V3_AUX"):              # root these supplies: later to_net calls must reach the source
             R.seed(net, [(L, "seg", (p[0], p[1], q[0], q[1], w_ / 2)) for L, xy in out for p, q in zip(xy, xy[1:])] +
                    [(a[0], "circle", (a[1], a[2], 0.1)), (b[0], "circle", (b[1], b[2], 0.1))])
+        if net == "3V3_AUX":                       # C9 first: the slot lines routed next would box its pad in
+            c9 = [q.GetNumber() for q in k.fps["C9"].Pads() if q.GetNetname() == "3V3_AUX"][0]
+            R.to_net("3V3_AUX", ("L1", *k.padxy("C9", c9)), w=0.25, **LCOST)
     except RuntimeError as e:
         print("FAIL riser", net, e)
 for net, v in card.supply_vias.items():
@@ -632,7 +645,7 @@ for hn, (hx, hy) in (("H1", (M(7.5), -94.75)), ("H2", (M(7.5), -9.35))):
     k.keepout(f"{hn}_L4_VOID", [(hx + 2.7 * math.cos(math.radians(a)), hy + 2.7 * math.sin(math.radians(a)))
                                 for a in range(0, 360, 30)], ["L4"])
     k.fp("MountingHole", "MountingHole_3.2mm_M3", hn, "bracket", hx, hy, bom=False)
-for i, (x, y) in enumerate(((6.0, -30.0), (6.0, -60.0), (XM - 4.0, -38.0), (XM - 4.0, -68.0))):
+for i, (x, y) in enumerate(((6.0, -30.0), (6.0, -60.0), (XM - 4.0, -46.0), (XM - 4.0, -68.0))):
     k.fp("u3adapter", "MountingSlot_M3_3.2x6.2", f"H{3 + i}", "M3 slot", x, y, bom=False)
 
 # ------------------------------------------------------------------ silkscreen

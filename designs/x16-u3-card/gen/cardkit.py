@@ -118,7 +118,10 @@ DRU_L3 = """(rule "REFCLK on L3 (front-drive x16 cards): 100 ohm stripline over 
     (condition "A.NetClass == 'REFCLK_100'")
     (layer inner)
     (constraint track_width (min 0.100mm) (opt 0.110mm) (max 0.120mm))
-    (constraint diff_pair_gap (min 0.240mm) (opt 0.250mm) (max 1.6mm)))"""
+    (constraint diff_pair_gap (min 0.240mm) (opt 0.250mm) (max 1.6mm)))
+(rule "REFCLK on L3 (front-drive x16 cards): two via pairs, the pin fan-out and the skew bumps of a 90-200 mm pair, <= 16 mm uncoupled"
+    (condition "A.NetClass == 'REFCLK_100'")
+    (constraint diff_pair_uncoupled (max 16.0mm)))"""
 
 
 class Card:
