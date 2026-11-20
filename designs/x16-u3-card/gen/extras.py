@@ -97,10 +97,10 @@ class Extras:
         # J6: pin 1 (square) at the top
         x, y = 8.8, -45.6
         k.fp("Connector_PinHeader_2.54mm", "PinHeader_1x04_P2.54mm_Vertical", "J6", "I2C local bus", x, y, 0,
-             pads={"1": "3V3_AUX", "2": "SMCLK", "3": "SMDAT", "4": "GND"}, lcsc="C124378")
+             bottom=True, pads={"1": "3V3_AUX", "2": "SMCLK", "3": "SMDAT", "4": "GND"}, lcsc="C124378")
         for q, lab in zip("1234", ("3V3", "SCL", "SDA", "GND")):
             px, py = k.padxy("J6", q)
-            k.text(lab, px - 3.2, py, P.F_SilkS, SILK)
+            k.text(lab, px - 3.2, py, P.F_SilkS, SILK); k.text(lab, px - 3.2, py, P.B_SilkS, SILK, mirror=True)
         for q, net in (("2", "SMCLK"), ("3", "SMDAT"), ("1", "3V3_AUX")):
             self.net("net", net, k.padxy("J6", q), w=0.25 if net == "3V3_AUX" else 0.2, layer="all", maxpad=48.0)
         # EEPROM (0x50: A0-A2 low), WP low = writable
@@ -121,7 +121,7 @@ class Extras:
         # test points and GND loop
         t = self.tp("3V3_AUX", 2.0, -36.2, "3V3A", lx=3.4, ly=0.0)
         self.net("net", "3V3_AUX", t, w=0.25, maxpad=48.0)
-        k.fp(*LOOP, "TP90", "GND", 2.6, -40.6, 0, pads={"1": "GND"}, lcsc="")
+        k.fp(*LOOP, "TP90", "GND", 2.6, -40.6, 0, bottom=True, pads={"1": "GND"}, lcsc="")
         k.text("GND", 2.6, -42.8, P.F_SilkS, SILK)
         # aux 12 V: test pad + LED (L4 is the aux plane under the whole column)
         y = -66.6
@@ -135,21 +135,24 @@ class Extras:
             k.text(s, 6.0, -92.0 + 1.6 * i, P.F_SilkS, SILK)
 
     # ------------------------------------------------------------------ foot left of the fingers: slot rails
-    def foot(self):
-        """Board foot between the bracket tab and the CEM notch (x 33.35 .. 41.35)."""
+    def foot(self, xm=None):
+        """Board foot between the bracket tab and the CEM notch (x 33.35 .. 41.35).  xm: the card is generated in the
+        mirrored frame (front drives), the foot sits at xm - x."""
         k, P = self.k, self.P
-        xt = 37.3
+        X = (lambda x: xm - x) if xm else (lambda x: x)
+        sg = -1 if xm else 1
+        xt = X(37.3)
         t = self.tp("12V", xt, -11.6)
-        r = self.led("R91", "D41", 35.0, -10.9, "12V", "LEDA_SLOT", dirn=(0, 1))
+        r = self.led("R91", "D41", X(35.0), -10.9, "12V", "LEDA_SLOT", dirn=(0, 1))
         k.track("12V", "L1", [t, r], 0.5)
         self.net("via", "12V", t, w=0.5)
         t = self.tp("3V3", xt, -9.4)
-        r = self.led("R92", "D42", 39.6, -10.9, "3V3", "LEDA_3V3", rval="1k", dirn=(0, 1))
-        k.track("3V3", "L1", [t, (r[0] - 1.2, r[1] + 1.0), (r[0] - 1.2, r[1]), r], 0.25)
+        r = self.led("R92", "D42", X(39.6), -10.9, "3V3", "LEDA_3V3", rval="1k", dirn=(0, 1))
+        k.track("3V3", "L1", [t, (r[0] - sg * 1.2, r[1] + 1.0), (r[0] - sg * 1.2, r[1]), r], 0.25)
         self.net("net", "3V3", t, w=0.25, maxpad=48.0)
         t = self.tp("PCIE_RST_N", xt, -7.0)
         self.net("net", "PCIE_RST_N", t, w=0.2)
-        k.text("12V", 35.0, -5.6, P.F_SilkS, SILK); k.text("3V3", 39.5, -5.6, P.F_SilkS, SILK)
+        k.text("12V", X(35.0), -5.6, P.F_SilkS, SILK); k.text("3V3", X(39.5), -5.6, P.F_SilkS, SILK)
         k.text("R", xt, -5.6, P.F_SilkS, SILK)
 
     # ------------------------------------------------------------------ per drive: 12V_DRV / PG / IMON pads, LED
@@ -180,7 +183,7 @@ class Extras:
         that rail is the L4 plane under the jumpers, else 'net' (track to the nearest copper of the rail)."""
         k, P = self.k, self.P
         k.fp("Connector", "FanPinHeader_1x04_P2.54mm_Vertical", "J7", "fan 4-pin PWM", xf + (-3.81 if flip else 3.81), yf,
-             0 if flip else 180, pads={"1": "GND", "2": "12V_FAN", "3": "FAN_TACH", "4": "FAN_PWM"}, lcsc="C240840")
+             180 if flip else 0, bottom=True, pads={"1": "GND", "2": "12V_FAN", "3": "FAN_TACH", "4": "FAN_PWM"}, lcsc="C240840")
         p = {q: k.padxy("J7", q) for q in "1234"}
         assert (p["1"][0] < p["4"][0]) == flip
         yj = yf - 5.1
@@ -217,6 +220,45 @@ class Extras:
         t = self.tp("FAN_PWM", xf + 3.3 if flip else xf - 4.4, yj)
         k.track("FAN_PWM", "L1", [t, (p["4"][0], yj + 1.3), p["4"]], 0.2)
         self.net("net", "12V_AUX", k.padxy("D50", "1"), w=0.5, maxpad=48.0)
+        self.net("via", "GND", k.padxy("D50", "2"), w=0.5)
+
+    def fan_front(self, xj, yf, xsj, yj, tps, default="slot"):
+        """Front-drive cards: fan header (drive side) with pin 1 at (xj, yf), pins toward +x; SJ4 (slot) at xsj and SJ5
+        (aux) 3.3 mm east of it on row yj, both over their L4 plane; tach / PWM test pads at tps."""
+        k, P = self.k, self.P
+        k.fp("Connector", "FanPinHeader_1x04_P2.54mm_Vertical", "J7", "fan 4-pin PWM", xj, yf, 180, bottom=True,
+             pads={"1": "GND", "2": "12V_FAN", "3": "FAN_TACH", "4": "FAN_PWM"}, lcsc="C240840")
+        p = {q: k.padxy("J7", q) for q in "1234"}
+        assert p["1"][0] < p["4"][0]
+        sj = ("Jumper", "SolderJumper-2_P1.3mm_Bridged_RoundedPad1.0x1.5mm")
+        so = ("Jumper", "SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm")
+        k.fp(*(sj if default == "slot" else so), "SJ4", "fan = slot 12V" + (" (default)" if default == "slot" else ""),
+             xsj, yj, 0, pads={"1": "12V", "2": "12V_FAN"}, bom=False)
+        k.fp(*(so if default == "slot" else sj), "SJ5", "fan = aux 12V" + ("" if default == "slot" else " (default)"),
+             xsj + 3.3, yj, 0, pads={"1": "12V_FAN", "2": "12V_AUX"}, bom=False)
+        k.text("FAN", p["1"][0] - 3.4, yf, P.B_SilkS, SILK, mirror=True)
+        k.text("SLOT", xsj - 0.6, yj - 1.95, P.F_SilkS, SILK); k.text("AUX", xsj + 3.6, yj - 1.95, P.F_SilkS, SILK)
+        a, b = k.padxy("SJ4", "2"), k.padxy("SJ5", "1")
+        k.track("12V_FAN", "L1", [a, b], 1.0)
+        xm_ = (a[0] + b[0]) / 2
+        k.track("12V_FAN", "L1", [(xm_, yj), (xm_, yj + 1.6), (p["2"][0], yj + 1.6 + abs(xm_ - p["2"][0])), p["2"]], 1.0)
+        self.net("via", "12V", k.padxy("SJ4", "1"), w=[1.0, 0.5], maxpad=48.0)
+        self.fan_aux_w = self.net("via", "12V_AUX", k.padxy("SJ5", "2"), w=[1.0, 0.5], maxpad=48.0)
+        for net, (tx, ty), q in (("FAN_TACH", tps[0], "3"), ("FAN_PWM", tps[1], "4")):
+            t = self.tp(net, tx, ty)
+            self.R_route(net, t, p[q])
+
+    def R_route(self, net, a, b):
+        try:
+            self.R.route(net, ("L1", *a), ("all", *b), w=0.2, maxpad=12.0, via_cost=1.0)
+        except RuntimeError as e:
+            self.fails.append((net, a, str(e))); print("FAIL extras", net, str(e)[:80])
+
+    def tvs(self, x, y, rot=0):
+        """SMBJ15A across the aux 12 V input, over the aux plane."""
+        k = self.k
+        k.fp("Diode_SMD", "D_SMB", "D50", "SMBJ15A", x, y, rot, pads={"1": "12V_AUX", "2": "GND"}, lcsc="C113988")
+        self.net("via", "12V_AUX", k.padxy("D50", "1"), w=0.5)
         self.net("via", "GND", k.padxy("D50", "2"), w=0.5)
 
     # ------------------------------------------------------------------ clamp holes in the strip between drives
@@ -279,5 +321,5 @@ class Extras:
         n = 7
         for x, y in [(6.0, -71.6), (6.0, -104.0)] + [(XR - 4.0, y) for y in ys_right]:
             self.hole(f"H{n}", x, y); n += 1
-        k.fp(*LOOP, "TP91", "GND", XR - 4.0, y_gnd, 0, pads={"1": "GND"}, lcsc="")
+        k.fp(*LOOP, "TP91", "GND", XR - 4.0, y_gnd, 0, bottom=True, pads={"1": "GND"}, lcsc="")
         k.text("GND", XR - 4.0, y_gnd - 2.4, P.F_SilkS, SILK)
