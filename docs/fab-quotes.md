@@ -126,5 +126,31 @@ card one fan header (Molex 47053-1000, LCSC C240840), one 1x4 pin header (C12437
 USD 1 of parts per card plus JLCPCB's per-type fee for the four new extended parts (about USD 12 per order). The two
 through-hole headers are hand-solder items unless through-hole assembly is added to the order.
 
+## Rev G delta (estimated, not re-quoted)
+
+Rev G (drives on the card front, 2026-11-20) keeps layer count, stackup, via sizes and finish. The online quote
+tools could not be reached when it was finished, so the figures below are **estimates scaled from the 2026-11-13
+quotes above**, not new quotes. Get a live quote before ordering.
+
+| | x8 card | x16 card, 3 drives | x16 card, 4 drives |
+| --- | --- | --- | --- |
+| Size, rev F | 190.1 x 111.25 mm | 239.1 x 111.25 mm | 312.1 x 111.25 mm |
+| Size, rev G (with the tail tab for the 6-pin) | 191.7 x 111.25 mm | 261.7 x 111.25 mm | 334.7 x 111.25 mm |
+| Clock buffers per card, rev F / rev G | 1 / 1 | 2 / 1 | 3 / 1 |
+| JLCPCB bare PCB, 5 pcs | about $141 | about $149 | about $157 |
+| JLCPCB bare PCB, 10 pcs | about $162 | about $177 | about $193 |
+| PCBWay bare PCB, ENIG fingers, 5 pcs | about $267 | about $288 | about $309 |
+| JLCPCB assembled, per card at 5 / 10 pcs | about $95 / $68 | about $113 / $84 | about $130 / $98 |
+
+- Bare-board prices follow the three rev F quotes, which rise almost linearly with length ($0.11 per mm at 5 pcs,
+  $0.22 per mm at 10 pcs at JLCPCB). A surcharge for boards over 300 mm was not visible in the 312 mm quote, but the
+  334.7 mm card has not been through a quote tool.
+- The 4-drive card is now 22.6 mm longer than a full-length CEM card. Check the fab's panel limits and the case.
+- The assembled figures take the rev F table and subtract the clock buffers that rev G no longer needs (one on the
+  3-drive card, two on the 4-drive card, $4.70 to $6.07 each depending on the order quantity). As before they leave
+  out the rev F additions (about $1 per card and $12 per order).
+- New hand-solder items: one generic 1x3 2.54 mm through-hole header per drive (the 12 V source jumper, no LCSC
+  number in the BOM). The fan header and the PCIe 6-pin were through-hole already.
+
 Stock and prices of the parts with sourcing risk (receptacle, eFuse, clock buffer) and the alternates are in
 [`part-options.md`](part-options.md), which supersedes the parts lines above where they differ.

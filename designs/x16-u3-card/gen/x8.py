@@ -426,6 +426,9 @@ risers = [("3V3", ENDS["3V3"], U3("3V3")), ("3V3_AUX", U3("3V3_AUX"), ("L3", *fi
           ("SMCLK_SLOT", ENDS["SMCLK_SLOT"], U2("22")), ("SMDAT_SLOT", ENDS["SMDAT_SLOT"], U2("23")),
           ("3V3_AUX_SLOT", ENDS["3V3_AUX_SLOT"], U3("3V3_AUX_SLOT"))]
 card.seed_trunks()
+if cardkit.CDC:      # CDCDB400 version: the slot SMBus risers box in the mux reset pull-up; wire it first
+    qr = [q.GetNumber() for q in k.fps["RN10"].Pads() if q.GetNetname() == "MUX_RST_N"][0]
+    R.route("MUX_RST_N", ("L1", *k.padxy("U2", "3")), ("L1", *k.padxy("RN10", qr)), w=0.15, **LCOST)
 for net, a, b in risers:
     try:
         w_ = 0.25 if "3V3" in net else 0.15
