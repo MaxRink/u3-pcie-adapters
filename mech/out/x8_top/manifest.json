@@ -2,9 +2,9 @@
  "name": "x8_top",
  "title": "x8 card, 2 drives, top-feed shroud",
  "board": {
-  "ref": "origin/claude/project-thread-tt8pfu",
+  "ref": "origin/main",
   "path": "designs/x16-u3-card/boards/x8/u3_x8.kicad_pcb",
-  "commit": "223cea3"
+  "commit": "761f67e"
  },
  "info": {
   "style": "top",

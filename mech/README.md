@@ -25,10 +25,8 @@ boards. They drop into `boards.json` when their layouts land.
 This is a first mechanical design. Nothing here has been printed or test-fitted yet; see
 [What is verified](#what-is-verified-and-what-is-not).
 
-**Card revisions.** The x8 and the 3-drive x16 card are built from rev G, where the drives and all
-tall parts stand on the card front. The 4-drive x16 card (`x16p`, `x16p_top`, `x16p_hood3`) is
-still built from rev F on `main` with the drives behind the card, until its rev G board is pushed.
-The generators detect the drive side from the board file and need no setting.
+**Card revisions.** All three cards are built from rev G, where the drives and all tall parts
+stand on the card front. The generators detect the drive side from the board file and need no setting.
 
 ## Which fan works
 
@@ -124,12 +122,10 @@ Length from the bracket-end card edge, height from the bottom of the gold finger
 
 | | Length | Height | Thickness |
 | --- | --- | --- | --- |
-| End fan, x8 / x16 3 drives (rev G) | 255 / 325 mm | 138 / 144 mm at the card, 151 mm at the fan | 30 mm at the card: 22 mm in front, 7 mm behind; the fan reaches 69 mm in front of the card and 51 mm behind it |
-| End fan, x16 4 drives (rev F) | 398 mm | 144 mm, 150 mm at the fan | 30 mm at the card, mirrored: 22 mm behind |
-| Top-feed, x8 / x16 3 drives (rev G) | 192 (the card itself) / 272 mm | 147 / 153 mm | 66 mm in front of the card, 7 mm behind it |
-| Top-feed, x16 4 drives (rev F) | 312 mm | 153 mm | 6 mm in front of the card, 66 mm behind it |
-| Shared end fan, 3 x8 cards (rev G) | 242 mm | 151 mm | 134 mm over all three cards |
-| Shared hood, 3 x8 / 3 x16 3-drive cards (rev G) | 192 (the cards) / 262 (the cards) mm | 193 / 198 mm | 124 mm over all three cards |
+| End fan, x8 / x16 3 drives / x16 4 drives | 255 / 325 / 398 mm | 138 / 144 / 144 mm at the card, 151 mm at the fan | 30 mm at the card: 22 mm in front, 7 mm behind; the fan reaches 69 mm in front of the card and 51 mm behind it |
+| Top-feed, x8 / x16 3 drives / x16 4 drives | 192 / 272 / 335 mm (the card itself where it is longer) | 147 / 153 / 153 mm | 66 mm in front of the card, 7 mm behind it |
+| Shared end fan, 3 x8 cards | 242 mm | 151 mm | 134 mm over all three cards |
+| Shared hood, 3 x8 / 3 x16 3-drive / 3 x16 4-drive cards | 192 / 262 / 335 mm (the cards) | 193 / 198 / 198 mm | 124 mm over all three cards |
 
 The drives alone already stand 23 to 29 mm above a full-height card (111 mm). The hood adds
 another 50 mm on top, so it needs a case with about 205 mm above the motherboard at the slots; it
@@ -215,8 +211,7 @@ python3 mech/render.py x8 --views hero xray --samples 64
 ```
 
 `boards.json` lists each board with the git ref it is read from. The boards are owned by other
-branches, so `mech/` reads them with `git show` and never edits a board. The rev G cards are read
-from their PR branch, the 4-drive card (rev F) and both backplanes from `main`, the OCuLink cage
+branches, so `mech/` reads them with `git show` and never edits a board. The cards and both backplanes are read from `main`, the OCuLink cage
 board from its PR branch. After those branches
 merge, point the refs at `WORKTREE`.
 

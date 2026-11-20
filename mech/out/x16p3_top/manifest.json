@@ -2,9 +2,9 @@
  "name": "x16p3_top",
  "title": "x16 card, 3 drives, top-feed shroud",
  "board": {
-  "ref": "origin/claude/project-thread-tt8pfu",
+  "ref": "origin/main",
   "path": "designs/x16-u3-card/boards/x16p3/u3_x16p3.kicad_pcb",
-  "commit": "223cea3"
+  "commit": "761f67e"
  },
  "info": {
   "style": "top",
