@@ -199,13 +199,13 @@
  },
  {
   "ref": "JP2",
-  "value": "12V src: 2-3 SLOT (default), 1-2 AUX",
-  "fp": "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical_SMD_Pin1Left",
-  "lcsc": "C6886650",
-  "side": "top",
-  "x": 76.2,
-  "y": -26.2,
-  "rot": 0,
+  "value": "PinHeader 1x03 2.54 mm THT: 2-3 SLOT (default), 1-2 AUX",
+  "fp": "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical",
+  "lcsc": "",
+  "side": "bottom",
+  "x": 73.46000000000001,
+  "y": -29.0,
+  "rot": 270,
   "dnp": false
  },
  {
@@ -507,13 +507,13 @@
  },
  {
   "ref": "JP1",
-  "value": "12V src: 2-3 SLOT (default), 1-2 AUX",
-  "fp": "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical_SMD_Pin1Left",
-  "lcsc": "C6886650",
-  "side": "top",
-  "x": 149.2,
-  "y": -26.2,
-  "rot": 0,
+  "value": "PinHeader 1x03 2.54 mm THT: 2-3 SLOT (default), 1-2 AUX",
+  "fp": "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical",
+  "lcsc": "",
+  "side": "bottom",
+  "x": 146.46,
+  "y": -29.0,
+  "rot": 270,
   "dnp": false
  },
  {

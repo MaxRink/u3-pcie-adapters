@@ -1,7 +1,7 @@
-** Drc report for /tmp/claude-0/-home-user/d17f1b47-5ae4-50a1-b324-429b472ebf70/scratchpad/g8/designs/x16-u3-card/boards/x8/u3_x8.kicad_pcb **
-** Created on 2026-11-13 23:39:14 **
+** Drc report for /tmp/claude-0/-home-user/d17f1b47-5ae4-50a1-b324-429b472ebf70/scratchpad/h8/designs/x16-u3-card/boards/x8/u3_x8.kicad_pcb **
+** Created on 2026-11-20 09:03:51 **
 
-** Found 179 DRC violations **
+** Found 157 DRC violations **
 [silk_overlap]: Silkscreen overlap
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
     @(263.4000 mm, 59.4800 mm): PCB Text 'SDA' on F.Silkscreen
@@ -10,6 +10,22 @@
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
     @(263.4000 mm, 62.0200 mm): PCB Text 'GND' on F.Silkscreen
     @(262.0000 mm, 63.8000 mm): Line on F.Courtyard
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(221.0000 mm, 67.8000 mm): PCB Text 'DRIVE B' on F.Silkscreen
+    @(246.4791 mm, 67.6640 mm): Track [REFCLK_A_P] on L1_SIG_HS, length 34.7162 mm
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(221.0000 mm, 67.8000 mm): PCB Text 'DRIVE B' on F.Silkscreen
+    @(246.3209 mm, 68.0460 mm): Track [REFCLK_A_N] on L1_SIG_HS, length 72.6418 mm
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(189.8000 mm, 68.4000 mm): PCB Text 'SLOT' on F.Silkscreen
+    @(246.3209 mm, 68.0460 mm): Track [REFCLK_A_N] on L1_SIG_HS, length 72.6418 mm
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(196.0000 mm, 68.4000 mm): PCB Text 'AUX' on F.Silkscreen
+    @(246.3209 mm, 68.0460 mm): Track [REFCLK_A_N] on L1_SIG_HS, length 72.6418 mm
 [silk_overlap]: Silkscreen overlap
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
     @(148.0000 mm, 67.8000 mm): PCB Text 'DRIVE A' on F.Silkscreen
@@ -28,51 +44,11 @@
     @(150.3000 mm, 68.5000 mm): Via [PCIE_RST_N] on L1_SIG_HS - L6_SIG_HS
 [silk_overlap]: Silkscreen overlap
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(221.0000 mm, 67.8000 mm): PCB Text 'DRIVE B' on F.Silkscreen
-    @(246.3209 mm, 68.0460 mm): Track [REFCLK_A_N] on L1_SIG_HS, length 72.6418 mm
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(221.0000 mm, 67.8000 mm): PCB Text 'DRIVE B' on F.Silkscreen
-    @(246.4791 mm, 67.6640 mm): Track [REFCLK_A_P] on L1_SIG_HS, length 34.7162 mm
-[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.0898 mm)
-    Rule: fab: silk to pads; Severity: warning
-    @(120.8000 mm, 77.5500 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(121.4550 mm, 76.3400 mm): Pad 3 [12V] of JP1 on L6_SIG_HS
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(182.4000 mm, 81.3500 mm): PCB Text 'PG' on B.Silkscreen
-    @(182.8000 mm, 79.9500 mm): Circle on B.Courtyard
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(197.7000 mm, 78.0000 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(196.2500 mm, 69.4500 mm): Line on B.Courtyard
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(197.7000 mm, 78.0000 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(196.2500 mm, 78.1500 mm): Line on B.Courtyard
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(197.4000 mm, 69.8000 mm): PCB Text 'AUX' on B.Silkscreen
-    @(196.2500 mm, 69.4500 mm): Line on B.Courtyard
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(197.4000 mm, 69.8000 mm): PCB Text 'AUX' on B.Silkscreen
-    @(189.3500 mm, 69.4500 mm): Line on B.Courtyard
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(197.4000 mm, 81.3500 mm): PCB Text '12VB' on B.Silkscreen
-    @(197.4000 mm, 79.9500 mm): Circle on B.Courtyard
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(186.0000 mm, 81.3500 mm): PCB Text 'IMON' on B.Silkscreen
-    @(185.4000 mm, 79.9500 mm): Circle on B.Courtyard
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(263.4000 mm, 31.8000 mm): PCB Text 'AUX 12V' on B.Silkscreen
+    @(263.0000 mm, 25.6000 mm): PCB Text 'PG IMON' on B.Silkscreen
     @(263.0000 mm, 28.4000 mm): Circle on B.Courtyard
 [silk_overlap]: Silkscreen overlap
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(263.0000 mm, 25.6000 mm): PCB Text 'PG IMON' on B.Silkscreen
+    @(263.4000 mm, 31.8000 mm): PCB Text 'AUX 12V' on B.Silkscreen
     @(263.0000 mm, 28.4000 mm): Circle on B.Courtyard
 [silk_overlap]: Silkscreen overlap
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
@@ -80,40 +56,24 @@
     @(137.3000 mm, 93.0000 mm): Circle on B.Courtyard
 [silk_overlap]: Silkscreen overlap
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(124.7000 mm, 78.0000 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(123.2500 mm, 69.4500 mm): Line on B.Courtyard
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(124.4000 mm, 69.8000 mm): PCB Text 'AUX' on B.Silkscreen
-    @(123.2500 mm, 69.4500 mm): Line on B.Courtyard
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(124.4000 mm, 69.8000 mm): PCB Text 'AUX' on B.Silkscreen
-    @(116.3500 mm, 69.4500 mm): Line on B.Courtyard
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(124.7000 mm, 78.0000 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(123.2500 mm, 78.1500 mm): Line on B.Courtyard
+    @(197.4000 mm, 81.3500 mm): PCB Text '12VB' on B.Silkscreen
+    @(197.4000 mm, 79.9500 mm): Circle on B.Courtyard
 [silk_overlap]: Silkscreen overlap
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
     @(103.9500 mm, 76.1000 mm): PCB Text 'P' on B.Silkscreen
     @(105.3000 mm, 76.1000 mm): Circle on B.Courtyard
 [silk_overlap]: Silkscreen overlap
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(182.4000 mm, 81.3500 mm): PCB Text 'PG' on B.Silkscreen
+    @(182.8000 mm, 79.9500 mm): Circle on B.Courtyard
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
+    @(186.0000 mm, 81.3500 mm): PCB Text 'IMON' on B.Silkscreen
+    @(185.4000 mm, 79.9500 mm): Circle on B.Courtyard
+[silk_overlap]: Silkscreen overlap
+    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
     @(116.6000 mm, 77.5500 mm): PCB Text 'AUX' on B.Silkscreen
-    @(116.3500 mm, 78.1500 mm): Line on B.Courtyard
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(197.7000 mm, 78.0000 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(197.4000 mm, 78.5000 mm): Footprint Text 'TP6' of TP6
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(263.4000 mm, 31.8000 mm): PCB Text 'AUX 12V' on B.Silkscreen
-    @(267.0000 mm, 31.9500 mm): Footprint Text 'TP2' of TP2
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(120.8000 mm, 77.5500 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(118.5300 mm, 77.6100 mm): Line on B.Fab
+    @(113.8000 mm, 78.1500 mm): Footprint Text 'TP12' of TP12
 [silk_overlap]: Silkscreen overlap
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
     @(103.9500 mm, 76.1000 mm): PCB Text 'P' on B.Silkscreen
@@ -124,56 +84,16 @@
     @(105.3000 mm, 74.6500 mm): Footprint Text 'TP10' of TP10
 [silk_overlap]: Silkscreen overlap
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(116.6000 mm, 77.5500 mm): PCB Text 'AUX' on B.Silkscreen
-    @(113.8000 mm, 78.1500 mm): Footprint Text 'TP12' of TP12
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(197.7000 mm, 78.0000 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(196.4000 mm, 77.2000 mm): Track [12V] on L6_SIG_HS, length 1.1000 mm
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(197.7000 mm, 78.0000 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(195.8000 mm, 76.3400 mm): Track [12V] on L6_SIG_HS, length 1.0486 mm
-[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.0000 mm)
-    Rule: fab: silk to pads; Severity: warning
-    @(197.7000 mm, 78.0000 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(196.4000 mm, 77.2000 mm): Via [12V] on L1_SIG_HS - L6_SIG_HS
-[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.0519 mm)
-    Rule: fab: silk to pads; Severity: warning
-    @(197.7000 mm, 78.0000 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(197.5000 mm, 77.2000 mm): Via [12V] on L1_SIG_HS - L6_SIG_HS
-[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.0000 mm)
-    Rule: fab: silk to pads; Severity: warning
-    @(197.4000 mm, 69.8000 mm): PCB Text 'AUX' on B.Silkscreen
-    @(197.8500 mm, 69.4000 mm): Via [GND] on L1_SIG_HS - L6_SIG_HS
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(197.4000 mm, 69.8000 mm): PCB Text 'AUX' on B.Silkscreen
-    @(197.8500 mm, 68.9000 mm): Track [GND] on L6_SIG_HS, length 0.5000 mm
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(197.4000 mm, 81.3500 mm): PCB Text '12VB' on B.Silkscreen
-    @(188.6860 mm, 81.6455 mm): Track [PER4_P] on L6_SIG_HS, length 24.1300 mm
+    @(263.4000 mm, 31.8000 mm): PCB Text 'AUX 12V' on B.Silkscreen
+    @(267.0000 mm, 31.9500 mm): Footprint Text 'TP2' of TP2
 [silk_overlap]: Silkscreen overlap
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
     @(197.4000 mm, 81.3500 mm): PCB Text '12VB' on B.Silkscreen
     @(188.8140 mm, 81.9545 mm): Track [PER4_N] on L6_SIG_HS, length 24.1300 mm
-[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.0000 mm)
-    Rule: fab: silk to pads; Severity: warning
-    @(124.7000 mm, 78.0000 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(123.4000 mm, 77.2000 mm): Via [12V] on L1_SIG_HS - L6_SIG_HS
 [silk_overlap]: Silkscreen overlap
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(124.7000 mm, 78.0000 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(123.4000 mm, 77.2000 mm): Track [12V] on L6_SIG_HS, length 1.1000 mm
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(124.7000 mm, 78.0000 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(122.8000 mm, 76.3400 mm): Track [12V] on L6_SIG_HS, length 1.0486 mm
-[silk_overlap]: Silkscreen overlap (fab: silk to pads clearance 0.1500 mm; actual 0.0519 mm)
-    Rule: fab: silk to pads; Severity: warning
-    @(124.7000 mm, 78.0000 mm): PCB Text 'SLOT' on B.Silkscreen
-    @(124.5000 mm, 77.2000 mm): Via [12V] on L1_SIG_HS - L6_SIG_HS
+    @(197.4000 mm, 81.3500 mm): PCB Text '12VB' on B.Silkscreen
+    @(188.6860 mm, 81.6455 mm): Track [PER4_P] on L6_SIG_HS, length 24.1300 mm
 [silk_overlap]: Silkscreen overlap
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
     @(106.6500 mm, 78.2000 mm): PCB Text 'I' on B.Silkscreen
@@ -182,409 +102,402 @@
     Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
     @(263.6000 mm, 63.8000 mm): PCB Text '3V3A' on B.Silkscreen
     @(267.0000 mm, 63.8000 mm): Track [3V3_AUX] on L6_SIG_HS, length 5.5000 mm
-[silk_overlap]: Silkscreen overlap
-    Rule: silk may sit on masked copper (only pads/holes need clearance); Severity: warning
-    @(197.4000 mm, 69.8000 mm): PCB Text 'AUX' on B.Silkscreen
-    @(198.3500 mm, 71.2500 mm): Track [SMBCLK_B] on L6_SIG_HS, length 2.3000 mm
-[silk_over_copper]: Silkscreen clipped by solder mask (rule fab: silk to pads clearance 0.1500 mm; actual 0.0898 mm)
-    Rule: fab: silk to pads; Severity: warning
-    @(120.8000 mm, 77.5500 mm): PCB Text 'SLOT' on B.Silkscreen
-[lib_footprint_issues]: The current configuration does not include the library 'Package_DFN_QFN'.
-    Local override; Severity: warning
-    @(248.0000 mm, 79.5000 mm): Footprint U1
-[lib_footprint_issues]: The current configuration does not include the library 'Connector_PCBEdge'.
-    Local override; Severity: warning
-    @(145.6500 mm, 96.5500 mm): Footprint J1
 [lib_footprint_issues]: The current configuration does not include the library 'Connector_Molex'.
     Local override; Severity: warning
     @(277.0000 mm, 75.4000 mm): Footprint J5
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(185.0000 mm, 75.3000 mm): Footprint C36
-[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
-    Local override; Severity: warning
-    @(266.4000 mm, 59.4000 mm): Footprint TP90
 [lib_footprint_issues]: The current configuration does not include the library 'Connector'.
     Local override; Severity: warning
     @(121.8000 mm, 84.6000 mm): Footprint J7
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(190.0000 mm, 75.3000 mm): Footprint C34
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(117.0000 mm, 75.3000 mm): Footprint C24
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(122.0000 mm, 75.3000 mm): Footprint C25
-[lib_footprint_mismatch]: Footprint 'Amphenol_PSAS4F213002_SFF-8639_U3_RA_SMD' does not match copy in library 'u3adapter'.
-    Local override; Severity: warning
-    @(221.0000 mm, 76.0000 mm): Footprint JB
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(195.0000 mm, 75.3000 mm): Footprint C35
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(112.0000 mm, 75.3000 mm): Footprint C26
 [lib_footprint_mismatch]: Footprint 'Amphenol_PSAS4F213002_SFF-8639_U3_RA_SMD' does not match copy in library 'u3adapter'.
     Local override; Severity: warning
     @(148.0000 mm, 76.0000 mm): Footprint JA
+[lib_footprint_issues]: The current configuration does not include the library 'Package_DFN_QFN'.
+    Local override; Severity: warning
+    @(248.0000 mm, 79.5000 mm): Footprint U1
 [lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
     Local override; Severity: warning
     @(104.0000 mm, 47.0000 mm): Footprint TP91
 [lib_footprint_issues]: The current configuration does not include the library 'Connector_PinHeader_2.54mm'.
     Local override; Severity: warning
-    @(260.2000 mm, 54.4000 mm): Footprint J6
-[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
+    @(122.5400 mm, 71.0000 mm): Footprint JP1
+[lib_footprint_issues]: The current configuration does not include the library 'Connector_PinHeader_2.54mm'.
     Local override; Severity: warning
-    @(105.3000 mm, 74.0000 mm): Footprint TP9
+    @(260.2000 mm, 54.4000 mm): Footprint J6
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(187.0500 mm, 70.0000 mm): Footprint C38
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    @(185.0000 mm, 75.3000 mm): Footprint C36
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(105.3000 mm, 71.4000 mm): Footprint R93
-[lib_footprint_mismatch]: Footprint 'TI_RGE0024M_VQFN-24_4x4mm_P0.5mm_SplitEP' does not match copy in library 'u3adapter'.
-    Local override; Severity: warning
-    @(111.6000 mm, 74.0000 mm): Footprint U30
-[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
-    Local override; Severity: warning
-    @(191.6000 mm, 79.9500 mm): Footprint D44
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(211.0000 mm, 68.8500 mm): Footprint R44
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(211.0000 mm, 70.4000 mm): Footprint R43
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(261.0000 mm, 85.4000 mm): Footprint R3
-[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
-    Local override; Severity: warning
-    @(262.6000 mm, 78.5000 mm): Footprint U2
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(111.3500 mm, 77.3500 mm): Footprint R28
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(114.7000 mm, 76.2500 mm): Footprint R26
-[lib_footprint_mismatch]: Footprint 'TI_RGE0024M_VQFN-24_4x4mm_P0.5mm_SplitEP' does not match copy in library 'u3adapter'.
-    Local override; Severity: warning
-    @(184.6000 mm, 74.0000 mm): Footprint U31
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(127.6000 mm, 70.4000 mm): Footprint RN1
+    @(122.0000 mm, 75.3000 mm): Footprint C25
 [lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
     Local override; Severity: warning
-    @(182.8000 mm, 79.9500 mm): Footprint TP8
-[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
+    @(266.4000 mm, 59.4000 mm): Footprint TP90
+[lib_footprint_issues]: The current configuration does not include the library 'Connector_PinHeader_2.54mm'.
     Local override; Severity: warning
-    @(206.0000 mm, 69.8500 mm): Footprint U14
+    @(195.5400 mm, 71.0000 mm): Footprint JP2
+[lib_footprint_mismatch]: Footprint 'Amphenol_PSAS4F213002_SFF-8639_U3_RA_SMD' does not match copy in library 'u3adapter'.
+    Local override; Severity: warning
+    @(221.0000 mm, 76.0000 mm): Footprint JB
+[lib_footprint_issues]: The current configuration does not include the library 'Connector_PCBEdge'.
+    Local override; Severity: warning
+    @(145.6500 mm, 96.5500 mm): Footprint J1
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(190.0000 mm, 75.3000 mm): Footprint C34
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(195.0000 mm, 75.3000 mm): Footprint C35
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(117.0000 mm, 75.3000 mm): Footprint C24
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(112.0000 mm, 75.3000 mm): Footprint C26
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
     @(153.8800 mm, 72.2500 mm): Footprint C22
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(224.3800 mm, 82.4000 mm): Footprint C106
-[lib_footprint_issues]: The current configuration does not include the library 'MountingHole'.
-    Local override; Severity: warning
-    @(263.0000 mm, 28.4000 mm): Footprint H7
-[lib_footprint_issues]: The current configuration does not include the library 'MountingHole'.
-    Local override; Severity: warning
-    @(107.5000 mm, 5.2500 mm): Footprint H1
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(230.6600 mm, 77.4000 mm): Footprint C108
-[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
-    Local override; Severity: warning
-    @(138.3000 mm, 75.8000 mm): Footprint D1
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(231.6600 mm, 77.4000 mm): Footprint C107
-[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
-    Local override; Severity: warning
-    @(238.6000 mm, 68.2500 mm): Footprint U16
-[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
-    Local override; Severity: warning
-    @(105.3000 mm, 76.1000 mm): Footprint TP10
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(256.5000 mm, 84.7000 mm): Footprint C7
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
     @(157.6600 mm, 77.4000 mm): Footprint C104
-[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
-    Local override; Severity: warning
-    @(231.2000 mm, 69.8500 mm): Footprint U15
-[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
-    Local override; Severity: warning
-    @(139.6000 mm, 92.2000 mm): Footprint D42
-[lib_footprint_issues]: The current configuration does not include the library 'Diode_SMD'.
-    Local override; Severity: warning
-    @(283.0000 mm, 66.6000 mm): Footprint D50
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(236.0000 mm, 71.9000 mm): Footprint C30
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(138.0000 mm, 70.4000 mm): Footprint R23
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(135.0000 mm, 89.1000 mm): Footprint R91
-[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
-    Local override; Severity: warning
-    @(165.6000 mm, 71.4500 mm): Footprint U13
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(226.0000 mm, 67.4500 mm): Footprint R41
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(163.0000 mm, 70.0500 mm): Footprint C21
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(153.0000 mm, 68.4500 mm): Footprint R20
-[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
-    Local override; Severity: warning
-    @(165.6000 mm, 68.2500 mm): Footprint U12
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(226.8800 mm, 72.2500 mm): Footprint C32
-[lib_footprint_issues]: The current configuration does not include the library 'Jumper'.
-    Local override; Severity: warning
-    @(120.2000 mm, 79.5000 mm): Footprint SJ4
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(187.7000 mm, 76.2500 mm): Footprint R46
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(114.0500 mm, 70.0000 mm): Footprint C28
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(226.0000 mm, 68.4500 mm): Footprint R40
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(163.0000 mm, 67.2500 mm): Footprint R22
-[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
-    Local override; Severity: warning
-    @(138.4000 mm, 67.6000 mm): Footprint D10
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(201.2000 mm, 67.5500 mm): Footprint C33
-[lib_footprint_issues]: The current configuration does not include the library 'MountingHole'.
-    Local override; Severity: warning
-    @(104.0000 mm, -6.0000 mm): Footprint H10
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(225.3800 mm, 82.4000 mm): Footprint C105
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(185.3500 mm, 77.3500 mm): Footprint R47
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(273.0000 mm, 67.0000 mm): Footprint C19
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(181.2500 mm, 74.2500 mm): Footprint C37
-[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
-    Local override; Severity: warning
-    @(185.4000 mm, 79.9500 mm): Footprint TP7
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(252.6375 mm, 81.4500 mm): Footprint C3
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(184.3500 mm, 77.3500 mm): Footprint R48
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(236.0000 mm, 67.2500 mm): Footprint R42
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(255.6000 mm, 81.1000 mm): Footprint RN10
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(138.0000 mm, 68.8500 mm): Footprint R24
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(236.0000 mm, 70.0500 mm): Footprint C31
-[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
-    Local override; Severity: warning
-    @(211.4000 mm, 67.6000 mm): Footprint D11
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(151.8000 mm, 71.0500 mm): Footprint RN2
-[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
-    Local override; Severity: warning
-    @(267.0000 mm, 63.8000 mm): Footprint TP1
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(257.0000 mm, 69.8000 mm): Footprint R1
-[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
-    Local override; Severity: warning
-    @(137.3000 mm, 93.0000 mm): Footprint TP5
-[lib_footprint_issues]: The current configuration does not include the library 'Jumper'.
-    Local override; Severity: warning
-    @(250.4000 mm, 72.6000 mm): Footprint SJ3
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(139.6000 mm, 89.1000 mm): Footprint R92
 [lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
     Local override; Severity: warning
     @(194.7000 mm, 79.9500 mm): Footprint R94
 [lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
     Local override; Severity: warning
-    @(264.3000 mm, 33.4000 mm): Footprint R90
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(246.8500 mm, 76.0625 mm): Footprint C2
+    @(140.9000 mm, 75.8000 mm): Footprint R11
 [lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
     Local override; Severity: warning
-    @(137.3000 mm, 90.6000 mm): Footprint TP4
-[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
+    @(113.8000 mm, 79.6000 mm): Footprint TP12
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(105.3000 mm, 68.3000 mm): Footprint D43
+    @(226.8800 mm, 72.2500 mm): Footprint C32
+[lib_footprint_issues]: The current configuration does not include the library 'MountingHole'.
+    Local override; Severity: warning
+    @(107.5000 mm, 5.2500 mm): Footprint H1
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(127.6000 mm, 70.4000 mm): Footprint RN1
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(186.3500 mm, 77.3500 mm): Footprint C39
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(231.6600 mm, 77.4000 mm): Footprint C107
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(112.3500 mm, 77.3500 mm): Footprint R27
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
     @(113.3500 mm, 77.3500 mm): Footprint C29
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(252.3375 mm, 78.2500 mm): Footprint C4
-[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
-    Local override; Severity: warning
-    @(258.8000 mm, 85.4000 mm): Footprint U3
-[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
-    Local override; Severity: warning
-    @(158.2000 mm, 69.8500 mm): Footprint U11
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(243.6625 mm, 77.7500 mm): Footprint C5
 [lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
     Local override; Severity: warning
-    @(153.0000 mm, 67.4500 mm): Footprint R21
+    @(256.0000 mm, 69.8000 mm): Footprint R2
+[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
+    Local override; Severity: warning
+    @(211.3000 mm, 75.8000 mm): Footprint D2
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(263.4000 mm, 44.9000 mm): Footprint C90
+    @(230.6600 mm, 77.4000 mm): Footprint C108
+[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
+    Local override; Severity: warning
+    @(137.3000 mm, 90.6000 mm): Footprint TP4
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(246.8500 mm, 76.0625 mm): Footprint C2
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(181.2500 mm, 74.2500 mm): Footprint C37
+[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
+    Local override; Severity: warning
+    @(263.4000 mm, 48.8000 mm): Footprint U4
+[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
+    Local override; Severity: warning
+    @(105.3000 mm, 74.0000 mm): Footprint TP9
+[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
+    Local override; Severity: warning
+    @(185.4000 mm, 79.9500 mm): Footprint TP7
+[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
+    Local override; Severity: warning
+    @(261.2000 mm, 33.4000 mm): Footprint D40
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(105.3000 mm, 71.4000 mm): Footprint R93
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(224.8000 mm, 71.0500 mm): Footprint RN4
 [lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
     Local override; Severity: warning
     @(137.3000 mm, 88.4000 mm): Footprint TP3
 [lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
     Local override; Severity: warning
-    @(224.8000 mm, 71.0500 mm): Footprint RN4
+    @(138.0000 mm, 70.4000 mm): Footprint R23
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(158.6600 mm, 77.4000 mm): Footprint C103
-[lib_footprint_issues]: The current configuration does not include the library 'Inductor_SMD'.
-    Local override; Severity: warning
-    @(251.8000 mm, 83.6000 mm): Footprint FB1
-[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
-    Local override; Severity: warning
-    @(111.4000 mm, 79.6000 mm): Footprint TP13
-[lib_footprint_issues]: The current configuration does not include the library 'Connector_PinHeader_2.54mm'.
-    Local override; Severity: warning
-    @(119.8000 mm, 73.8000 mm): Footprint JP1
+    @(128.2000 mm, 67.5500 mm): Footprint C23
 [lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
     Local override; Severity: warning
-    @(256.0000 mm, 69.8000 mm): Footprint R2
+    @(211.0000 mm, 68.8500 mm): Footprint R44
+[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
+    Local override; Severity: warning
+    @(197.4000 mm, 79.9500 mm): Footprint TP6
+[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
+    Local override; Severity: warning
+    @(135.0000 mm, 92.2000 mm): Footprint D41
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(184.3500 mm, 77.3500 mm): Footprint R48
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(213.9000 mm, 75.8000 mm): Footprint R12
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(264.3000 mm, 33.4000 mm): Footprint R90
+[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
+    Local override; Severity: warning
+    @(267.0000 mm, 63.8000 mm): Footprint TP1
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(256.5000 mm, 84.7000 mm): Footprint C7
+[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
+    Local override; Severity: warning
+    @(238.6000 mm, 68.2500 mm): Footprint U16
+[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
+    Local override; Severity: warning
+    @(138.4000 mm, 67.6000 mm): Footprint D10
+[lib_footprint_issues]: The current configuration does not include the library 'MountingHole'.
+    Local override; Severity: warning
+    @(104.0000 mm, -6.0000 mm): Footprint H10
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(151.8000 mm, 71.0500 mm): Footprint RN2
+[lib_footprint_issues]: The current configuration does not include the library 'Jumper'.
+    Local override; Severity: warning
+    @(255.6000 mm, 72.6000 mm): Footprint SJ1
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(252.3375 mm, 78.2500 mm): Footprint C4
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(187.7000 mm, 76.2500 mm): Footprint R46
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
     @(152.3800 mm, 81.4000 mm): Footprint C101
+[lib_footprint_mismatch]: Footprint 'TI_RGE0024M_VQFN-24_4x4mm_P0.5mm_SplitEP' does not match copy in library 'u3adapter'.
+    Local override; Severity: warning
+    @(111.6000 mm, 74.0000 mm): Footprint U30
+[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
+    Local override; Severity: warning
+    @(206.0000 mm, 69.8500 mm): Footprint U14
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(224.3800 mm, 82.4000 mm): Footprint C106
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(243.6625 mm, 77.7500 mm): Footprint C5
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(163.0000 mm, 70.0500 mm): Footprint C21
+[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
+    Local override; Severity: warning
+    @(258.8000 mm, 85.4000 mm): Footprint U3
+[lib_footprint_mismatch]: Footprint 'TI_RGE0024M_VQFN-24_4x4mm_P0.5mm_SplitEP' does not match copy in library 'u3adapter'.
+    Local override; Severity: warning
+    @(184.6000 mm, 74.0000 mm): Footprint U31
 [lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
     Local override; Severity: warning
-    @(114.7000 mm, 74.2500 mm): Footprint R25
+    @(226.0000 mm, 68.4500 mm): Footprint R40
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(255.5000 mm, 84.7000 mm): Footprint C8
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(200.6000 mm, 70.4000 mm): Footprint RN3
+[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
+    Local override; Severity: warning
+    @(137.3000 mm, 93.0000 mm): Footprint TP5
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(262.0000 mm, 85.4000 mm): Footprint R4
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(111.3500 mm, 77.3500 mm): Footprint R28
+[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
+    Local override; Severity: warning
+    @(182.8000 mm, 79.9500 mm): Footprint TP8
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(108.2500 mm, 74.2500 mm): Footprint C27
+[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
+    Local override; Severity: warning
+    @(165.6000 mm, 71.4500 mm): Footprint U13
+[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
+    Local override; Severity: warning
+    @(238.6000 mm, 71.4500 mm): Footprint U17
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(163.0000 mm, 71.9000 mm): Footprint C20
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(153.0000 mm, 67.4500 mm): Footprint R21
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(261.0000 mm, 85.4000 mm): Footprint R3
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(187.0500 mm, 70.0000 mm): Footprint C38
+[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
+    Local override; Severity: warning
+    @(133.0000 mm, 69.8500 mm): Footprint U10
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(236.0000 mm, 67.2500 mm): Footprint R42
+[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
+    Local override; Severity: warning
+    @(105.3000 mm, 76.1000 mm): Footprint TP10
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(226.0000 mm, 67.4500 mm): Footprint R41
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(139.6000 mm, 89.1000 mm): Footprint R92
+[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
+    Local override; Severity: warning
+    @(262.6000 mm, 78.5000 mm): Footprint U2
+[lib_footprint_issues]: The current configuration does not include the library 'Jumper'.
+    Local override; Severity: warning
+    @(250.4000 mm, 72.6000 mm): Footprint SJ3
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(163.0000 mm, 67.2500 mm): Footprint R22
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(185.3500 mm, 77.3500 mm): Footprint R47
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(201.2000 mm, 67.5500 mm): Footprint C33
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(114.7000 mm, 76.2500 mm): Footprint R26
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(255.6000 mm, 81.1000 mm): Footprint RN10
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(211.0000 mm, 70.4000 mm): Footprint R43
+[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
+    Local override; Severity: warning
+    @(139.6000 mm, 92.2000 mm): Footprint D42
+[lib_footprint_issues]: The current configuration does not include the library 'Jumper'.
+    Local override; Severity: warning
+    @(120.2000 mm, 79.5000 mm): Footprint SJ4
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(236.0000 mm, 70.0500 mm): Footprint C31
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
     @(266.0000 mm, 83.6000 mm): Footprint C6
 [lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
     Local override; Severity: warning
-    @(135.0000 mm, 92.2000 mm): Footprint D41
-[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
-    Local override; Severity: warning
-    @(133.0000 mm, 69.8500 mm): Footprint U10
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(254.1000 mm, 84.8000 mm): Footprint C9
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
-    Local override; Severity: warning
-    @(262.0000 mm, 85.4000 mm): Footprint R4
-[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
-    Local override; Severity: warning
-    @(267.0000 mm, 33.4000 mm): Footprint TP2
-[lib_footprint_issues]: The current configuration does not include the library 'Jumper'.
-    Local override; Severity: warning
-    @(116.9000 mm, 79.5000 mm): Footprint SJ5
-[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
-    Local override; Severity: warning
-    @(105.3000 mm, 78.2000 mm): Footprint TP11
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(255.5000 mm, 84.7000 mm): Footprint C8
-[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
-    Local override; Severity: warning
-    @(263.4000 mm, 48.8000 mm): Footprint U4
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(128.2000 mm, 67.5500 mm): Footprint C23
+    @(105.3000 mm, 68.3000 mm): Footprint D43
 [lib_footprint_issues]: The current configuration does not include the library 'MountingHole'.
     Local override; Severity: warning
     @(104.0000 mm, 24.0000 mm): Footprint H9
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(108.2500 mm, 74.2500 mm): Footprint C27
-[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
-    Local override; Severity: warning
-    @(261.2000 mm, 33.4000 mm): Footprint D40
-[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
-    Local override; Severity: warning
-    @(197.4000 mm, 79.9500 mm): Footprint TP6
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(163.0000 mm, 71.9000 mm): Footprint C20
-[lib_footprint_issues]: The current configuration does not include the library 'Connector_PinHeader_2.54mm'.
-    Local override; Severity: warning
-    @(192.8000 mm, 73.8000 mm): Footprint JP2
-[lib_footprint_issues]: The current configuration does not include the library 'Jumper'.
-    Local override; Severity: warning
-    @(253.0000 mm, 72.6000 mm): Footprint SJ2
-[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
-    Local override; Severity: warning
-    @(238.6000 mm, 71.4500 mm): Footprint U17
-[lib_footprint_issues]: The current configuration does not include the library 'Jumper'.
-    Local override; Severity: warning
-    @(255.6000 mm, 72.6000 mm): Footprint SJ1
+    @(254.1000 mm, 84.8000 mm): Footprint C9
 [lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
     Local override; Severity: warning
-    @(140.9000 mm, 75.8000 mm): Footprint R11
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    @(135.0000 mm, 89.1000 mm): Footprint R91
+[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
     Local override; Severity: warning
-    @(246.8500 mm, 82.9375 mm): Footprint C1
+    @(211.4000 mm, 67.6000 mm): Footprint D11
+[lib_footprint_issues]: The current configuration does not include the library 'Diode_SMD'.
+    Local override; Severity: warning
+    @(283.0000 mm, 66.6000 mm): Footprint D50
 [lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
     Local override; Severity: warning
     @(187.7000 mm, 74.2500 mm): Footprint R45
 [lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
     Local override; Severity: warning
-    @(151.3800 mm, 81.4000 mm): Footprint C102
+    @(273.0000 mm, 67.0000 mm): Footprint C19
+[lib_footprint_issues]: The current configuration does not include the library 'Jumper'.
+    Local override; Severity: warning
+    @(116.9000 mm, 79.5000 mm): Footprint SJ5
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(225.3800 mm, 82.4000 mm): Footprint C105
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(236.0000 mm, 71.9000 mm): Footprint C30
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(246.8500 mm, 82.9375 mm): Footprint C1
+[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
+    Local override; Severity: warning
+    @(158.2000 mm, 69.8500 mm): Footprint U11
 [lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
     Local override; Severity: warning
-    @(112.3500 mm, 77.3500 mm): Footprint R27
+    @(257.0000 mm, 69.8000 mm): Footprint R1
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(114.0500 mm, 70.0000 mm): Footprint C28
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(153.0000 mm, 68.4500 mm): Footprint R20
+[lib_footprint_issues]: The current configuration does not include the library 'Jumper'.
+    Local override; Severity: warning
+    @(253.0000 mm, 72.6000 mm): Footprint SJ2
 [lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
     Local override; Severity: warning
-    @(113.8000 mm, 79.6000 mm): Footprint TP12
+    @(111.4000 mm, 79.6000 mm): Footprint TP13
+[lib_footprint_issues]: The current configuration does not include the library 'Package_TO_SOT_SMD'.
+    Local override; Severity: warning
+    @(165.6000 mm, 68.2500 mm): Footprint U12
 [lib_footprint_issues]: The current configuration does not include the library 'MountingHole'.
     Local override; Severity: warning
-    @(263.0000 mm, -4.0000 mm): Footprint H8
-[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    @(263.0000 mm, 28.4000 mm): Footprint H7
+[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
     Local override; Severity: warning
-    @(200.6000 mm, 70.4000 mm): Footprint RN3
+    @(105.3000 mm, 78.2000 mm): Footprint TP11
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(151.3800 mm, 81.4000 mm): Footprint C102
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(252.6375 mm, 81.4500 mm): Footprint C3
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(263.4000 mm, 44.9000 mm): Footprint C90
+[lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
+    Local override; Severity: warning
+    @(138.3000 mm, 75.8000 mm): Footprint D1
 [lib_footprint_issues]: The current configuration does not include the library 'MountingHole'.
     Local override; Severity: warning
     @(107.5000 mm, 90.6500 mm): Footprint H2
-[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
-    Local override; Severity: warning
-    @(186.3500 mm, 77.3500 mm): Footprint C39
 [lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
     Local override; Severity: warning
-    @(213.9000 mm, 75.8000 mm): Footprint R12
+    @(138.0000 mm, 68.8500 mm): Footprint R24
+[lib_footprint_issues]: The current configuration does not include the library 'Capacitor_SMD'.
+    Local override; Severity: warning
+    @(158.6600 mm, 77.4000 mm): Footprint C103
+[lib_footprint_issues]: The current configuration does not include the library 'Package_SO'.
+    Local override; Severity: warning
+    @(231.2000 mm, 69.8500 mm): Footprint U15
 [lib_footprint_issues]: The current configuration does not include the library 'LED_SMD'.
     Local override; Severity: warning
-    @(211.3000 mm, 75.8000 mm): Footprint D2
+    @(191.6000 mm, 79.9500 mm): Footprint D44
+[lib_footprint_issues]: The current configuration does not include the library 'Inductor_SMD'.
+    Local override; Severity: warning
+    @(251.8000 mm, 83.6000 mm): Footprint FB1
+[lib_footprint_issues]: The current configuration does not include the library 'TestPoint'.
+    Local override; Severity: warning
+    @(267.0000 mm, 33.4000 mm): Footprint TP2
+[lib_footprint_issues]: The current configuration does not include the library 'Resistor_SMD'.
+    Local override; Severity: warning
+    @(114.7000 mm, 74.2500 mm): Footprint R25
+[lib_footprint_issues]: The current configuration does not include the library 'MountingHole'.
+    Local override; Severity: warning
+    @(263.0000 mm, -4.0000 mm): Footprint H8
 
 ** Found 0 unconnected pads **
 
