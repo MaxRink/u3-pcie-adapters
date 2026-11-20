@@ -13,7 +13,7 @@ board changes. All designs are built around 120 mm fans.
 | `x8`, `x16p3`, `x16p` | slot card with 2 / 3 / 4 drives, **end-fan** shroud | one 120 mm at the card end | from the board file |
 | `x8_top`, `x16p3_top`, `x16p_top` | the same cards, **top-feed** shroud | one 120 mm per 2 drives, behind the drives | from the board file |
 | `x8_end3` | three cards in neighbouring slot pairs on **one shared end fan** | one 120 mm for 6 drives | from the board file |
-| `x8_hood3`, `x16p_hood3` | three cards under **one shared hood** | one 120 mm per 6 drives, on top | from the board file |
+| `x8_hood3`, `x16p3_hood3`, `x16p_hood3` | three cards under **one shared hood** | one 120 mm per 6 drives, on top | from the board file |
 | `cage` | OCuLink cage board, 1 drive, sled | 60x25 | from the board file |
 | `backplane`, `backplane6` | top-loading hot-plug cage for 4 / 6 drives behind a front case fan, 80 / 120 mm wide | the case's 120 mm front fan | from the board files |
 
@@ -23,8 +23,10 @@ Not modelled yet because no board files exist: the three SlimSAS host cards and 
 boards. They drop into `boards.json` when their layouts land.
 
 This is a first mechanical design. Nothing here has been printed or test-fitted yet; see
-[What is verified](#what-is-verified-and-what-is-not). The card layout may still change (drives on
-the front or the back of the card); the card shrouds are regenerated from the board files then.
+[What is verified](#what-is-verified-and-what-is-not).
+
+**Card revisions.** All three cards are built from rev G, where the drives and all tall parts
+stand on the card front. The generators detect the drive side from the board file and need no setting.
 
 ## Which fan works
 
@@ -53,13 +55,25 @@ the numbers as ± 5 °C. Hottest drive in °C:
 
 ## Slot-card shrouds
 
-The drives hang on the back of the card and stand up from the connector strip. In every style the
-card gets a **body** behind the drives and a **cover** over the card window in front of them; four
-M3x10 screws per drive go through printed pillars in the cover into the drive's bottom mounting
-holes. That holds every drive and sets the 5 mm gaps. Body, card and cover are clamped with M3x12
+The drives stand up from the connector strip, on the card front since rev G. In every style the
+card gets a **body** over the drives' label faces and a **cover** on the other side of the card
+window, behind the card since rev G; four M3x10 screws per drive go through printed pillars in the
+cover into the drive's bottom mounting holes. That holds every drive and sets the 5 mm gaps. Body, card and cover are clamped with M3x12
 screws through the card's M3 slots into heat-set inserts. **Slot fillers** close the 3.15 mm slots
 between neighbouring drives. Parts on the card are cut out of the print automatically with 0.5 mm
 clearance. Parts longer than 250 mm are split between two drives.
+
+On the rev G cards:
+
+- There are no M3 holes between the drives, so everything is clamped through the holes in the two
+  card columns and held by the drive screws.
+- Every 12 V jumper header, the I2C header and the fan header get a shaft through the body, so they
+  stay reachable with the shroud on.
+- The 6-pin sits on a tail tab beyond the card body. The duct ends with the card body; the funnel
+  of the end-fan styles is raised so that the plug and its cable pass under it.
+- The cover stands 7.4 mm behind the card's back surface (10.4 mm with the screw heads), more than
+  the 2.67 mm a PCIe card may use there. The slot behind the card must be empty or hold a card
+  whose parts are lower than 8 mm. In front the shroud takes the card's own slot and the next one.
 
 ### End fan (`x8`, `x16p3`, `x16p`)
 
@@ -108,10 +122,10 @@ Length from the bracket-end card edge, height from the bottom of the gold finger
 
 | | Length | Height | Thickness |
 | --- | --- | --- | --- |
-| End fan, x8 / x16 3 drives / x16 4 drives | 276 / 325 / 398 mm | 138 / 144 / 144 mm at the card, 145 / 150 / 150 mm at the fan | 30 mm at the card; the fan reaches 51 mm in front of the card and 69 mm behind it |
-| Top-feed, x8 / x16 3 drives / x16 4 drives | 190 / 275 / 312 mm | 147 / 153 / 153 mm | 6 mm in front of the card, 66 mm behind it |
-| Shared end fan, 3 x8 cards | 263 mm | 145 mm | 134 mm over all three cards |
-| Shared hood, 3 x8 / 3 x16 4-drive cards | 193 / 315 mm | 193 / 198 mm | 124 mm over all three cards |
+| End fan, x8 / x16 3 drives / x16 4 drives | 255 / 325 / 398 mm | 138 / 144 / 144 mm at the card, 151 mm at the fan | 30 mm at the card: 22 mm in front, 7 mm behind; the fan reaches 69 mm in front of the card and 51 mm behind it |
+| Top-feed, x8 / x16 3 drives / x16 4 drives | 192 / 272 / 335 mm (the card itself where it is longer) | 147 / 153 / 153 mm | 66 mm in front of the card, 7 mm behind it |
+| Shared end fan, 3 x8 cards | 242 mm | 151 mm | 134 mm over all three cards |
+| Shared hood, 3 x8 / 3 x16 3-drive / 3 x16 4-drive cards | 192 / 262 / 335 mm (the cards) | 193 / 198 / 198 mm | 124 mm over all three cards |
 
 The drives alone already stand 23 to 29 mm above a full-height card (111 mm). The hood adds
 another 50 mm on top, so it needs a case with about 205 mm above the motherboard at the slots; it
@@ -197,8 +211,8 @@ python3 mech/render.py x8 --views hero xray --samples 64
 ```
 
 `boards.json` lists each board with the git ref it is read from. The boards are owned by other
-branches, so `mech/` reads them with `git show` and never edits a board. The cards are read from
-`main` (rev F cards and both backplanes), the OCuLink cage board from its PR branch. After those branches
+branches, so `mech/` reads them with `git show` and never edits a board. The cards and both backplanes are read from `main`, the OCuLink cage
+board from its PR branch. After those branches
 merge, point the refs at `WORKTREE`.
 
 | File | What |

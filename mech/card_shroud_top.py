@@ -47,7 +47,7 @@ def build(board, p=None):
     t, w = board.t, p.wall
     drives = board.drives()
     assert drives and all(d["back"] for d in drives)
-    L = board.L
+    L = board.body_L
     zb = -t
     zt = min(d["z_top"] for d in drives)
     z_bi, z_ci = zt - p.gap, zb + p.gap
@@ -91,8 +91,11 @@ def build(board, p=None):
         keep.append(box(x0 - c, x1 + c, y0 - c, y1 + c, min(z0, -t / 2) - (c if z0 < -t else 0), max(z1, -t / 2) + (c if z1 > 0 else 0)))
     bracket = parts.pcie_bracket(tab_y=[h[1] for h in bracket_holes], tab_x=bracket_holes[0][0] if bracket_holes else 7.5)
     for h in bracket_holes:
-        keep.append(box(-2, h[0] + 5.5, h[1] - 5, h[1] + 5, 0, 4.2))
+        keep.append(box(-2, h[0] + 5.5, h[1] - 5, h[1] + 5, *board.bracket_tab_z))
     keepout = _union(keep)
+    # jumpers and small headers under the body stay reachable: a shaft from the part through the body to the outside
+    access = [box(x0 - 2.5, x1 + 2.5, y0 - 2.5, y1 + 2.5, z_bo - 1.0, z1 + 0.1) for (x0, x1, y0, y1, z0, z1, ref) in board.part_boxes()
+              if z0 < -t - 3.0 and ref and ref.startswith(("JP", "J6", "J7")) and y1 > p.y_bottom]
 
     # ------------------------------------------------------------ cover: plate, end ribs, top wall; open at the strip
     cov = []
@@ -151,7 +154,7 @@ def build(board, p=None):
     if p.open_top:
         bc.append(cyl(p.insert_d / 2, p.insert_depth, "x", (xb_card - p.insert_depth, hood_y, z_bi + 4.5)))
         bc.append(box(xa - 1, xa + w + 1, hood_y - 1.5, hood_y + 1.5, z_bi + 2.0, z_bi + 8.0))     # pocket for the hood's hook
-    body = body.cut(_union(bc)).cut(keepout)
+    body = body.cut(_union(bc + access)).cut(keepout)
 
     # ------------------------------------------------------------ manifold: fan wall, chamber walls, top cap
     y_tm = y_ti + w
@@ -239,4 +242,4 @@ def build(board, p=None):
         manifold_points=[(round(x, 2), round(y, 2)) for (x, y) in sp],
         duct=dict(x=[xa, xb_card], z=[z_bo, z_co], zi=[z_bi, z_ci], y_edge=y_ti, hood_y=hood_y, pair_x=[round(f, 2) for f in xf]),
     )
-    return dict(printed=printed, hardware=hw, info=info, board_solid=pcb)
+    return dict(printed=printed, hardware=hw, info=info, board_solid=pcb, keepout=keepout)

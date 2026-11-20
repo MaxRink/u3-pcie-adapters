@@ -75,7 +75,7 @@ def build(board, p=None):
     t = board.t
     drives = board.drives()
     assert drives and all(d["back"] for d in drives), "card shroud expects drives on the back of the card"
-    L = board.L
+    L = board.body_L                          # the duct ends with the card body; a tail tab (6-pin) stays outside
     zb = -t                                   # drive bottom plane = card back surface
     zt = min(d["z_top"] for d in drives)      # drive label face
     z_bi, z_ci = zt - p.gap, zb + p.gap       # inner faces of body back wall / cover plate
@@ -111,8 +111,11 @@ def build(board, p=None):
     bracket = parts.pcie_bracket(tab_y=[h[1] for h in bracket_holes], tab_x=bracket_holes[0][0] if bracket_holes else 7.5)
     bb = bracket[0][0].val().BoundingBox()
     for h in bracket_holes:                              # tab + screw head
-        keep.append(box(-2, h[0] + 5.5, h[1] - 5, h[1] + 5, 0, 4.2))
+        keep.append(box(-2, h[0] + 5.5, h[1] - 5, h[1] + 5, *board.bracket_tab_z))
     keepout = _union(keep)
+    # jumpers and small headers under the body stay reachable: a shaft from the part through the body to the outside
+    access = [box(x0 - 2.5, x1 + 2.5, y0 - 2.5, y1 + 2.5, z_bo - 1.0, z1 + 0.1) for (x0, x1, y0, y1, z0, z1, ref) in board.part_boxes()
+              if z0 < -t - 3.0 and ref and ref.startswith(("JP", "J6", "J7")) and y1 > p.y_bottom]
 
     # ------------------------------------------------------------ cover (component side)
     cov = []
@@ -174,11 +177,14 @@ def build(board, p=None):
     # drive envelope + insertion clearance, so the filler never touches a drive
     for d in drives:
         cuts.append(box(d["xc"] - W2 - 0.4, d["xc"] + W2 + 0.4, d["y_face"] - 0.6, d["y_top"] + 0.5, zt - 0.3, zb + 1))
-    body = body.cut(_union(cuts)).cut(keepout)
+    body = body.cut(_union(cuts + access)).cut(keepout)
 
     # ------------------------------------------------------------ fan adapter
     s, hs, _hub = parts.FANS[p.fan]
     cyc, czc = (y_in + y_ti) / 2, (z_bi + z_ci) / 2 + p.fan_z_offset
+    tail = board.L > L + 1.0
+    if tail:                                   # keep the funnel above the tail tab and the 6-pin plug
+        cyc = max(cyc, y_in - p.wall + s / 2 + 0.4)    # not flush with the duct floor: coplanar faces break the union
     x0, x1, x2 = xb + p.fit, xb + p.neck, xb + p.neck + p.funnel_len
     w = p.wall
     rect_i = (y_in, y_ti, z_bi, z_ci)
@@ -203,6 +209,17 @@ def build(board, p=None):
     for (y, z) in fan_holes:
         acut.append(cyl(1.9, 6, "x", (x2 - 1, y, z)))      # M4 self-tapping into the flange
     adapter = adapter.cut(_union(acut))
+    tail_keep = None
+    if tail:                                   # slot for the tail tab, room for what stands on it (few simple boxes: the full keep-out breaks this cut)
+        tb = pcb.intersect(box(xb + 0.01, board.L + 5, -50, 400, -50, 50)).val().BoundingBox()
+        tk = [box(xb, tb.xmax + 0.4, tb.ymin - 0.4, tb.ymax + 0.4, -t - 0.4, 0.4)]
+        for (px0, px1, py0, py1, pz0, pz1, ref) in board.part_boxes():
+            if px1 > xb + 0.5:                      # tall parts with room for their plug towards the card end
+                ext = 30.0 if pz1 - pz0 > 2.0 else 0.6
+                tk.append(box(max(px0 - 0.6, xb), px1 + ext, py0 - 0.6, py1 + 0.6, pz0 - 0.6, pz1 + 0.6))
+        tail_keep = _union(tk)
+        adapter = adapter.cut(tail_keep)
+    assert adapter.val().BoundingBox().xmax > x2 + 3.0, "fan adapter lost its funnel"
 
     # ------------------------------------------------------------ slot fillers between drives
     fillers = []
@@ -280,4 +297,4 @@ def build(board, p=None):
         fan_centre=dict(x=xf, y=cyc, z=czc),
         adapter=dict(x0=x0, lugs=lugs, rect_i=rect_i, rect_o=rect_o),
     )
-    return dict(printed=printed, hardware=hw, info=info, board_solid=pcb)
+    return dict(printed=printed, hardware=hw, info=info, board_solid=pcb, keepout=keepout, tail_keep=tail_keep)

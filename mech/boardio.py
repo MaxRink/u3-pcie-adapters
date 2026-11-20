@@ -87,6 +87,11 @@ class MechBoard:
         self.L, self.Hh = max(xs) - min(xs), max(ys) - min(ys)
         self.t = self.d["thickness"]
         self.shift = np.array([self.b.cx - self.X0, self.Y0 - self.b.cy, 0.0])
+        # length of the card body: rev G cards carry the 6-pin on a low tail tab beyond it
+        hi = [self.xy(*p)[0] for p in self.d["outline"][0]["outer"] if self.xy(*p)[1] > 0.5 * self.Hh]
+        self.body_L = max(hi) if hi else self.L
+        self.bracket_tab_z = (0.0, 4.2)          # bracket tab and its screw head lie on the component side
+        self.mirrored = False
 
     # ---- frames
     def xy(self, kx, ky):
@@ -173,11 +178,54 @@ class MechBoard:
                 continue
             b = np.array(m.bounds).reshape(3, 2) + self.shift[:, None]
             out.append((b[0, 0], b[0, 1], b[1, 0], b[1, 1], b[2, 0], b[2, 1], it.get("ref")))
+        fpid = {f["ref"]: f for f in self.d["footprints"]}
+        tall = []
+        for b in out:                                # vertical pin headers come as 1 mm stand-ins: give them their real height
+            f = fpid.get(b[6])
+            if f and "PinHeader" in f["fpid"] and "Vertical" in f["fpid"] and b[5] - b[4] < 3.0:
+                h = 12.0 if "Fan" in f["fpid"] else 9.0
+                b = (b[0], b[1], b[2], b[3], -self.t - h, b[5], b[6]) if f["back"] else (b[0], b[1], b[2], b[3], b[4], h, b[6])
+            tall.append(b)
+        out = tall
         merged = {}
         for b in out:
             m = merged.get(b[6])
             merged[b[6]] = b if m is None else (min(m[0], b[0]), max(m[1], b[1]), min(m[2], b[2]), max(m[3], b[3]), min(m[4], b[4]), max(m[5], b[5]), b[6])
         return list(merged.values())
+
+
+class MirrorBoard:
+    """A card with the drives on the component side, seen mirrored through its thickness
+    (z' = -t - z), so that the shroud generators, which are written for drives behind the card,
+    can be used unchanged. build.unmirror() turns their result back."""
+
+    def __init__(self, board):
+        self.real = board
+        for k in ("name", "src", "d", "L", "Hh", "t", "body_L"):
+            setattr(self, k, getattr(board, k))
+        self.mirrored = True
+        self.bracket_tab_z = (-self.t - 4.2, -self.t)
+        self.Mz = np.diag([1.0, 1.0, -1.0, 1.0])
+        self.Mz[2, 3] = -self.t
+
+    def drives(self):
+        out = []
+        for d in self.real.drives():
+            d = dict(d)
+            d["T"] = self.Mz @ d["T"]
+            d["z_bottom"], d["z_top"] = -self.t - d["z_bottom"], -self.t - d["z_top"]
+            d["back"] = not d["back"]
+            out.append(d)
+        return out
+
+    def mount_holes(self, dmin=3.1):
+        return self.real.mount_holes(dmin)
+
+    def solid(self, holes_min=0.9):
+        return self.real.solid(holes_min)           # the bare board is symmetric about its mid-plane
+
+    def part_boxes(self):
+        return [(x0, x1, y0, y1, -self.t - z1, -self.t - z0, ref) for (x0, x1, y0, y1, z0, z1, ref) in self.real.part_boxes()]
 
 
 def _tr(x, y, z):
@@ -189,3 +237,8 @@ def _tr(x, y, z):
 def load(name):
     cfg = json.load(open(os.path.join(HERE, "boards.json")))[name]
     return MechBoard(name, cfg["ref"], cfg["path"])
+
+
+def for_shroud(board):
+    """The board as the card shroud generators want it: drives behind the card."""
+    return board if all(d["back"] for d in board.drives()) else MirrorBoard(board)
