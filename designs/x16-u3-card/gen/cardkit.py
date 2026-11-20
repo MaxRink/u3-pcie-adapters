@@ -8,7 +8,7 @@ and run along the window edge to every drive's block (geometry in sideband.py).
 import math
 import os
 import pcbnew as P
-from pcbkit import plen
+from pcbkit import plen, CLK3_W, CLK3_G
 import sideband as sb
 
 RW, RG = 0.128, 0.254                         # REFCLK 100 ohm geometry (outer layers)
@@ -38,7 +38,7 @@ def two(k, ref, fp, val, x, y, rot, bottom, near, net_near, net_far, lcsc, dnp=F
     k.setpad(ref, "2", net_near); k.setpad(ref, "1", net_far); return p2, p1
 
 
-def refclk(k, layer, center, starts, ends, h=0.22, L=0.4, extra=None):
+def refclk(k, layer, center, starts, ends, h=0.22, L=0.4, extra=None, RW=RW, RG=RG):
     """Coupled REFCLK pair; skew trimmed with trapezoid bumps on the shorter line, spread over the longest centre
     segments (bump height grows up to 0.4 mm when the pair is short)."""
     res = k.pair(layer, center, starts, ends, RW, RG, dry=True)
@@ -92,9 +92,36 @@ DRU = """(rule "REFCLK100: skew-tuning bumps (rule areas TUNE*) widen the gap lo
 (rule "REFCLK100: slot clock input <= 16 mm uncoupled (P/N swap crossing at the buffer + its deskew bumps)"
     (condition "A.NetClass == 'REFCLK_100' && A.NetName == 'REFCLK_IN_*'")
     (constraint diff_pair_uncoupled (max 16.0mm)))
+(rule "REFCLK_IN on L3 under the lane field (front-drive cards): 100 ohm over the L4 GND pour"
+    (condition "A.NetClass == 'REFCLK_100' && A.NetName == 'REFCLK_IN_*'")
+    (layer inner)
+    (constraint track_width (min 0.100mm) (opt 0.110mm) (max 0.120mm))
+    (constraint diff_pair_gap (min 0.240mm) (opt 0.250mm) (max 1.6mm)))
 (rule "PWR_12V: eFuse pin fan-out (0.5 mm pitch QFN pins, inside the EFUSE* areas; the pours carry the current)"
     (condition "A.NetClass == 'PWR_12V' && A.intersectsArea('EFUSE*')")
     (constraint track_width (min 0.2mm)))"""
+
+
+def allow_refclk_in_l3(k, every=False):
+    """The base rules keep REFCLK off the inner layers; the front-drive cards run REFCLK_IN on L3 (see DRU), the
+    front-drive x16 cards every REFCLK pair (every=True, see DRU_L3)."""
+    p = os.path.join(k.dir, k.name + ".kicad_dru")
+    t = open(p).read()
+    a = '(rule "REFCLK100: outer layers only"\n    (condition "A.NetClass == \'REFCLK_100\'")'
+    assert a in t
+    t = t.replace(a, a[:-2] + (" && A.NetName == 'none'\")" if every else " && A.NetName != 'REFCLK_IN_*'\")"))
+    open(p, "w").write(t)
+
+
+# front-drive x16 cards: every REFCLK pair runs on L3 between its via pairs
+DRU_L3 = """(rule "REFCLK on L3 (front-drive x16 cards): 100 ohm stripline over the L4 plane"
+    (condition "A.NetClass == 'REFCLK_100'")
+    (layer inner)
+    (constraint track_width (min 0.100mm) (opt 0.110mm) (max 0.120mm))
+    (constraint diff_pair_gap (min 0.240mm) (opt 0.250mm) (max 1.6mm)))
+(rule "REFCLK on L3 (front-drive x16 cards): two via pairs, the pin fan-out and the skew bumps of a 90-200 mm pair, <= 16 mm uncoupled"
+    (condition "A.NetClass == 'REFCLK_100'")
+    (constraint diff_pair_uncoupled (max 16.0mm)))"""
 
 
 class Card:
@@ -104,7 +131,11 @@ class Card:
         self.yA = yp_first
 
     # ------------------------------------------------------------------ REFCLK buffer
-    def buffer(self, used):
+    def buffer(self, used, at=None):
+        """at: (x, y) of the buffer when it does not sit in the card-end cluster (front-drive x16 cards)."""
+        global UX, UY
+        if at:
+            UX, UY = at
         if CDC:
             return self.buffer_cdc(used)
         """used: {drive: DIF index}.  Places the buffer, routes REFCLK_IN and the support parts."""
@@ -302,8 +333,49 @@ class Card:
         self.refin_skew = lP - lN
         return lP - lN
 
+    def refclk_in_l3(self, yrow=-13.45, xjog=1.65, yv=-10.4, xve=24.7, yc=-14.2):
+        """Front-drive cards (mirrored frame): the fingers sit east of the lane field and the buffer west of it, so
+        the slot clock passes under the lanes on L3, over a GND pour on L4.  A13/A14 (L1) run north and step east,
+        clear of the PET0 riser, to two vias side by side; L3 goes north and then west along yrow to two vias at the
+        buffer; L6 finishes west and north into the pins.  Heading north with P east, the left turn puts P on the
+        north line and the right turn at the buffer puts it east again: no crossing, two vias per line."""
+        k, U = self.k, self.U
+        x13, x14 = self.xpin(13), self.xpin(14)
+        assert x13 > x14
+        xin = (x13 + x14) / 2; xc1 = xin + xjog
+        o = 0.6; d1 = (RW + RG) / 2; d3 = (CLK3_W + CLK3_G) / 2; VIA_H = 1.5784
+        N_ = ("REFCLK_IN_P", "REFCLK_IN_N")
+        cen1 = [(xin, -5.76), (xin, -7.5), (xc1, -7.5 - xjog), (xc1, yv + 1.0)]
+        st1 = [(N_[0], [(x13, -5.62)]), (N_[1], [(x14, -5.62)])]
+        en1 = [(None, [(xc1 + o, yv), (xc1 + d1, yv + o - d1)]), (None, [(xc1 - o, yv), (xc1 - d1, yv + o - d1)])]
+        r1 = k.pair("L1", cen1, st1, en1, RW, RG)
+        assert r1[N_[0]][0][-1][0] > xc1, "REFCLK_IN: P should take the east via"
+        k.via(N_[0], xc1 + o, yv); k.via(N_[1], xc1 - o, yv)
+        p5, p6 = U(CLKIN[0]), U(CLKIN[1])
+        assert p5[0] > p6[0]
+        xc = (p5[0] + p6[0]) / 2
+        cen6 = [(xve - 1.0, yc), (xc + 0.6, yc), (xc, yc - 0.6), (xc, yc - 1.0)]
+        st6 = [(N_[0], [(xve, yc - o), (xve - o + d1, yc - d1)]), (N_[1], [(xve, yc + o), (xve - o + d1, yc + d1)])]
+        en6 = [(None, [p5, (p5[0], yc - 1.4)]), (None, [p6, (p6[0], yc - 1.4)])]
+        r6 = k.pair("L6", cen6, st6, en6, RW, RG)
+        assert math.dist(r6[N_[0]][0][-1], p5) < 1e-6, "REFCLK_IN: P should end on the east pin"
+        k.via(N_[0], xve, yc - o); k.via(N_[1], xve, yc + o)
+        tail = {n: plen(r1[n][0]) + plen(r6[n][0]) + 2 * VIA_H for n in N_}
+        dj = yrow - yc
+        cen3 = [(xc1, yv - 1.0), (xc1, yrow + 0.85), (xc1 - 0.85, yrow), (xve + 1.3 + dj, yrow), (xve + 1.3, yc),
+                (xve + 1.0, yc)]
+        st3 = [(N_[0], [(xc1 + o, yv), (xc1 + d3, yv - o + d3)]), (N_[1], [(xc1 - o, yv), (xc1 - d3, yv - o + d3)])]
+        en3 = [(None, [(xve, yc - o), (xve + o - d3, yc - d3)]), (None, [(xve, yc + o), (xve + o - d3, yc + d3)])]
+        r3 = refclk(k, "L3", cen3, st3, en3, extra=tail, RW=CLK3_W, RG=CLK3_G)
+        assert r3[N_[0]][0][-1][1] < yc, "REFCLK_IN: P should take the north via"
+        lp, ln = (plen(r3[n][0]) + tail[n] for n in N_)
+        self.refin_skew = lp - ln
+        self.refin_l3 = cen3
+        print(f"REFCLK_IN: {lp:.2f} mm, of it {plen(r3[N_[0]][0]):.2f} on L3")
+        return lp - ln
+
     # ------------------------------------------------------------------ card-level parts
-    def parts(self):
+    def parts(self, dy=0.0, fb=(17.2, -16.4)):
         """TCA9548A (slot SMBus -> card-local bus on ch0, address 0x77 with A0-A2 pulled up; close SJ1-SJ3 to move it
         to 0x70-0x76 if the host already uses 0x77, never onto 0x70-0x73 where the drives' TCA9543As sit on the
         local side), TPS2116 3.3 V OR (VIN1 = slot 3.3 V has priority, so in S0 the card never loads slot 3.3Vaux;
@@ -314,7 +386,7 @@ class Card:
             "1": "MUXA0", "2": "MUXA1", "3": "MUX_RST_N", "4": "SMDAT", "5": "SMCLK", "12": "GND", "21": "MUXA2",
             "22": "SMCLK_SLOT", "23": "SMDAT_SLOT", "24": "3V3_AUX"}, lcsc="C130026")
         # TPS2116 (SOT-583): 1 GND, 2/7 VOUT, 3 VIN1, 4 PR1, 5 MODE (= VIN1), 6 VIN2, 8 ST (open)
-        k.fp("Package_TO_SOT_SMD", "SOT-583-8", "U3", "TPS2116DRLR", 10.2, -14.2, 0, pads={
+        k.fp("Package_TO_SOT_SMD", "SOT-583-8", "U3", "TPS2116DRLR", 10.2, -14.2 + dy, 0, pads={
             "1": "GND", "2": "3V3_AUX", "3": "3V3", "4": "PR1", "5": "3V3", "6": "3V3_AUX_SLOT",
             "7": "3V3_AUX"}, lcsc="C3235557")
         # 0.5 mm pitch: hand escapes.  VOUT 2-7 and VIN1 3-5 (MODE) tie under the body; stub ends are router terminals
@@ -346,12 +418,12 @@ class Card:
         L = [("R1", R0402, "4.7k", 12.0, -30.2, 90, (12.0, -31.2), "SMCLK", "3V3_AUX"),
              ("R2", R0402, "4.7k", 13.0, -30.2, 90, (13.0, -31.2), "SMDAT", "3V3_AUX"),
              ("C6", C0402, "100nF", 3.0, -16.4, 0, (3.5, -17.4), "3V3_AUX", "GND"),
-             ("R3", R0402, "15k", 8.0, -14.2, 90, (8.0, -13.2), "PR1", "3V3"),
-             ("R4", R0402, "10k", 7.0, -14.2, 90, (7.0, -13.2), "PR1", "GND"),
-             ("C7", C0402, "100nF", 12.5, -14.9, 90, (12.5, -14.0), "3V3_AUX_SLOT", "GND"),
-             ("C8", C0402, "100nF", 13.5, -14.9, 90, (13.5, -14.0), "3V3", "GND"),
+             ("R3", R0402, "15k", 8.0, -14.2 + dy, 90, (8.0, -13.2 + dy), "PR1", "3V3"),
+             ("R4", R0402, "10k", 7.0, -14.2 + dy, 90, (7.0, -13.2 + dy), "PR1", "GND"),
+             ("C7", C0402, "100nF", 12.5, -14.9 + dy, 90, (12.5, -14.0 + dy), "3V3_AUX_SLOT", "GND"),
+             ("C8", C0402, "100nF", 13.5, -14.9 + dy, 90, (13.5, -14.0 + dy), "3V3", "GND"),
              ("C9", C0603, "10uF", 14.9, -15.2, 90, (14.9, -14.0), "3V3_AUX", "GND"),
-             ("FB1", ("Inductor_SMD", "L_0603_1608Metric"), "600R@100MHz", 17.2, -16.4, 0, (16.0, -16.4), "3V3",
+             ("FB1", ("Inductor_SMD", "L_0603_1608Metric"), "600R@100MHz", fb[0], fb[1], 0, (fb[0] - 1.2, fb[1]), "3V3",
               "3V3_A")]
         for ref, fp, val, x, y, rot, near_, na, nb in L:
             lc = LC["FB"] if ref == "FB1" else LC.get(val, {"4.7k": "C25900", "15k": "C25756"}.get(val))

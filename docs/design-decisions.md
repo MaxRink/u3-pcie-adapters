@@ -669,6 +669,22 @@ wired as the datasheets require. Four points deserve attention before ordering, 
 Not re-checked: the routed geometry itself beyond the DRC reports (clean on all boards), and the
 ITIMER blanking time of "about 2 ms", which was not read from the datasheet curve.
 
+## Rev G (2026-11-20): what changed in the choices above
+
+Rev G moves the drives and every tall part to the card front. These entries override the sections named.
+
+| Section | Rev F | Rev G | Why, and what it costs |
+| --- | --- | --- | --- |
+| A2, drive side | drives on the back (solder side) | drives on the front (component side) | The back of a CEM card may be 2.67 mm tall and faces the next slot. The owner asked for the drives, the aux plug and all tall parts on the front. |
+| G2, lane reversal | not used | **required**: every x4 port trains lane-reversed | Seen from the front the receptacle's lane order runs against the fingers'. Straight wiring keeps the lanes short. Reversal is optional in PCIe and unconfirmed for EPYC 7002/7003 on the H12SSL with PM1735 drives: test one drive first (README, rev G). Alternative checked: uncrossing on the board needs every lane bundle looped around its receptacle, about 35 mm more per drive; not built. Fallback without reversal: the rev F boards. |
+| B6, 50 mm budget | x8: all lanes within 50 mm | x8 drive B 45-66 mm (PET6, PET7, PER7 over) | On the front, drive B's lane 0 end is the far end of its receptacle. Accepted with its own DRU rule; drive B is the first to fall back to Gen3 on a weak host. |
+| D4, x16 clock | chain of up to three buffers | one buffer at the bracket end, one pair per drive on the physical L4 (stripline between the 12 V plane and GND) | Only one clock pair fits under a sideband block, and a chain from the free end would put the Gen4 drives A and B behind three stages. Costs pairs of 81 to 277 mm (well under 1 dB at 100 MHz, about 2 ns of flight time) and REFCLK on an inner layer referenced to the 12 V plane on one side. Two repeater buffers are gone. |
+| D2, CDCDB400 on x16 | built for all cards | x8 only | The front x16 clock layout needs three or four outputs on three faces of the buffer; the CDCDB400 variant in the generator only wires outputs 2 and 3. Not laid out, so the `boards/x16p*-cdcdb400` folders still hold rev F. |
+| C3, 12 V jumper | SMD 1x3 header, side away from the drives | through-hole 1x3 header on the drive side, in the gap next to the receptacle | A header on the back breaks the 2.67 mm limit. An SMD header does not fit on the front: its pads collide with the 12 V pour to the drive, the trunks on L3 and, on the x8, a clock pair. Through-hole pins meet their planes directly. Costs hand soldering of one header per drive (generic part, no LCSC number). |
+| Fan header, x16 | far end, slot or aux by solder jumper | tail tab next to the 6-pin, aux 12 V only | No slot 12 V copper reaches the tab, and the slot cannot spare a 3 A fan next to three or four drives. Without the 6-pin the fan needs a motherboard header. x8 unchanged (slot default, aux by solder jumper). |
+| 4-drive card length | 312 mm | 334.7 mm | The owner chose to keep the PCIe 6-pin, which needs the 22.6 mm tail tab. Longer than a full-length CEM card: check the case. |
+| Clamp holes between drives | one per gap where a spot was free | none | The strip between receptacles and fingers is full of lanes and clock pairs on the front cards. The shroud has to clamp at the column holes. |
+
 ## Sources
 
 - `docs/fab-cost-options.md` (PR #13) and `docs/fab-quotes.md` (PR #11): stock, prices, fab options, 2026-11-13.

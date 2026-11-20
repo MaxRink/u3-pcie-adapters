@@ -82,4 +82,7 @@ if jps:
         w = csv.writer(fh); w.writerow(["Comment", "For", "LCSC Part #", "Quantity"])
         w.writerow(["Jumper shunt 2.54 mm 1x2 (HCTL HC-JP254-1-65-CL-B-G0), fit on pins 2-3 = SLOT 12V", ",".join(jps),
                     "C5380290", len(jps)])
+        if any("THT" in r["value"] for r in raw.values() if r["ref"] in jps):
+            w.writerow(["Pin header 1x3, 2.54 mm, straight, through-hole (any make); solder on the drive side",
+                        ",".join(jps), "", len(jps)])
 print("wrote", zpath, len(groups), "BOM lines,", len(cpl), "placements")
