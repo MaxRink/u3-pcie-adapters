@@ -18,6 +18,8 @@ LAYER = {"L1": P.F_Cu, "L2": P.In1_Cu, "L3": P.In2_Cu, "L4": P.In3_Cu, "L5": P.I
 # PCIe 85 ohm and REFCLK 100 ohm geometry on JLC06161H-3313 outer layers (design-rules README sec. 3)
 PCIE_W, PCIE_G = 0.157, 0.152
 CLK_W, CLK_G = 0.128, 0.254
+# REFCLK 100 ohm on L3 over a GND pour on L4 (0.109 mm 2116 below, 0.55 mm core to L2 above): field solver 100-104 ohm
+CLK3_W, CLK3_G = 0.11, 0.25
 
 
 def offset_polyline(pts, d):
@@ -356,10 +358,22 @@ class Kit:
                 self.b.Delete(t)
             del dead
 
+    def mirror_all(self, xm):
+        """Mirror the finished board left-right about x = xm / 2 and swap the layer stack (L1<->L6, L2<->L5, L3<->L4,
+        top parts <-> bottom parts).  The front-drive cards are generated in this mirrored frame, where the drive
+        blocks are the proven back-side blocks, and flipped once at the end.  Layer names follow the copper."""
+        c = self.V(xm / 2.0, 0.0)
+        for it in list(self.b.GetFootprints()) + list(self.b.GetTracks()) + list(self.b.Zones()) + \
+                list(self.b.GetDrawings()):
+            it.Flip(c, True)
+        self.b.SetLayerName(P.In2_Cu, "L3_12V"); self.b.SetLayerName(P.In3_Cu, "L4_LS_3V3")
+
     def save(self):
         n = self.prune() if os.environ.get("STAGE") != "card" else 0
         if n:
             print(f"pruned {n} dangling router vias/tracks")
+        if getattr(self, "xm", None) is not None and not getattr(self, "_mirrored", False):
+            self.mirror_all(self.xm); self._mirrored = True
         self.b.Save(self.pcb)
 
     def fill_and_check(self, extra_dru=""):
@@ -374,6 +388,28 @@ class Kit:
         rpt = os.path.join(self.dir, self.name + "-drc.rpt")
         P.WriteDRCReport(b, rpt, P.EDA_UNITS_MILLIMETRES, True)
         return b, rpt
+
+
+class Phys:
+    """Physical-frame view of a Kit that builds in the mirrored frame (Kit.xm set): x -> xm - x, outer and GND layers
+    swapped (L1<->L6, L2<->L5).  L3 / L4 keep their roles (L3 = low speed, L4 = 12 V).  Used for the finger field,
+    which has to sit where the CEM puts it."""
+    SW = {"L1": "L6", "L6": "L1", "L2": "L5", "L5": "L2", "L3": "L3", "L4": "L4"}
+
+    def __init__(self, k, xm):
+        self.k, self.xm = k, xm
+
+    def X(self, p):
+        return (self.xm - p[0], p[1])
+
+    def track(self, net, layer, pts, w):
+        self.k.track(net, self.SW[layer], [self.X(p) for p in pts], w)
+
+    def via(self, net, x, y, *a):
+        return self.k.via(net, self.xm - x, y, *a)
+
+    def padxy(self, ref, num):
+        return self.X(self.k.padxy(ref, num))
 
 
 def drc_summary(rpt):
