@@ -70,6 +70,10 @@ sit on the card front (the CEM component side, where a card may be 14.47 mm tall
 slot). The back carries only flat SMD parts. Rev F and earlier had the drives on the back, where a CEM card may
 only be 2.67 mm tall; those boards are in the git history (merge of PR #17).
 
+| x8, drives fitted | x16 with 4 drives |
+| --- | --- |
+| ![x8 rev G](../../docs/img/x16-u3-card/x8_revG_front.png) | ![x16 rev G](../../docs/img/x16-u3-card/x16p_revG_front.png) |
+
 **Lane order.** Seen from the front, a receptacle's lane order runs against the finger order. The cards wire every
 lane straight through, so finger lane n lands on drive lane 3 - n mod 4, and every x4 port has to train
 lane-reversed. Lane reversal is optional in PCIe; most root ports and NVMe controllers do it, but it could not be

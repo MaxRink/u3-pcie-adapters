@@ -352,7 +352,7 @@ def _route_block_once(k, R, d, info, JP, yvm, yvt, fan):
     try:
         # a block that leaves pins unrouted is routed again with those pins first (the order decides who gets the
         # few via sites over the trunk strip)
-        n_try = int(os.environ.get("BLOCK_TRIES", "1"))
+        n_try = int(os.environ.get("BLOCK_TRIES", "2"))
         for attempt in range(n_try):
             base = len(R.tasks)
             fails = R.run_tasks(tasks)
