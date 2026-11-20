@@ -553,7 +553,11 @@ for net, (w_, pts) in ROWS.items():
 V33 = SLOTV["3V3"]
 XE33 = M(15.0) + 1.0
 F33 = [V33, (V33[0], -12.9), (V33[0] + 0.35, -13.25), (XE33 - 0.7, -13.25), (XE33, -12.55), (XE33, -11.9)]
-k.track("3V3", "L3", F33, 0.3); k.via("3V3", *F33[-1])
+if N == 4:      # every OE# pin is tied low here, nothing uses the end via: stop where the router taps the line
+    F33 = F33[:3] + [(XM - 17.35, -13.25)]
+else:
+    k.via("3V3", *F33[-1])
+k.track("3V3", "L3", F33, 0.3)
 # the low drive's reset gate / WAKE buffer tap these verticals (1.05 mm apart, room for a via on each)
 for net, tv in (("PCIE_RST_N", (27.45, YPL - 6.3)), ("PCIE_WAKE_N", (28.3, YPL - 5.0))):
     k.via(net, *tv); card.taps[net].append(tv)
@@ -601,7 +605,10 @@ for net, v in card.supply_vias.items():
                 print("FAIL buffer supply", net, e)
 card.wire()
 print("t card", round(time.time() - T0))
+ONLY = os.environ.get("U3_ONLY", "")       # experiments: route only these drives' blocks
 for j, (d, xc) in enumerate(DRV if os.environ.get("STAGE") != "card" else ()):
+    if ONLY and d not in ONLY:
+        continue
     SB[d]["taps"] = {net: tv[j] for net, tv in card.taps.items()}
     sideband.route_block(k, R, d, SB[d], JP[d], YVMD[d], YVTD[d])
     card.after_block(j)
